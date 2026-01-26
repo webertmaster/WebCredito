@@ -1,267 +1,569 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WEB CRÉDITO – Simulador de Empréstimo</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WEB CRÉDITO – Simulador de Empréstimo</title>
 
-<style>
-body{
-  margin:0;
-  background:#0b1220;
-  color:#e7eefc;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-}
-.wrap{max-width:720px;margin:auto;padding:16px;flex:1}
-.card{
-  background:#121b2f;
-  border-radius:16px;
-  padding:16px;
-  border:1px solid #243255;
-}
-.logo{text-align:center;margin-bottom:12px}
-.logo h2{margin:0;font-size:26px;font-weight:900;color:#5b7cfa}
-.logo span{font-size:13px;color:#b9c7ea}
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#121b2f;
+      --line:#243255;
+      --field:#0f1730;
+      --fieldLine:#2a3a63;
+      --text:#e7eefc;
+      --muted:#b9c7ea;
+      --brand:#5b7cfa;
+      --warn:#ffd38a;
+      --ok:#6CFF9D;
+      --bad:#ff7c7c;
+      --wa:#25D366;
+      --neon:#39ff14;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+    .wrap{ max-width:720px; margin:auto; padding:16px; flex:1; width:100%; }
+    .card{
+      background:var(--card);
+      border-radius:16px;
+      padding:16px;
+      border:1px solid var(--line);
+    }
 
-label{font-size:14px;color:#b9c7ea}
-input,select,button{
-  width:100%;
-  padding:12px;
-  margin-top:6px;
-  border-radius:12px;
-  border:1px solid #2a3a63;
-  background:#0f1730;
-  color:#fff;
-  font-size:16px;
-}
-button{background:#5b7cfa;font-weight:bold;border:none;cursor:pointer}
-button:disabled{opacity:.5}
-.warn{font-size:13px;color:#ffd38a;margin-top:4px}
+    .logo{ text-align:center; margin-bottom:12px; }
+    .logo h2{
+      margin:0;
+      font-size:26px;
+      font-weight:900;
+      letter-spacing:1px;
+      color:var(--brand);
+    }
+    .logo span{ font-size:13px; color:var(--muted); }
 
-.result{margin-top:16px;padding-top:16px;border-top:1px dashed #2a3a63}
-.box{background:#0f1730;padding:12px;border-radius:12px;margin-bottom:10px}
+    label{ font-size:14px; color:var(--muted); display:block; margin-top:10px; }
+    input, select, button{
+      width:100%;
+      padding:12px;
+      margin-top:6px;
+      border-radius:12px;
+      border:1px solid var(--fieldLine);
+      background:var(--field);
+      color:#fff;
+      font-size:16px;
+      outline:none;
+    }
+    input:focus, select:focus{
+      border-color:rgba(91,124,250,.9);
+      box-shadow:0 0 0 3px rgba(91,124,250,.15);
+    }
+    button{
+      background:var(--brand);
+      font-weight:800;
+      border:none;
+      cursor:pointer;
+      margin-top:12px;
+    }
+    button:disabled{ opacity:.5; cursor:not-allowed; }
 
-.btn-whatsapp{
-  background:#25D366;
-  border:none;
-  border-radius:12px;
-  padding:14px;
-  font-weight:bold;
-  color:#fff;
-  cursor:pointer;
-}
+    .hint{ font-size:13px; color:var(--warn); margin-top:6px; }
 
-footer{text-align:center;font-size:11px;color:#39ff14;padding:10px}
+    .result{
+      margin-top:16px;
+      padding-top:16px;
+      border-top:1px dashed var(--fieldLine);
+      display:none;
+    }
+    .box{
+      background:var(--field);
+      padding:12px;
+      border-radius:12px;
+      margin-bottom:10px;
+      border:1px solid rgba(42,58,99,.5);
+    }
 
-.overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.6);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-}
-.loader{
-  background:#121b2f;
-  border-radius:16px;
-  padding:20px;
-  width:90%;
-  max-width:420px;
-  text-align:center;
-}
-.progress{
-  width:100%;
-  height:14px;
-  background:#0f1730;
-  border-radius:999px;
-  overflow:hidden;
-  margin-top:10px;
-}
-.progress-bar{
-  height:100%;
-  width:0%;
-  background:#5b7cfa;
-  transition:width .12s linear;
-}
-.progress-pct{margin-top:8px;font-weight:800}
-</style>
+    /* CPF UI */
+    .cpf-row{ position:relative; }
+    .cpf-row input{ padding-right:44px; }
+    .cpf-status-icon{
+      position:absolute;
+      right:12px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:18px;
+      opacity:.95;
+      pointer-events:none;
+    }
+    .cpf-msg{
+      margin-top:6px;
+      font-size:13px;
+      color:var(--muted);
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+    .cpf-msg.ok{ color:var(--ok); }
+    .cpf-msg.bad{ color:var(--bad); }
+    .cpf-msg.warn{ color:var(--warn); }
+
+    .input-ok{ border-color:rgba(108,255,157,.65)!important; box-shadow:0 0 0 3px rgba(108,255,157,.10); }
+    .input-bad{ border-color:rgba(255,124,124,.65)!important; box-shadow:0 0 0 3px rgba(255,124,124,.10); }
+
+    .btn-wa{
+      background:var(--wa);
+      color:#fff;
+      font-weight:900;
+      border:none;
+      border-radius:12px;
+      padding:14px;
+      cursor:pointer;
+      margin-top:10px;
+    }
+
+    .legal{
+      margin-top:10px;
+      font-size:12px;
+      color:#9eb2e2;
+      text-align:center;
+      font-style:italic;
+      line-height:1.35;
+    }
+
+    footer{
+      text-align:center;
+      font-size:11px;
+      color:var(--neon);
+      padding:10px 0;
+      letter-spacing:1px;
+    }
+
+    /* Overlay */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+      padding:16px;
+    }
+    .loader-card{
+      width:min(420px, 100%);
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+      text-align:center;
+    }
+    .loader-title{
+      margin:0 0 6px;
+      font-size:16px;
+      color:var(--text);
+      font-weight:900;
+    }
+    .loader-sub{
+      margin:0 0 12px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .progress-wrap{
+      width:100%;
+      background:var(--field);
+      border:1px solid var(--fieldLine);
+      border-radius:999px;
+      overflow:hidden;
+      height:14px;
+    }
+    .progress-bar{
+      height:100%;
+      width:0%;
+      background:var(--brand);
+      border-radius:999px;
+      transition:width .12s linear;
+    }
+    .progress-pct{
+      margin-top:10px;
+      font-size:14px;
+      color:var(--text);
+      font-weight:900;
+      letter-spacing:.5px;
+    }
+  </style>
 </head>
 
 <body>
-<div class="wrap">
-  <div class="card">
-    <div class="logo">
-      <h2>WEB CRÉDITO</h2>
-      <span>Simulador de Empréstimo</span>
-    </div>
+  <div class="wrap">
+    <div class="card">
 
-    <label>Responsável</label>
-    <input id="responsavel" placeholder="Nome do responsável">
+      <div class="logo">
+        <h2>WEB CRÉDITO</h2>
+        <span>Simulador de Empréstimo</span>
+      </div>
 
-    <label>CPF</label>
-    <input id="cpf" placeholder="000.000.000-00" maxlength="14">
+      <label>Responsável</label>
+      <input id="responsavel" placeholder="Nome do responsável" autocomplete="name" />
 
-    <label>Valor desejado (R$)</label>
-    <input id="valor" inputmode="numeric" placeholder="Ex: 80">
-    <div class="warn" id="info">Digite um valor válido</div>
+      <label>CPF</label>
+      <div class="cpf-row">
+        <input id="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off" />
+        <div class="cpf-status-icon" id="cpfIcon">🪪</div>
+      </div>
+      <div class="cpf-msg warn" id="cpfMsg">Digite o CPF completo para validar</div>
 
-    <label>Parcelas</label>
-    <select id="parcelas"></select>
+      <label>Valor desejado (R$)</label>
+      <input id="valor" inputmode="numeric" placeholder="Ex: 80" />
+      <div class="hint" id="info">Digite um valor válido</div>
 
-    <button id="btnSimular" disabled onclick="simular()">Simular</button>
+      <label>Parcelas</label>
+      <select id="parcelas" disabled>
+        <option value="">Informe um valor acima</option>
+      </select>
 
-    <div class="result" id="resultado" style="display:none">
-      <div class="box">💳 Valor da parcela: <strong id="parcela"></strong></div>
-      <div class="box">📊 Total a pagar: <strong id="total"></strong></div>
+      <button id="btnSimular" onclick="simular()" disabled>Simular</button>
 
-      <button class="btn-whatsapp" onclick="enviarWhats()">Solicitar análise no WhatsApp</button>
+      <div class="result" id="resultado">
+        <div class="box">💳 Valor da parcela: <strong id="parcela"></strong></div>
+        <div class="box">📊 Total a pagar: <strong id="total"></strong></div>
+
+        <button class="btn-wa" id="btnWhats" onclick="enviarWhatsComLoading()">
+          Solicitar análise no WhatsApp
+        </button>
+
+        <div class="legal">
+          Simulação sem compromisso. Valores sujeitos à análise e aprovação.
+        </div>
+      </div>
+
     </div>
   </div>
-</div>
 
-<footer>webdev</footer>
+  <footer>webdev</footer>
 
-<div class="overlay" id="overlay">
-  <div class="loader">
-    Enviando solicitação…
-    <div class="progress"><div class="progress-bar" id="bar"></div></div>
-    <div class="progress-pct" id="pct">0%</div>
+  <div class="overlay" id="overlay">
+    <div class="loader-card">
+      <p class="loader-title">Enviando sua solicitação…</p>
+      <p class="loader-sub">Aguarde um instante 👌</p>
+
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="progress-pct" id="progressPct">0%</div>
+    </div>
   </div>
-</div>
 
 <script>
-const WHATSAPP="5584987974972";
-const LIMITE=1500;
+  const LIMITE = 1500;
+  const WHATSAPP = "5584987974972";
 
-function parseValor(v){return Number((v||"").replace(/\D/g,""))}
+  let cpfValido = false;
 
-function formatBRL(el){
-  const d=el.value.replace(/\D/g,"");
-  if(!d){el.value="";return;}
-  el.value=Number(d).toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:0});
-}
+  // ---------- Helpers (valor) ----------
+  function parseBRLInteiro(str) {
+    const digits = (str || "").replace(/\D/g, "");
+    if (!digits) return NaN;
+    return Number(digits);
+  }
 
-document.getElementById("valor").addEventListener("input",e=>{
-  formatBRL(e.target);
-  atualizarUI();
-});
+  function formatarBRLSemCentavos(inputEl) {
+    const digits = (inputEl.value || "").replace(/\D/g, "");
+    if (!digits) { inputEl.value = ""; return; }
+    const n = Number(digits);
+    inputEl.value = n.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+  }
 
-document.getElementById("cpf").addEventListener("input",e=>{
-  let v=e.target.value.replace(/\D/g,"").slice(0,11);
-  v=v.replace(/(\d{3})(\d)/,"$1.$2");
-  v=v.replace(/(\d{3})(\d)/,"$1.$2");
-  v=v.replace(/(\d{3})(\d{1,2})$/,"$1-$2");
-  e.target.value=v;
-});
+  // ---------- CPF ----------
+  function somenteDigitos(str){ return (str || "").replace(/\D/g, ""); }
 
-/* 🔥 REGRAS COMPLETAS */
-function regras(v){
-  if(v < 100) return [
-    {n:1,t:0.30},
-    {n:2,t:0.26}
-  ];
+  function aplicarMascaraCPF(v) {
+    v = somenteDigitos(v).slice(0, 11);
+    v = v.replace(/(\d{3})(\d)/, "$1.$2");
+    v = v.replace(/(\d{3})(\d)/, "$1.$2");
+    v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    return v;
+  }
 
-  if(v <= 500) return [
-    {n:1,t:0.25},
-    {n:2,t:0.223},
-    {n:3,t:0.20},
-    {n:4,t:0.195},
-    {n:5,t:0.188}
-  ];
+  function cpfEhValido(cpf) {
+    cpf = somenteDigitos(cpf);
+    if (cpf.length !== 11) return false;
+    if (/^(\d)\1{10}$/.test(cpf)) return false;
 
-  if(v <= 700) return [
-    {n:6,t:0.17},
-    {n:10,t:0.164}
-  ];
+    let soma = 0;
+    for (let i = 0; i < 9; i++) soma += Number(cpf[i]) * (10 - i);
+    let d1 = (soma * 10) % 11;
+    if (d1 === 10) d1 = 0;
+    if (d1 !== Number(cpf[9])) return false;
 
-  if(v <= 1000) return [
-    {n:6,t:0.162},
-    {n:12,t:0.154}
-  ];
+    soma = 0;
+    for (let i = 0; i < 10; i++) soma += Number(cpf[i]) * (11 - i);
+    let d2 = (soma * 10) % 11;
+    if (d2 === 10) d2 = 0;
+    if (d2 !== Number(cpf[10])) return false;
 
-  return [
-    {n:6,t:0.161},
-    {n:12,t:0.154}
-  ];
-}
+    return true;
+  }
 
-function price(p,i,n){
-  return p*(i/(1-Math.pow(1+i,-n)));
-}
+  function setCpfUI(estado) {
+    elCPF.classList.remove("input-ok","input-bad");
+    elCPFMsg.classList.remove("warn","ok","bad");
 
-function atualizarUI(){
-  const v=parseValor(valor.value);
-  parcelas.innerHTML="";
-  btnSimular.disabled=true;
-  if(!v||v> LIMITE) return;
+    if (estado === "ok") {
+      elCPF.classList.add("input-ok");
+      elCPFMsg.classList.add("ok");
+      elCPFMsg.textContent = "CPF válido ✅";
+      elCPFIcon.textContent = "✅";
+      return;
+    }
+    if (estado === "bad") {
+      elCPF.classList.add("input-bad");
+      elCPFMsg.classList.add("bad");
+      elCPFMsg.textContent = "CPF inválido ❌ (verifique os números)";
+      elCPFIcon.textContent = "❌";
+      return;
+    }
+    elCPFMsg.classList.add("warn");
+    elCPFMsg.textContent = "Digite o CPF completo para validar";
+    elCPFIcon.textContent = "🪪";
+  }
 
-  regras(v).forEach(r=>{
-    const o=document.createElement("option");
-    o.value=r.n;
-    o.textContent=r.n+"x";
-    parcelas.appendChild(o);
+  function validarCpfAtual() {
+    const dig = somenteDigitos(elCPF.value);
+    if (dig.length < 11) { cpfValido = false; setCpfUI("warn"); return; }
+    cpfValido = cpfEhValido(elCPF.value);
+    setCpfUI(cpfValido ? "ok" : "bad");
+  }
+
+  // ---------- Regras ----------
+  function regras(valor) {
+    // ✅ abaixo de 100 (1x e 2x)
+    if (valor < 100) {
+      return [
+        { n: 1, t: 0.30 },
+        { n: 2, t: 0.26 }
+      ];
+    }
+
+    if (valor <= 500) {
+      return [
+        { n: 1, t: 0.25  },
+        { n: 2, t: 0.223 },
+        { n: 3, t: 0.20  },
+        { n: 4, t: 0.195 },
+        { n: 5, t: 0.188 }
+      ];
+    }
+
+    if (valor <= 700) {
+      return [
+        { n: 6,  t: 0.17  },
+        { n: 10, t: 0.164 }
+      ];
+    }
+
+    if (valor <= 1000) {
+      return [
+        { n: 6,  t: 0.162 },
+        { n: 12, t: 0.154 }
+      ];
+    }
+
+    return [
+      { n: 6,  t: 0.161 },
+      { n: 12, t: 0.154 }
+    ];
+  }
+
+  // Parcela fixa (Price)
+  function price(p, i, n) {
+    return p * (i / (1 - Math.pow(1 + i, -n)));
+  }
+
+  // ---------- Elementos ----------
+  const elResp = document.getElementById("responsavel");
+  const elCPF  = document.getElementById("cpf");
+  const elCPFMsg = document.getElementById("cpfMsg");
+  const elCPFIcon = document.getElementById("cpfIcon");
+  const elValor = document.getElementById("valor");
+  const elParcelas = document.getElementById("parcelas");
+  const elInfo = document.getElementById("info");
+  const elBtnSim = document.getElementById("btnSimular");
+  const elResultado = document.getElementById("resultado");
+
+  // ---------- UI ----------
+  function atualizarUI() {
+    const nomeOk = elResp.value.trim().length > 0;
+    const v = parseBRLInteiro(elValor.value);
+
+    elResultado.style.display = "none";
+
+    // ✅ IMPORTANTE: preservar a parcela selecionada
+    const selecionadaAntes = elParcelas.value;
+
+    // reset select
+    elParcelas.innerHTML = "";
+    elParcelas.disabled = true;
+
+    if (!Number.isFinite(v) || v <= 0) {
+      elInfo.textContent = "Digite um valor válido";
+      elBtnSim.disabled = true;
+      const opt = document.createElement("option");
+      opt.value = ""; opt.textContent = "Informe um valor acima";
+      elParcelas.appendChild(opt);
+      return;
+    }
+
+    if (v > LIMITE) {
+      elInfo.textContent = "⚠️ Valor máximo permitido: R$ 1.500";
+      elBtnSim.disabled = true;
+      const opt = document.createElement("option");
+      opt.value = ""; opt.textContent = "Valor acima do limite";
+      elParcelas.appendChild(opt);
+      return;
+    }
+
+    const lista = regras(v);
+    lista.forEach(r => {
+      const opt = document.createElement("option");
+      opt.value = String(r.n);
+      opt.textContent = `${r.n}x`;
+      elParcelas.appendChild(opt);
+    });
+
+    elParcelas.disabled = false;
+    elInfo.textContent = "Selecione as parcelas";
+
+    // ✅ tentar restaurar seleção
+    if (selecionadaAntes && [...elParcelas.options].some(o => o.value === selecionadaAntes)) {
+      elParcelas.value = selecionadaAntes;
+    }
+
+    elBtnSim.disabled = !(nomeOk && cpfValido && elParcelas.value);
+  }
+
+  // ---------- Eventos ----------
+  elValor.addEventListener("paste", (e) => e.preventDefault());
+  elValor.addEventListener("drop", (e) => e.preventDefault());
+  elValor.addEventListener("keydown", (e) => {
+    const key = e.key;
+    const permitidas = ["Backspace","Delete","ArrowLeft","ArrowRight","Home","End","Tab"];
+    if (permitidas.includes(key)) return;
+
+    if ((e.ctrlKey && (key === "v" || key === "V")) ||
+        (e.metaKey && (key === "v" || key === "V")) ||
+        (e.shiftKey && key === "Insert")) {
+      e.preventDefault(); return;
+    }
+    if (!/^\d$/.test(key)) e.preventDefault();
   });
-  btnSimular.disabled=false;
-}
 
-function simular(){
-  const nome=responsavel.value.trim();
-  const cpfv=cpf.value.trim();
-  const v=parseValor(valor.value);
-  const p=Number(parcelas.value);
-  if(!nome||!cpfv||!v||!p) return;
+  elValor.addEventListener("input", () => { formatarBRLSemCentavos(elValor); atualizarUI(); });
+  elResp.addEventListener("input", atualizarUI);
+  elParcelas.addEventListener("change", atualizarUI);
 
-  const r=regras(v).find(x=>x.n===p);
-  const parc=price(v,r.t,p);
-  const tot=parc*p;
+  elCPF.addEventListener("input", () => {
+    elCPF.value = aplicarMascaraCPF(elCPF.value);
+    validarCpfAtual();
+    atualizarUI();
+  });
 
-  parcela.textContent=parc.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  total.textContent=tot.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-  resultado.style.display="block";
+  // ---------- Simular ----------
+  function simular() {
+    const nome = elResp.value.trim();
+    const cpf = elCPF.value.trim();
+    const v = parseBRLInteiro(elValor.value);
+    const p = Number(elParcelas.value);
 
-  window._d={nome,cpfv,v,p,parc,tot};
-}
+    if (!nome) { alert("Informe o responsável."); return; }
+    if (!cpfEhValido(cpf)) { alert("CPF inválido. Verifique e tente novamente."); return; }
+    if (!Number.isFinite(v) || v <= 0) { alert("Digite um valor válido."); return; }
+    if (v > LIMITE) { alert("⚠️ Valor máximo permitido: R$ 1.500"); return; }
 
-function enviarWhats(){
-  const d=window._d;
-  if(!d) return;
+    const r = regras(v).find(x => x.n === p);
+    if (!r) { alert("Opção de parcelas inválida para este valor."); atualizarUI(); return; }
 
-  overlay.style.display="flex";
-  let prog=0;
-  const t=setInterval(()=>{
-    prog+=20;
-    bar.style.width=prog+"%";
-    pct.textContent=prog+"%";
-    if(prog>=100){
-      clearInterval(t);
+    const parc = price(v, r.t, p);
+    const tot = parc * p;
 
-        // Emojis por Unicode escape (não quebram)
-        const msg =
-`Olá! Gostaria de solicitar uma análise de empréstimo.
+    document.getElementById("parcela").textContent =
+      parc.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+    document.getElementById("total").textContent =
+      tot.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+    elResultado.style.display = "block";
+    window._dados = { nome, cpf, v, p, parc, tot };
+  }
+
+  // ---------- WhatsApp ----------
+  function montarMensagem(d){
+    return `Olá! Gostaria de solicitar uma análise de empréstimo.
 
 👤 Responsável: ${d.nome}
 🪪 CPF: ${d.cpf}
 
-💰 Valor solicitado: ${d.v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+💰 Valor solicitado: ${d.v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 })}
 📆 Parcelas: ${d.p}x
 💳 Valor da parcela: R$ ${d.parc.toFixed(2)}
 📊 Total a pagar: R$ ${d.tot.toFixed(2)}
 
 Fico no aguardo, obrigado.`;
+  }
 
-        // Redirecionamento estável
-        window.location.href =
-          "https://api.whatsapp.com/send?phone=" + WHATSAPP + "&text=" + encodeURIComponent(msg);
+  function enviarWhatsComLoading() {
+    const d = window._dados;
+    if (!d) { alert("Faça a simulação primeiro."); return; }
 
-        overlay.style.display="none";
+    const overlay = document.getElementById("overlay");
+    const bar = document.getElementById("progressBar");
+    const pct = document.getElementById("progressPct");
+
+    overlay.style.display = "flex";
+    bar.style.width = "0%";
+    pct.textContent = "0%";
+
+    const msg = montarMensagem(d);
+    const text = encodeURIComponent(msg);
+
+    // ✅ iPhone FIX: tenta abrir o APP direto (sem depender do timer)
+    const deepLink = `whatsapp://send?phone=${WHATSAPP}&text=${text}`;
+    const webLink  = `https://wa.me/${WHATSAPP}?text=${text}`;
+
+    // tenta abrir o app
+    window.location.href = deepLink;
+
+    // fallback pro link web (se não tiver app / se bloquear)
+    setTimeout(() => {
+      window.location.href = webLink;
+    }, 700);
+
+    // animação só visual (não trava nada)
+    let progresso = 0;
+    const timer = setInterval(() => {
+      progresso = Math.min(100, progresso + 10);
+      bar.style.width = progresso + "%";
+      pct.textContent = progresso + "%";
+      if (progresso >= 100) {
+        clearInterval(timer);
+        setTimeout(() => { overlay.style.display = "none"; }, 400);
       }
-    },80);
+    }, 70);
   }
 
   // init
+  setCpfUI("warn");
   atualizarUI();
 </script>
 </body>
