@@ -44,7 +44,10 @@
       color: #fff;
       font-size: 16px;
       box-sizing: border-box;
+      outline: none;
     }
+    input:focus, select:focus { border-color: #4c67c9; }
+
     button {
       background: #5b7cfa;
       font-weight: bold;
@@ -52,7 +55,10 @@
       cursor: pointer;
     }
     button:disabled { opacity: .5; cursor: not-allowed; }
-    .warn { font-size: 13px; color: #ffd38a; margin-top: 4px; }
+
+    .warn { font-size: 13px; color: #ffd38a; margin-top: 6px; line-height: 1.25; }
+    .ok { color: #8fffb3; }
+    .err { color: #ff9aa5; }
 
     .result {
       margin-top: 16px;
@@ -131,6 +137,14 @@
       font-size: 14px;
       font-weight: 800;
     }
+
+    .rowgap { margin-top: 10px; }
+    .hint {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #b9c7ea;
+      opacity: .95;
+    }
   </style>
 </head>
 
@@ -143,13 +157,25 @@
       <span>Simulador de Empréstimo</span>
     </div>
 
-    <label>Responsável</label>
-    <input id="responsavel" placeholder="Nome do responsável">
+    <!-- CPF -->
+    <label>CPF</label>
+    <input id="cpf" inputmode="numeric" placeholder="000.000.000-00" maxlength="14" autocomplete="off">
+    <div class="warn" id="cpfInfo">Digite seu CPF</div>
 
+    <!-- Nome -->
+    <div class="rowgap"></div>
+    <label>Nome completo</label>
+    <input id="nome" placeholder="Digite seu nome completo" autocomplete="off">
+    <div class="hint">Confirme seu nome completo abaixo.</div>
+
+    <!-- Valor -->
+    <div class="rowgap"></div>
     <label>Valor desejado (R$)</label>
-    <input id="valor" inputmode="numeric" placeholder="Ex: 500">
+    <input id="valor" inputmode="numeric" placeholder="Ex: 500" autocomplete="off">
     <div class="warn" id="info">Digite um valor válido</div>
 
+    <!-- Parcelas -->
+    <div class="rowgap"></div>
     <label>Parcelas</label>
     <select id="parcelas"></select>
 
@@ -159,7 +185,7 @@
       <div class="box">💳 Valor da parcela: <strong id="parcela"></strong></div>
       <div class="box">📊 Total a pagar: <strong id="total"></strong></div>
 
-      <button class="btn-whatsapp" onclick="enviarWhatsComLoading()">
+      <button class="btn-whatsapp" id="btnWhats" onclick="enviarWhatsComLoading()" disabled>
         Solicitar análise no WhatsApp
       </button>
 
@@ -187,25 +213,56 @@
   const LIMITE = 1500;
   const WHATSAPP = "5584987974972";
 
-  // Emojis seguros (Unicode)
-  const EMOJI_PESSOA = String.fromCodePoint(0x1F464);
-  const EMOJI_DINHEIRO = String.fromCodePoint(0x1F4B0);
-  const EMOJI_CALENDARIO = String.fromCodePoint(0x1F4C6);
-  const EMOJI_CARTAO = String.fromCodePoint(0x1F4B3);
-  const EMOJI_GRAFICO = String.fromCodePoint(0x1F4CA);
+  // ---------- Helpers CPF ----------
+  function onlyDigits(s){ return (s || "").replace(/\D/g,""); }
 
+  function maskCPF(digits){
+    const d = onlyDigits(digits).slice(0,11);
+    let out = "";
+    for(let i=0;i<d.length;i++){
+      out += d[i];
+      if(i===2 || i===5) out += ".";
+      if(i===8) out += "-";
+    }
+    return out;
+  }
+
+  function isCPFValid(cpfStr){
+    const cpf = onlyDigits(cpfStr);
+    if(cpf.length !== 11) return false;
+    // bloqueia CPFs repetidos: 000..., 111..., etc.
+    if(/^(\d)\1{10}$/.test(cpf)) return false;
+
+    const calc = (base, factorStart) => {
+      let sum = 0;
+      for(let i=0;i<base.length;i++){
+        sum += Number(base[i]) * (factorStart - i);
+      }
+      const mod = sum % 11;
+      return (mod < 2) ? 0 : (11 - mod);
+    };
+
+    const d1 = calc(cpf.slice(0,9), 10);
+    const d2 = calc(cpf.slice(0,9) + String(d1), 11);
+    return cpf.endsWith(String(d1) + String(d2));
+  }
+
+  // ---------- Helpers dinheiro ----------
   function parseBRLInteiro(str){
-    const d = (str || "").replace(/\D/g,"");
+    const d = onlyDigits(str);
     if(!d) return NaN;
     return Number(d);
   }
 
   function formatarBRL(el){
-    const d = el.value.replace(/\D/g,"");
+    const d = onlyDigits(el.value);
     if(!d){ el.value=""; return; }
-    el.value = Number(d).toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:0});
+    el.value = Number(d).toLocaleString("pt-BR",{
+      style:"currency", currency:"BRL", minimumFractionDigits:0, maximumFractionDigits:0
+    });
   }
 
+  // ---------- Regras e parcela ----------
   function regras(v){
     if(v<=500) return [
       {n:1,t:.25},{n:2,t:.223},{n:3,t:.20},{n:4,t:.195},{n:5,t:.188}
@@ -219,54 +276,138 @@
     return p * (i / (1 - Math.pow(1+i,-n)));
   }
 
+  // ---------- Elements ----------
+  const elCPF = document.getElementById("cpf");
+  const elCPFInfo = document.getElementById("cpfInfo");
+  const elNome = document.getElementById("nome");
+
   const elValor = document.getElementById("valor");
   const elParcelas = document.getElementById("parcelas");
-  const elBtn = document.getElementById("btnSimular");
+  const elInfo = document.getElementById("info");
 
+  const elBtnSimular = document.getElementById("btnSimular");
+  const elResultado = document.getElementById("resultado");
+  const elBtnWhats = document.getElementById("btnWhats");
+
+  // ---------- CPF mask + validate ----------
+  elCPF.addEventListener("input", () => {
+    const caretEnd = elCPF.selectionStart;
+    elCPF.value = maskCPF(elCPF.value);
+    validarCPF_UI();
+    atualizarUI();
+    try { elCPF.setSelectionRange(caretEnd, caretEnd); } catch(e){}
+  });
+
+  function validarCPF_UI(){
+    const cpfOk = isCPFValid(elCPF.value);
+    if(!onlyDigits(elCPF.value)){
+      elCPFInfo.textContent = "Digite seu CPF";
+      elCPFInfo.className = "warn";
+      return false;
+    }
+    if(cpfOk){
+      elCPFInfo.textContent = "CPF válido ✅";
+      elCPFInfo.className = "warn ok";
+      return true;
+    } else {
+      elCPFInfo.textContent = "CPF inválido. Verifique e tente novamente.";
+      elCPFInfo.className = "warn err";
+      return false;
+    }
+  }
+
+  // ---------- Valor formatting ----------
   elValor.addEventListener("input",()=>{
     formatarBRL(elValor);
     atualizarUI();
   });
 
+  // ---------- UI state ----------
   function atualizarUI(){
+    const cpfOk = isCPFValid(elCPF.value);
+    const nomeOk = elNome.value.trim().length >= 3;
+
     const v = parseBRLInteiro(elValor.value);
-    elParcelas.innerHTML="";
-    elBtn.disabled=true;
 
-    if(!Number.isFinite(v) || v<=0 || v>LIMITE) return;
+    // reset parcelas/resultado quando mexe
+    elParcelas.innerHTML = "";
+    elResultado.style.display = "none";
+    elBtnWhats.disabled = true;
+    window._dados = null;
 
+    elBtnSimular.disabled = true;
+
+    // mensagens valor
+    if(!Number.isFinite(v) || v <= 0){
+      elInfo.textContent = "Digite um valor válido";
+      return;
+    }
+    if(v > LIMITE){
+      elInfo.textContent = "⚠️ Valor máximo permitido: R$ 1.500";
+      return;
+    }
+
+    // preenche parcelas
     regras(v).forEach(r=>{
       const o=document.createElement("option");
       o.value=r.n;
       o.textContent=r.n+"x";
       elParcelas.appendChild(o);
     });
-    elBtn.disabled=false;
+
+    elInfo.textContent = "Selecione as parcelas";
+    // só habilita simular se CPF e Nome ok também
+    elBtnSimular.disabled = !(cpfOk && nomeOk);
   }
 
+  // Nome muda estado do botão
+  elNome.addEventListener("input", atualizarUI);
+
+  // ---------- Simular ----------
   function simular(){
-    const nome=document.getElementById("responsavel").value.trim();
-    const v=parseBRLInteiro(elValor.value);
-    const p=Number(elParcelas.value);
+    const cpfOk = validarCPF_UI();
+    const nome = elNome.value.trim();
+    const nomeOk = nome.length >= 3;
 
-    if(!nome || !Number.isFinite(v) || !p) return;
+    const v = parseBRLInteiro(elValor.value);
+    const p = Number(elParcelas.value);
 
-    const r=regras(v).find(x=>x.n===p);
-    const parc=price(v,r.t,p);
-    const tot=parc*p;
+    if(!cpfOk){ alert("Informe um CPF válido."); return; }
+    if(!nomeOk){ alert("Informe seu nome completo."); return; }
+
+    if(!Number.isFinite(v) || v<=0){ alert("Digite um valor válido."); return; }
+    if(v > LIMITE){ alert("⚠️ Valor máximo permitido: R$ 1.500"); return; }
+    if(!p){ alert("Selecione as parcelas."); return; }
+
+    const r = regras(v).find(x=>x.n===p);
+    if(!r){ alert("Opção de parcelas inválida."); atualizarUI(); return; }
+
+    const parc = price(v, r.t, p);
+    const tot = parc * p;
 
     document.getElementById("parcela").innerText =
       parc.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
     document.getElementById("total").innerText =
       tot.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
-    document.getElementById("resultado").style.display="block";
-    window._dados={nome,v,p,parc,tot};
+    elResultado.style.display="block";
+
+    window._dados = {
+      cpf: elCPF.value,
+      nome,
+      v,
+      p,
+      parc,
+      tot
+    };
+
+    elBtnWhats.disabled = false;
   }
 
+  // ---------- WhatsApp with overlay ----------
   function enviarWhatsComLoading(){
-    const d=window._dados;
-    if(!d) return;
+    const d = window._dados;
+    if(!d){ alert("Faça a simulação primeiro."); return; }
 
     const overlay=document.getElementById("overlay");
     const bar=document.getElementById("progressBar");
@@ -284,24 +425,30 @@
       if(prog>=100){
         clearInterval(t);
 
+        // Emojis por Unicode escape (não quebram)
         const msg =
 `Olá! Gostaria de solicitar uma análise de empréstimo.
 
-${EMOJI_PESSOA} Responsável: ${d.nome}
+\\u{1F464} Responsável: ${d.nome}
+CPF: ${d.cpf}
 
-${EMOJI_DINHEIRO} Valor solicitado: ${d.v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
-${EMOJI_CALENDARIO} Parcelas: ${d.p}x
-${EMOJI_CARTAO} Valor da parcela: R$ ${d.parc.toFixed(2)}
-${EMOJI_GRAFICO} Total a pagar: R$ ${d.tot.toFixed(2)}
+\\u{1F4B0} Valor solicitado: ${d.v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+\\u{1F4C6} Parcelas: ${d.p}x
+\\u{1F4B3} Valor da parcela: R$ ${d.parc.toFixed(2)}
+\\u{1F4CA} Total a pagar: R$ ${d.tot.toFixed(2)}
 
 Fico no aguardo, obrigado.`;
 
-        window.location.href = "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg);
+        // Redirecionamento estável
+        window.location.href =
+          "https://api.whatsapp.com/send?phone=" + WHATSAPP + "&text=" + encodeURIComponent(msg);
+
         overlay.style.display="none";
       }
     },80);
   }
 
+  // init
   atualizarUI();
 </script>
 </body>
