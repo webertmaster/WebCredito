@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WEB CRÉDITO – Simulador de Empréstimo</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: #0b1220;
+      color: #e7eefc;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .wrap { max-width: 720px; margin: auto; padding: 16px; flex: 1; }
+    .card {
+      background: #121b2f;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid #243255;
+    }
+
+    .logo { text-align: center; margin-bottom: 12px; }
+    .logo h2 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      color: #5b7cfa;
+    }
+    .logo span { font-size: 13px; color: #b9c7ea; }
+
+    label { font-size: 14px; color: #b9c7ea; }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border-radius: 12px;
+      border: 1px solid #2a3a63;
+      background: #0f1730;
+      color: #fff;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #5b7cfa;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .warn { font-size: 13px; color: #ffd38a; margin-top: 4px; }
+
+    .result {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px dashed #2a3a63;
+    }
+    .box {
+      background: #0f1730;
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+    }
+
+    .btn-whatsapp {
+      background: #25D366;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      cursor: pointer;
+    }
+
+    .legal {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #9eb2e2;
+      text-align: center;
+      font-style: italic;
+      line-height: 1.35;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 11px;
+      color: #39ff14;
+      padding: 10px 0;
+      letter-spacing: 1px;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 16px;
+    }
+    .loader-card {
+      width: min(420px, 100%);
+      background: #121b2f;
+      border: 1px solid #243255;
+      border-radius: 16px;
+      padding: 16px;
+      text-align: center;
+    }
+    .progress-wrap {
+      width: 100%;
+      background: #0f1730;
+      border: 1px solid #2a3a63;
+      border-radius: 999px;
+      overflow: hidden;
+      height: 14px;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: #5b7cfa;
+      border-radius: 999px;
+      transition: width .12s linear;
+    }
+    .progress-pct {
+      margin-top: 10px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="card">
+
+    <div class="logo">
+      <h2>WEB CRÉDITO</h2>
+      <span>Simulador de Empréstimo</span>
+    </div>
+
+    <label>Responsável</label>
+    <input id="responsavel" placeholder="Nome do responsável">
+
+    <label>Valor desejado (R$)</label>
+    <input id="valor" inputmode="numeric" placeholder="Ex: 500">
+    <div class="warn" id="info">Digite um valor válido</div>
+
+    <label>Parcelas</label>
+    <select id="parcelas"></select>
+
+    <button id="btnSimular" onclick="simular()" disabled>Simular</button>
+
+    <div class="result" id="resultado" style="display:none">
+      <div class="box">💳 Valor da parcela: <strong id="parcela"></strong></div>
+      <div class="box">📊 Total a pagar: <strong id="total"></strong></div>
+
+      <button class="btn-whatsapp" onclick="enviarWhatsComLoading()">
+        Solicitar análise no WhatsApp
+      </button>
+
+      <div class="legal">
+        Simulação sem compromisso. Valores sujeitos à análise e aprovação.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>webdev</footer>
+
+<div class="overlay" id="overlay">
+  <div class="loader-card">
+    <p>Enviando sua solicitação…</p>
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="progress-pct" id="progressPct">0%</div>
+  </div>
+</div>
+
+<script>
+  const LIMITE = 1500;
+  const WHATSAPP = "5584987974972";
+
+  // Emojis seguros (Unicode)
+  const EMOJI_PESSOA = String.fromCodePoint(0x1F464);
+  const EMOJI_DINHEIRO = String.fromCodePoint(0x1F4B0);
+  const EMOJI_CALENDARIO = String.fromCodePoint(0x1F4C6);
+  const EMOJI_CARTAO = String.fromCodePoint(0x1F4B3);
+  const EMOJI_GRAFICO = String.fromCodePoint(0x1F4CA);
+
+  function parseBRLInteiro(str){
+    const d = (str || "").replace(/\D/g,"");
+    if(!d) return NaN;
+    return Number(d);
+  }
+
+  function formatarBRL(el){
+    const d = el.value.replace(/\D/g,"");
+    if(!d){ el.value=""; return; }
+    el.value = Number(d).toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:0});
+  }
+
+  function regras(v){
+    if(v<=500) return [
+      {n:1,t:.25},{n:2,t:.223},{n:3,t:.20},{n:4,t:.195},{n:5,t:.188}
+    ];
+    if(v<=700) return [{n:6,t:.17},{n:10,t:.164}];
+    if(v<=1000) return [{n:6,t:.162},{n:12,t:.154}];
+    return [{n:6,t:.161},{n:12,t:.154}];
+  }
+
+  function price(p,i,n){
+    return p * (i / (1 - Math.pow(1+i,-n)));
+  }
+
+  const elValor = document.getElementById("valor");
+  const elParcelas = document.getElementById("parcelas");
+  const elBtn = document.getElementById("btnSimular");
+
+  elValor.addEventListener("input",()=>{
+    formatarBRL(elValor);
+    atualizarUI();
+  });
+
+  function atualizarUI(){
+    const v = parseBRLInteiro(elValor.value);
+    elParcelas.innerHTML="";
+    elBtn.disabled=true;
+
+    if(!Number.isFinite(v) || v<=0 || v>LIMITE) return;
+
+    regras(v).forEach(r=>{
+      const o=document.createElement("option");
+      o.value=r.n;
+      o.textContent=r.n+"x";
+      elParcelas.appendChild(o);
+    });
+    elBtn.disabled=false;
+  }
+
+  function simular(){
+    const nome=document.getElementById("responsavel").value.trim();
+    const v=parseBRLInteiro(elValor.value);
+    const p=Number(elParcelas.value);
+
+    if(!nome || !Number.isFinite(v) || !p) return;
+
+    const r=regras(v).find(x=>x.n===p);
+    const parc=price(v,r.t,p);
+    const tot=parc*p;
+
+    document.getElementById("parcela").innerText =
+      parc.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+    document.getElementById("total").innerText =
+      tot.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+
+    document.getElementById("resultado").style.display="block";
+    window._dados={nome,v,p,parc,tot};
+  }
+
+  function enviarWhatsComLoading(){
+    const d=window._dados;
+    if(!d) return;
+
+    const overlay=document.getElementById("overlay");
+    const bar=document.getElementById("progressBar");
+    const pct=document.getElementById("progressPct");
+
+    overlay.style.display="flex";
+    bar.style.width="0%";
+    pct.textContent="0%";
+
+    let prog=0;
+    const t=setInterval(()=>{
+      prog+=20;
+      bar.style.width=prog+"%";
+      pct.textContent=prog+"%";
+      if(prog>=100){
+        clearInterval(t);
+
+        const msg =
+`Olá! Gostaria de solicitar uma análise de empréstimo.
+
+${EMOJI_PESSOA} Responsável: ${d.nome}
+
+${EMOJI_DINHEIRO} Valor solicitado: ${d.v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+${EMOJI_CALENDARIO} Parcelas: ${d.p}x
+${EMOJI_CARTAO} Valor da parcela: R$ ${d.parc.toFixed(2)}
+${EMOJI_GRAFICO} Total a pagar: R$ ${d.tot.toFixed(2)}
+
+Fico no aguardo, obrigado.`;
+
+        window.location.href = "https://wa.me/"+WHATSAPP+"?text="+encodeURIComponent(msg);
+        overlay.style.display="none";
+      }
+    },80);
+  }
+
+  atualizarUI();
+</script>
+</body>
+</html>
