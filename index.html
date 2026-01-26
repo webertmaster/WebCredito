@@ -1,429 +1,242 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>WEB CRÉDITO – Simulador de Empréstimo</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEB CRÉDITO – Simulador de Empréstimo</title>
 
-  <style>
-    body {
-      margin: 0;
-      background: #0b1220;
-      color: #e7eefc;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .wrap { max-width: 720px; margin: auto; padding: 16px; flex: 1; }
-    .card {
-      background: #121b2f;
-      border-radius: 16px;
-      padding: 16px;
-      border: 1px solid #243255;
-    }
+<style>
+body{
+  margin:0;
+  background:#0b1220;
+  color:#e7eefc;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+.wrap{max-width:720px;margin:auto;padding:16px;flex:1}
+.card{
+  background:#121b2f;
+  border-radius:16px;
+  padding:16px;
+  border:1px solid #243255;
+}
+.logo{text-align:center;margin-bottom:12px}
+.logo h2{margin:0;font-size:26px;font-weight:900;color:#5b7cfa}
+.logo span{font-size:13px;color:#b9c7ea}
 
-    .logo { text-align: center; margin-bottom: 12px; }
-    .logo h2 {
-      margin: 0;
-      font-size: 26px;
-      font-weight: 900;
-      letter-spacing: 1px;
-      color: #5b7cfa;
-    }
-    .logo span { font-size: 13px; color: #b9c7ea; }
+label{font-size:14px;color:#b9c7ea}
+input,select,button{
+  width:100%;
+  padding:12px;
+  margin-top:6px;
+  border-radius:12px;
+  border:1px solid #2a3a63;
+  background:#0f1730;
+  color:#fff;
+  font-size:16px;
+}
+button{background:#5b7cfa;font-weight:bold;border:none;cursor:pointer}
+button:disabled{opacity:.5}
+.warn{font-size:13px;color:#ffd38a;margin-top:4px}
 
-    label { font-size: 14px; color: #b9c7ea; }
-    input, select, button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 6px;
-      border-radius: 12px;
-      border: 1px solid #2a3a63;
-      background: #0f1730;
-      color: #fff;
-      font-size: 16px;
-      box-sizing: border-box;
-      outline: none;
-    }
-    input:focus, select:focus { border-color: #4c67c9; }
+.result{margin-top:16px;padding-top:16px;border-top:1px dashed #2a3a63}
+.box{background:#0f1730;padding:12px;border-radius:12px;margin-bottom:10px}
 
-    button {
-      background: #5b7cfa;
-      font-weight: bold;
-      border: none;
-      cursor: pointer;
-    }
-    button:disabled { opacity: .5; cursor: not-allowed; }
+.btn-whatsapp{
+  background:#25D366;
+  border:none;
+  border-radius:12px;
+  padding:14px;
+  font-weight:bold;
+  color:#fff;
+  cursor:pointer;
+}
 
-    .warn { font-size: 13px; color: #ffd38a; margin-top: 6px; line-height: 1.25; }
-    .ok { color: #8fffb3; }
-    .err { color: #ff9aa5; }
+footer{text-align:center;font-size:11px;color:#39ff14;padding:10px}
 
-    .result {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px dashed #2a3a63;
-    }
-    .box {
-      background: #0f1730;
-      padding: 12px;
-      border-radius: 12px;
-      margin-bottom: 10px;
-    }
-
-    .btn-whatsapp {
-      background: #25D366;
-      color: #fff;
-      font-weight: bold;
-      border: none;
-      border-radius: 12px;
-      padding: 14px;
-      cursor: pointer;
-    }
-
-    .legal {
-      margin-top: 10px;
-      font-size: 12px;
-      color: #9eb2e2;
-      text-align: center;
-      font-style: italic;
-      line-height: 1.35;
-    }
-
-    footer {
-      text-align: center;
-      font-size: 11px;
-      color: #39ff14;
-      padding: 10px 0;
-      letter-spacing: 1px;
-    }
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.55);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      padding: 16px;
-    }
-    .loader-card {
-      width: min(420px, 100%);
-      background: #121b2f;
-      border: 1px solid #243255;
-      border-radius: 16px;
-      padding: 16px;
-      text-align: center;
-    }
-    .progress-wrap {
-      width: 100%;
-      background: #0f1730;
-      border: 1px solid #2a3a63;
-      border-radius: 999px;
-      overflow: hidden;
-      height: 14px;
-    }
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      background: #5b7cfa;
-      border-radius: 999px;
-      transition: width .12s linear;
-    }
-    .progress-pct {
-      margin-top: 10px;
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .rowgap { margin-top: 10px; }
-    .hint {
-      margin-top: 6px;
-      font-size: 12px;
-      color: #b9c7ea;
-      opacity: .95;
-    }
-  </style>
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+.loader{
+  background:#121b2f;
+  border-radius:16px;
+  padding:20px;
+  width:90%;
+  max-width:420px;
+  text-align:center;
+}
+.progress{
+  width:100%;
+  height:14px;
+  background:#0f1730;
+  border-radius:999px;
+  overflow:hidden;
+  margin-top:10px;
+}
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:#5b7cfa;
+  transition:width .12s linear;
+}
+.progress-pct{margin-top:8px;font-weight:800}
+</style>
 </head>
 
 <body>
 <div class="wrap">
   <div class="card">
-
     <div class="logo">
       <h2>WEB CRÉDITO</h2>
       <span>Simulador de Empréstimo</span>
     </div>
 
-    <!-- CPF -->
+    <label>Responsável</label>
+    <input id="responsavel" placeholder="Nome do responsável">
+
     <label>CPF</label>
-    <input id="cpf" inputmode="numeric" placeholder="000.000.000-00" maxlength="14" autocomplete="off">
-    <div class="warn" id="cpfInfo">Digite seu CPF</div>
+    <input id="cpf" placeholder="000.000.000-00" maxlength="14">
 
-    <!-- Nome -->
-    <div class="rowgap"></div>
-    <label>Nome completo</label>
-    <input id="nome" placeholder="Digite seu nome completo" autocomplete="off">
-    <div class="hint">Confirme seu nome completo abaixo.</div>
-
-    <!-- Valor -->
-    <div class="rowgap"></div>
     <label>Valor desejado (R$)</label>
-    <input id="valor" inputmode="numeric" placeholder="Ex: 500" autocomplete="off">
+    <input id="valor" inputmode="numeric" placeholder="Ex: 80">
     <div class="warn" id="info">Digite um valor válido</div>
 
-    <!-- Parcelas -->
-    <div class="rowgap"></div>
     <label>Parcelas</label>
     <select id="parcelas"></select>
 
-    <button id="btnSimular" onclick="simular()" disabled>Simular</button>
+    <button id="btnSimular" disabled onclick="simular()">Simular</button>
 
     <div class="result" id="resultado" style="display:none">
       <div class="box">💳 Valor da parcela: <strong id="parcela"></strong></div>
       <div class="box">📊 Total a pagar: <strong id="total"></strong></div>
 
-      <button class="btn-whatsapp" id="btnWhats" onclick="enviarWhatsComLoading()" disabled>
-        Solicitar análise no WhatsApp
-      </button>
-
-      <div class="legal">
-        Simulação sem compromisso. Valores sujeitos à análise e aprovação.
-      </div>
+      <button class="btn-whatsapp" onclick="enviarWhats()">Solicitar análise no WhatsApp</button>
     </div>
-
   </div>
 </div>
 
 <footer>webdev</footer>
 
 <div class="overlay" id="overlay">
-  <div class="loader-card">
-    <p>Enviando sua solicitação…</p>
-    <div class="progress-wrap">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
-    <div class="progress-pct" id="progressPct">0%</div>
+  <div class="loader">
+    Enviando solicitação…
+    <div class="progress"><div class="progress-bar" id="bar"></div></div>
+    <div class="progress-pct" id="pct">0%</div>
   </div>
 </div>
 
 <script>
-  const LIMITE = 1500;
-  const WHATSAPP = "5584987974972";
+const WHATSAPP="5584987974972";
+const LIMITE=1500;
 
-  // ---------- Helpers CPF ----------
-  function onlyDigits(s){ return (s || "").replace(/\D/g,""); }
+function parseValor(v){return Number((v||"").replace(/\D/g,""))}
 
-  function maskCPF(digits){
-    const d = onlyDigits(digits).slice(0,11);
-    let out = "";
-    for(let i=0;i<d.length;i++){
-      out += d[i];
-      if(i===2 || i===5) out += ".";
-      if(i===8) out += "-";
-    }
-    return out;
-  }
+function formatBRL(el){
+  const d=el.value.replace(/\D/g,"");
+  if(!d){el.value="";return;}
+  el.value=Number(d).toLocaleString("pt-BR",{style:"currency",currency:"BRL",minimumFractionDigits:0});
+}
 
-  function isCPFValid(cpfStr){
-    const cpf = onlyDigits(cpfStr);
-    if(cpf.length !== 11) return false;
-    // bloqueia CPFs repetidos: 000..., 111..., etc.
-    if(/^(\d)\1{10}$/.test(cpf)) return false;
+document.getElementById("valor").addEventListener("input",e=>{
+  formatBRL(e.target);
+  atualizarUI();
+});
 
-    const calc = (base, factorStart) => {
-      let sum = 0;
-      for(let i=0;i<base.length;i++){
-        sum += Number(base[i]) * (factorStart - i);
-      }
-      const mod = sum % 11;
-      return (mod < 2) ? 0 : (11 - mod);
-    };
+document.getElementById("cpf").addEventListener("input",e=>{
+  let v=e.target.value.replace(/\D/g,"").slice(0,11);
+  v=v.replace(/(\d{3})(\d)/,"$1.$2");
+  v=v.replace(/(\d{3})(\d)/,"$1.$2");
+  v=v.replace(/(\d{3})(\d{1,2})$/,"$1-$2");
+  e.target.value=v;
+});
 
-    const d1 = calc(cpf.slice(0,9), 10);
-    const d2 = calc(cpf.slice(0,9) + String(d1), 11);
-    return cpf.endsWith(String(d1) + String(d2));
-  }
+/* 🔥 REGRAS COMPLETAS */
+function regras(v){
+  if(v < 100) return [
+    {n:1,t:0.30},
+    {n:2,t:0.26}
+  ];
 
-  // ---------- Helpers dinheiro ----------
-  function parseBRLInteiro(str){
-    const d = onlyDigits(str);
-    if(!d) return NaN;
-    return Number(d);
-  }
+  if(v <= 500) return [
+    {n:1,t:0.25},
+    {n:2,t:0.223},
+    {n:3,t:0.20},
+    {n:4,t:0.195},
+    {n:5,t:0.188}
+  ];
 
-  function formatarBRL(el){
-    const d = onlyDigits(el.value);
-    if(!d){ el.value=""; return; }
-    el.value = Number(d).toLocaleString("pt-BR",{
-      style:"currency", currency:"BRL", minimumFractionDigits:0, maximumFractionDigits:0
-    });
-  }
+  if(v <= 700) return [
+    {n:6,t:0.17},
+    {n:10,t:0.164}
+  ];
 
-  // ---------- Regras e parcela ----------
-  function regras(v){
-    if(v<=500) return [
-      {n:1,t:.25},{n:2,t:.223},{n:3,t:.20},{n:4,t:.195},{n:5,t:.188}
-    ];
-    if(v<=700) return [{n:6,t:.17},{n:10,t:.164}];
-    if(v<=1000) return [{n:6,t:.162},{n:12,t:.154}];
-    return [{n:6,t:.161},{n:12,t:.154}];
-  }
+  if(v <= 1000) return [
+    {n:6,t:0.162},
+    {n:12,t:0.154}
+  ];
 
-  function price(p,i,n){
-    return p * (i / (1 - Math.pow(1+i,-n)));
-  }
+  return [
+    {n:6,t:0.161},
+    {n:12,t:0.154}
+  ];
+}
 
-  // ---------- Elements ----------
-  const elCPF = document.getElementById("cpf");
-  const elCPFInfo = document.getElementById("cpfInfo");
-  const elNome = document.getElementById("nome");
+function price(p,i,n){
+  return p*(i/(1-Math.pow(1+i,-n)));
+}
 
-  const elValor = document.getElementById("valor");
-  const elParcelas = document.getElementById("parcelas");
-  const elInfo = document.getElementById("info");
+function atualizarUI(){
+  const v=parseValor(valor.value);
+  parcelas.innerHTML="";
+  btnSimular.disabled=true;
+  if(!v||v> LIMITE) return;
 
-  const elBtnSimular = document.getElementById("btnSimular");
-  const elResultado = document.getElementById("resultado");
-  const elBtnWhats = document.getElementById("btnWhats");
-
-  // ---------- CPF mask + validate ----------
-  elCPF.addEventListener("input", () => {
-    const caretEnd = elCPF.selectionStart;
-    elCPF.value = maskCPF(elCPF.value);
-    validarCPF_UI();
-    atualizarUI();
-    try { elCPF.setSelectionRange(caretEnd, caretEnd); } catch(e){}
+  regras(v).forEach(r=>{
+    const o=document.createElement("option");
+    o.value=r.n;
+    o.textContent=r.n+"x";
+    parcelas.appendChild(o);
   });
+  btnSimular.disabled=false;
+}
 
-  function validarCPF_UI(){
-    const cpfOk = isCPFValid(elCPF.value);
-    if(!onlyDigits(elCPF.value)){
-      elCPFInfo.textContent = "Digite seu CPF";
-      elCPFInfo.className = "warn";
-      return false;
-    }
-    if(cpfOk){
-      elCPFInfo.textContent = "CPF válido ✅";
-      elCPFInfo.className = "warn ok";
-      return true;
-    } else {
-      elCPFInfo.textContent = "CPF inválido. Verifique e tente novamente.";
-      elCPFInfo.className = "warn err";
-      return false;
-    }
-  }
+function simular(){
+  const nome=responsavel.value.trim();
+  const cpfv=cpf.value.trim();
+  const v=parseValor(valor.value);
+  const p=Number(parcelas.value);
+  if(!nome||!cpfv||!v||!p) return;
 
-  // ---------- Valor formatting ----------
-  elValor.addEventListener("input",()=>{
-    formatarBRL(elValor);
-    atualizarUI();
-  });
+  const r=regras(v).find(x=>x.n===p);
+  const parc=price(v,r.t,p);
+  const tot=parc*p;
 
-  // ---------- UI state ----------
-  function atualizarUI(){
-    const cpfOk = isCPFValid(elCPF.value);
-    const nomeOk = elNome.value.trim().length >= 3;
+  parcela.textContent=parc.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  total.textContent=tot.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  resultado.style.display="block";
 
-    const v = parseBRLInteiro(elValor.value);
+  window._d={nome,cpfv,v,p,parc,tot};
+}
 
-    // reset parcelas/resultado quando mexe
-    elParcelas.innerHTML = "";
-    elResultado.style.display = "none";
-    elBtnWhats.disabled = true;
-    window._dados = null;
+function enviarWhats(){
+  const d=window._d;
+  if(!d) return;
 
-    elBtnSimular.disabled = true;
-
-    // mensagens valor
-    if(!Number.isFinite(v) || v <= 0){
-      elInfo.textContent = "Digite um valor válido";
-      return;
-    }
-    if(v > LIMITE){
-      elInfo.textContent = "⚠️ Valor máximo permitido: R$ 1.500";
-      return;
-    }
-
-    // preenche parcelas
-    regras(v).forEach(r=>{
-      const o=document.createElement("option");
-      o.value=r.n;
-      o.textContent=r.n+"x";
-      elParcelas.appendChild(o);
-    });
-
-    elInfo.textContent = "Selecione as parcelas";
-    // só habilita simular se CPF e Nome ok também
-    elBtnSimular.disabled = !(cpfOk && nomeOk);
-  }
-
-  // Nome muda estado do botão
-  elNome.addEventListener("input", atualizarUI);
-
-  // ---------- Simular ----------
-  function simular(){
-    const cpfOk = validarCPF_UI();
-    const nome = elNome.value.trim();
-    const nomeOk = nome.length >= 3;
-
-    const v = parseBRLInteiro(elValor.value);
-    const p = Number(elParcelas.value);
-
-    if(!cpfOk){ alert("Informe um CPF válido."); return; }
-    if(!nomeOk){ alert("Informe seu nome completo."); return; }
-
-    if(!Number.isFinite(v) || v<=0){ alert("Digite um valor válido."); return; }
-    if(v > LIMITE){ alert("⚠️ Valor máximo permitido: R$ 1.500"); return; }
-    if(!p){ alert("Selecione as parcelas."); return; }
-
-    const r = regras(v).find(x=>x.n===p);
-    if(!r){ alert("Opção de parcelas inválida."); atualizarUI(); return; }
-
-    const parc = price(v, r.t, p);
-    const tot = parc * p;
-
-    document.getElementById("parcela").innerText =
-      parc.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-    document.getElementById("total").innerText =
-      tot.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
-
-    elResultado.style.display="block";
-
-    window._dados = {
-      cpf: elCPF.value,
-      nome,
-      v,
-      p,
-      parc,
-      tot
-    };
-
-    elBtnWhats.disabled = false;
-  }
-
-  // ---------- WhatsApp with overlay ----------
-  function enviarWhatsComLoading(){
-    const d = window._dados;
-    if(!d){ alert("Faça a simulação primeiro."); return; }
-
-    const overlay=document.getElementById("overlay");
-    const bar=document.getElementById("progressBar");
-    const pct=document.getElementById("progressPct");
-
-    overlay.style.display="flex";
-    bar.style.width="0%";
-    pct.textContent="0%";
-
-    let prog=0;
-    const t=setInterval(()=>{
-      prog+=20;
-      bar.style.width=prog+"%";
-      pct.textContent=prog+"%";
-      if(prog>=100){
-        clearInterval(t);
+  overlay.style.display="flex";
+  let prog=0;
+  const t=setInterval(()=>{
+    prog+=20;
+    bar.style.width=prog+"%";
+    pct.textContent=prog+"%";
+    if(prog>=100){
+      clearInterval(t);
 
         // Emojis por Unicode escape (não quebram)
         const msg =
