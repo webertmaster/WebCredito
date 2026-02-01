@@ -228,12 +228,19 @@
         <option value="">Informe um valor acima</option>
       </select>
 
+      <label>Dia de vencimento (1ª parcela)</label>
+      <select id="diaVenc" disabled>
+      <option value="">Selecione um valor primeiro</option>
+      </select>
+      <div class="hint" style="color:#b9c7ea">A 1ª parcela cai no próximo vencimento disponível (mín. 7 dias).</div>
+      
       <button id="btnSimular" onclick="simular()" disabled>Simular</button>
 
       <div class="result" id="resultado">
         <div class="box">💳 Valor da parcela: <strong id="parcela"></strong></div>
         <div class="box">📊 Total a pagar: <strong id="total"></strong></div>
-
+        <div class="box">📅 1ª parcela: <strong id="primeiraParcela"></strong></div>
+       
         <button class="btn-wa" id="btnWhats" onclick="enviarWhatsComLoading()">
           Solicitar análise no WhatsApp
         </button>
@@ -395,6 +402,35 @@
     return p * (i / (1 - Math.pow(1 + i, -n)));
   }
 
+  // ---------- Primeira parcela (5 / 10 / 15 / 20) ----------
+function calcularPrimeiraParcelaPorDia(diaEscolhido, minDias = 7) {
+  const hoje = new Date();
+  const y = hoje.getFullYear();
+  const m = hoje.getMonth();
+
+  let candidato = new Date(y, m, diaEscolhido);
+
+  // se o dia já passou neste mês, vai para o próximo
+  if (candidato < hoje) {
+    candidato = new Date(y, m + 1, diaEscolhido);
+  }
+
+  // se ficou perto demais, pula mais um mês
+  const diffDias = Math.ceil((candidato - hoje) / (1000 * 60 * 60 * 24));
+  if (diffDias < minDias) {
+    candidato = new Date(y, m + 1, diaEscolhido);
+    if (candidato < hoje) {
+      candidato = new Date(y, m + 2, diaEscolhido);
+    }
+  }
+
+  return candidato.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+}
+
   // ---------- Elementos ----------
   const elResp = document.getElementById("responsavel");
   const elCPF  = document.getElementById("cpf");
@@ -405,6 +441,7 @@
   const elInfo = document.getElementById("info");
   const elBtnSim = document.getElementById("btnSimular");
   const elResultado = document.getElementById("resultado");
+  const elDiaVenc = document.getElementById("diaVenc");
 
   // ---------- UI ----------
   function atualizarUI() {
@@ -419,6 +456,8 @@
     // reset select
     elParcelas.innerHTML = "";
     elParcelas.disabled = true;
+    elDiaVenc.innerHTML = "";
+    elDiaVenc.disabled = true;
 
     if (!Number.isFinite(v) || v <= 0) {
       elInfo.textContent = "Digite um valor válido";
@@ -454,13 +493,21 @@
 
     elParcelas.disabled = false;
     elInfo.textContent = "Selecione as parcelas";
-
+// preencher vencimentos (5/10/15/20)
+elDiaVenc.innerHTML = "";
+[5,10,15,20].forEach(d => {
+  const opt = document.createElement("option");
+  opt.value = String(d);
+  opt.textContent = `Dia ${d}`;
+  elDiaVenc.appendChild(opt);
+});
+elDiaVenc.disabled = false;
     // ✅ tentar restaurar seleção
     if (selecionadaAntes && [...elParcelas.options].some(o => o.value === selecionadaAntes)) {
       elParcelas.value = selecionadaAntes;
     }
 
-    elBtnSim.disabled = !(nomeOk && cpfValido && elParcelas.value);
+    elBtnSim.disabled = !(nomeOk && cpfValido && elParcelas.value && elDiaVenc.value);
   }
 
   // ---------- Eventos ----------
@@ -507,6 +554,9 @@
     const parc = price(v, r.t, p);
     const tot = parc * p;
 
+    const diaVenc = Number(elDiaVenc.value);
+    const dataPrimeira = calcularPrimeiraParcelaPorDia(diaVenc, 7);
+    document.getElementById("primeiraParcela").textContent = dataPrimeira;
     document.getElementById("parcela").textContent =
       parc.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -514,7 +564,7 @@
       tot.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
     elResultado.style.display = "block";
-    window._dados = { nome, cpf, v, p, parc, tot };
+    window._dados = { nome, cpf, v, p, parc, tot, diaVenc, dataPrimeira };
   }
 
   // ---------- WhatsApp ----------
@@ -528,6 +578,7 @@
 📆 Parcelas: ${d.p}x
 💳 Valor da parcela: R$ ${d.parc.toFixed(2)}
 📊 Total a pagar: R$ ${d.tot.toFixed(2)}
+📅 1ª parcela (venc. dia ${d.diaVenc}): ${d.dataPrimeira}
 
 Fico no aguardo, obrigado.`;
   }
