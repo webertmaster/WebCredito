@@ -261,6 +261,7 @@
   </div>
 
 <script>
+  const VALOR_MINIMO = 50;
   const LIMITE = 1500;
   const WHATSAPP = "5584987974972";
 
@@ -427,7 +428,13 @@
       elParcelas.appendChild(opt);
       return;
     }
-
+   if (v < VALOR_MINIMO) {
+  elInfo.textContent = `⚠️ Valor mínimo permitido: R$ ${VALOR_MINIMO}`;
+  elParcelas.innerHTML = "";
+  elParcelas.disabled = true;
+  elBtnSim.disabled = true;
+  return;
+}
     if (v > LIMITE) {
       elInfo.textContent = "⚠️ Valor máximo permitido: R$ 1.500";
       elBtnSim.disabled = true;
