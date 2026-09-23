@@ -322,6 +322,97 @@
   .hist-item.juros .hist-head strong{ color:var(--warn); }
   .hist-item .hist-detail{ color:var(--muted); font-size:12px; line-height:1.5; }
 
+  /* ✅ DASHBOARD */
+  .dash-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;
+  }
+  .dash-card{
+    background:var(--field); border:1px solid var(--fieldLine);
+    border-radius:12px; padding:12px;
+  }
+  .dash-card.full{ grid-column: 1 / -1; }
+  .dash-label{
+    font-size:10px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:.5px; margin-bottom:6px; font-weight:800;
+  }
+  .dash-value{
+    font-size:19px; font-weight:900; color:var(--text); word-break:break-word;
+    line-height:1.15;
+  }
+  .dash-value.ok{ color:var(--ok); }
+  .dash-value.warn{ color:var(--warn); }
+  .dash-value.bad{ color:var(--bad); }
+  .dash-value.brand{ color:var(--brand); }
+  .dash-sub{ font-size:11px; color:var(--muted); margin-top:4px; }
+
+  /* ✅ BOTÕES DE BACKUP */
+  .backup-row{
+    display:flex; gap:8px; margin-top:8px;
+  }
+  .backup-row button{
+    flex:1; margin-top:0; padding:12px 8px; font-size:13px;
+  }
+
+  /* ✅ TELA DE PIN */
+  .pin-overlay{
+    position:fixed; inset:0; background:var(--bg);
+    display:none; align-items:center; justify-content:center;
+    z-index:99999; padding:20px;
+  }
+  .pin-overlay.show{ display:flex; }
+  .pin-card{
+    width:min(340px, 100%); background:var(--card);
+    border:1px solid var(--line); border-radius:20px;
+    padding:24px 20px; text-align:center;
+  }
+  .pin-emoji{
+    font-size:44px; display:block; margin-bottom:8px;
+  }
+  .pin-title{
+    font-size:22px; font-weight:900; color:var(--brand);
+    letter-spacing:1px; margin:0 0 4px;
+  }
+  .pin-subtitle{
+    font-size:13px; color:var(--muted); margin:0 0 20px;
+  }
+  .pin-dots{
+    display:flex; justify-content:center; gap:12px;
+    margin-bottom:22px; min-height:20px;
+  }
+  .pin-dot{
+    width:14px; height:14px; border-radius:50%;
+    background:transparent; border:2px solid var(--fieldLine);
+    transition:all .15s;
+  }
+  .pin-dot.filled{ background:var(--brand); border-color:var(--brand); }
+  .pin-dot.error{ background:var(--bad); border-color:var(--bad); }
+  .pin-keypad{
+    display:grid; grid-template-columns:repeat(3, 1fr);
+    gap:10px;
+  }
+  .pin-key{
+    aspect-ratio:1; padding:0; margin:0;
+    font-size:22px; font-weight:800;
+    background:var(--field); border:1px solid var(--fieldLine);
+    color:var(--text); border-radius:14px;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    transition:all .1s;
+    width:100%;
+  }
+  .pin-key:active{ background:var(--brand); border-color:var(--brand); }
+  .pin-key.pin-key-ok{ background:var(--ok); color:#0b1220; border-color:var(--ok); }
+  .pin-key.pin-key-back{ color:var(--warn); }
+  .pin-link{
+    background:transparent; border:none; color:var(--muted);
+    font-size:12px; margin-top:16px; text-decoration:underline;
+    cursor:pointer; padding:6px; width:auto;
+  }
+  .pin-link:hover{ color:var(--text); }
+  .pin-error-msg{
+    font-size:13px; color:var(--bad); margin-top:10px;
+    min-height:18px; font-weight:800;
+  }
+
   /* MODAIS */
   .overlay{
     position:fixed; inset:0; background:rgba(0,0,0,.6);
@@ -368,15 +459,22 @@
     font-weight:900; letter-spacing:.5px;
   }
 
-  /* ✅ RODAPÉ AZUL NEON */
+  /* RODAPÉ */
   footer{
-    text-align:center;
-    font-size:11px;
-    color:var(--neon-blue);
-    padding:10px 0;
+    text-align:center; font-size:11px; padding:10px 0;
     letter-spacing:1px;
+  }
+  footer .footer-dev{
+    color:var(--neon-blue);
     text-shadow:0 0 8px rgba(0,229,255,.7), 0 0 16px rgba(0,229,255,.35);
     font-weight:800;
+  }
+  footer .footer-sep{ color:var(--muted); margin:0 6px; }
+  footer .footer-link{
+    color:var(--muted); background:none; border:none;
+    font-size:11px; padding:0; margin:0;
+    text-decoration:underline; cursor:pointer;
+    font-family:inherit;
   }
 
   @media (max-width: 420px){
@@ -394,6 +492,29 @@
 </style>
 </head>
 <body>
+
+<!-- ===================== TELA DE PIN ===================== -->
+<div class="pin-overlay" id="pinOverlay">
+  <div class="pin-card">
+    <span class="pin-emoji" id="pinEmoji">🔒</span>
+    <h2 class="pin-title">WEB CRÉDITO</h2>
+    <p class="pin-subtitle" id="pinSubtitle">Digite seu PIN</p>
+
+    <div class="pin-dots" id="pinDots">
+      <div class="pin-dot"></div>
+      <div class="pin-dot"></div>
+      <div class="pin-dot"></div>
+      <div class="pin-dot"></div>
+    </div>
+
+    <div class="pin-keypad" id="pinKeypad"></div>
+
+    <div class="pin-error-msg" id="pinError"></div>
+
+    <button class="pin-link" id="pinLinkEsqueci" onclick="abrirEsqueciPin()">Esqueci meu PIN</button>
+  </div>
+</div>
+
 <div class="wrap">
 
   <div class="tabs">
@@ -404,6 +525,7 @@
     <button type="button" class="tab" data-tab="agenda">
       📅 Agenda <span class="badge" id="badgeAgenda" style="display:none">0</span>
     </button>
+    <button type="button" class="tab" data-tab="rel">📊</button>
   </div>
 
   <!-- ===================== SIMULADOR ===================== -->
@@ -418,13 +540,13 @@
 
     <label>CPF</label>
     <div class="cpf-row">
-      <input id="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off" />
+      <input id="cpf" data-mask="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off" />
       <div class="cpf-status-icon" id="cpfIcon">🪪</div>
     </div>
     <div class="cpf-msg warn" id="cpfMsg">Digite o CPF completo para validar</div>
 
     <label>Telefone (WhatsApp do cliente)</label>
-    <input id="telefone" placeholder="(00) 00000-0000" maxlength="16" inputmode="numeric" />
+    <input id="telefone" data-mask="tel" placeholder="(00) 00000-0000" maxlength="16" inputmode="numeric" />
 
     <label>Valor desejado (R$)</label>
     <input id="valor" inputmode="numeric" placeholder="Ex: 80" />
@@ -493,10 +615,10 @@
       <input id="fNome" placeholder="Nome completo" autocomplete="off" />
 
       <label>CPF</label>
-      <input id="fCpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off" />
+      <input id="fCpf" data-mask="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off" />
 
       <label>Telefone (WhatsApp do cliente)</label>
-      <input id="fTelefone" placeholder="(00) 00000-0000" maxlength="16" inputmode="numeric" />
+      <input id="fTelefone" data-mask="tel" placeholder="(00) 00000-0000" maxlength="16" inputmode="numeric" />
 
       <label>Valor solicitado (R$) *</label>
       <input id="fValor" inputmode="numeric" placeholder="Ex: 800" />
@@ -530,9 +652,36 @@
     </div>
   </div>
 
+  <!-- ===================== RELATÓRIO / DASHBOARD ===================== -->
+  <div id="tab-rel" style="display:none">
+    <div class="card">
+      <div class="detail-header" style="margin-bottom:14px;">
+        <h3>📊 Relatório da Carteira</h3>
+        <button class="btn-mini btn-sec" onclick="renderRelatorio()">↻</button>
+      </div>
+      <div id="relatorioContent"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title" style="margin-top:0;">💾 Backup dos dados</div>
+      <p class="hint-muted" style="margin-top:0;">
+        Salve um arquivo com todos os clientes e empréstimos. Se trocar de celular ou navegador, pode restaurar aqui.
+      </p>
+      <div class="backup-row">
+        <button class="btn-sec" onclick="exportarBackup()">⬇️ Exportar</button>
+        <button class="btn-sec" onclick="document.getElementById('importFile').click()">⬆️ Restaurar</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json,.json" style="display:none" onchange="importarBackup(this.files[0]); this.value='';" />
+    </div>
+  </div>
+
 </div>
 
-<footer>webdev</footer>
+<footer>
+  <span class="footer-dev">webdev</span>
+  <span class="footer-sep">·</span>
+  <button class="footer-link" onclick="abrirAjustes()">⚙️ Ajustes</button>
+</footer>
 
 <!-- MODAL: pagamento / comprovante / lembrete / extrato -->
 <div class="overlay" id="modalPag">
@@ -563,6 +712,24 @@
   </div>
 </div>
 
+<!-- MODAL: ajustes (trocar PIN) -->
+<div class="overlay" id="modalAjustes">
+  <div class="modal">
+    <h3>⚙️ Ajustes</h3>
+    <p style="margin-bottom:14px;">Escolha uma opção:</p>
+
+    <label>PIN atual</label>
+    <input id="pinAtualInput" type="password" inputmode="numeric" maxlength="4" placeholder="4 dígitos" />
+
+    <label>Novo PIN (4 dígitos)</label>
+    <input id="pinNovoInput" type="password" inputmode="numeric" maxlength="4" placeholder="4 dígitos" />
+
+    <button class="btn-ok" onclick="trocarPin()">🔐 Trocar PIN</button>
+    <button class="btn-sec" onclick="bloquearAgora()">🔒 Bloquear agora</button>
+    <button class="btn-sec" onclick="fecharModal('modalAjustes')">Fechar</button>
+  </div>
+</div>
+
 <!-- LOADER -->
 <div class="overlay-loader" id="overlayLoader">
   <div class="loader-card">
@@ -583,7 +750,9 @@ const CONFIG = {
   WHATSAPP: "5584987974972",
   JUROS_ATRASO_MES: 0.30,
   MULTA_ATRASO: 0,
-  STORAGE_KEY: "webcredito_emprestimos_v3"
+  STORAGE_KEY: "webcredito_emprestimos_v3",
+  PIN_KEY: "webcredito_pin_v1",
+  SESSION_UNLOCK: "webcredito_unlocked"
 };
 
 // ============================================================
@@ -717,6 +886,28 @@ function cpfEhValido(cpf) {
   if (d2 !== Number(cpf[10])) return false;
   return true;
 }
+
+// ============================================================
+// MÁSCARAS – EVENT DELEGATION (à prova de bugs)
+// ============================================================
+document.addEventListener("input", (e) => {
+  const el = e.target;
+  if (!el || !el.dataset) return;
+  const tipo = el.dataset.mask;
+  if (tipo === "cpf") {
+    el.value = aplicarMascaraCPF(el.value);
+    if (el.id === "cpf") { validarCpfAtual(); atualizarUI(); }
+  } else if (tipo === "tel") {
+    el.value = formatTel(el.value);
+  }
+});
+document.addEventListener("blur", (e) => {
+  const el = e.target;
+  if (!el || !el.dataset) return;
+  const tipo = el.dataset.mask;
+  if (tipo === "cpf") el.value = aplicarMascaraCPF(el.value);
+  else if (tipo === "tel") el.value = formatTel(el.value);
+}, true);
 
 // ============================================================
 // PRIMEIRA PARCELA
@@ -1034,14 +1225,6 @@ elValor.addEventListener("input", () => { formatarBRLSemCentavos(elValor); atual
 elResp.addEventListener("input", atualizarUI);
 elParcelas.addEventListener("change", atualizarUI);
 elDiaVenc.addEventListener("change", atualizarUI);
-elCPF.addEventListener("input", () => {
-  elCPF.value = aplicarMascaraCPF(elCPF.value);
-  validarCpfAtual();
-  atualizarUI();
-});
-elTelefone.addEventListener("input", () => {
-  elTelefone.value = formatTel(elTelefone.value);
-});
 
 // ============================================================
 // SIMULAR
@@ -1165,9 +1348,11 @@ function setTab(name) {
   document.getElementById("tab-sim").style.display = (name === "sim") ? "block" : "none";
   document.getElementById("tab-cli").style.display = (name === "cli") ? "block" : "none";
   document.getElementById("tab-agenda").style.display = (name === "agenda") ? "block" : "none";
+  document.getElementById("tab-rel").style.display = (name === "rel") ? "block" : "none";
 
   if (name === "cli") { voltarLista(); updateBadge(); }
   if (name === "agenda") { renderAgenda(); }
+  if (name === "rel") { renderRelatorio(); }
 }
 document.querySelectorAll(".tab").forEach(btn => {
   btn.addEventListener("click", () => setTab(btn.dataset.tab));
@@ -1424,7 +1609,6 @@ function renderDetalhe(id) {
 
   const contador = contarParcelas(emp.parcelas);
 
-  // ✅ BOTÃO EXTRATO (📄) – ao lado da lixeira, só quando não quitado
   const btnExtrato = st !== "quitado"
     ? `<button class="btn-mini btn-sec" onclick="abrirExtrato('${emp.id}')">📄</button>`
     : "";
@@ -1659,6 +1843,426 @@ function renderAgenda() {
 }
 
 // ============================================================
+// ✅ RELATÓRIO / DASHBOARD
+// ============================================================
+function renderRelatorio() {
+  const emps = getEmprestimos();
+  const c = document.getElementById("relatorioContent");
+
+  // Totais gerais
+  let totalEmprestadoAtivo = 0;
+  let totalAReceber = 0;
+  let totalRecebido = 0;
+  let totalJurosRecebidos = 0;
+  let empsAtivos = 0;
+  let empsQuitados = 0;
+  let empsAtrasados = 0;
+
+  const clientesInadimplentes = new Set();
+
+  emps.forEach(emp => {
+    const st = statusEmprestimo(emp);
+    if (st === "quitado") {
+      empsQuitados++;
+    } else {
+      empsAtivos++;
+      totalEmprestadoAtivo += emp.valorSolicitado;
+      totalAReceber += saldoDevedor(emp);
+      if (st === "atrasado") {
+        empsAtrasados++;
+        clientesInadimplentes.add(chaveCliente(emp));
+      }
+    }
+
+    // Pagamentos
+    (emp.pagamentos || []).forEach(h => {
+      totalRecebido += h.total;
+      if (h.juros && h.juros > 0) totalJurosRecebidos += h.juros;
+    });
+
+    // Parcelas pagas (se não tiver histórico, conta o valor base)
+    emp.parcelas.forEach(p => {
+      if (p.pago && (!emp.pagamentos || emp.pagamentos.length === 0)) {
+        totalRecebido += (p.valorPago || p.valor);
+        totalJurosRecebidos += (p.jurosAtraso || 0);
+      }
+    });
+  });
+
+  const totalClientes = agruparPorCliente(emps).length;
+  const taxaInadimplencia = totalClientes > 0
+    ? (clientesInadimplentes.size / totalClientes) * 100
+    : 0;
+
+  let html = `
+    <div class="dash-grid">
+      <div class="dash-card">
+        <div class="dash-label">💰 Emprestado ativo</div>
+        <div class="dash-value">${brl(totalEmprestadoAtivo, 0)}</div>
+        <div class="dash-sub">${empsAtivos} contrato(s) ativo(s)</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">📥 A receber</div>
+        <div class="dash-value warn">${brl(totalAReceber)}</div>
+        <div class="dash-sub">saldo devedor total</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">✅ Já recebido</div>
+        <div class="dash-value ok">${brl(totalRecebido)}</div>
+        <div class="dash-sub">de todos os tempos</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">📈 Lucro (juros)</div>
+        <div class="dash-value brand">${brl(totalJurosRecebidos)}</div>
+        <div class="dash-sub">juros já recebidos</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">👥 Clientes</div>
+        <div class="dash-value">${totalClientes}</div>
+        <div class="dash-sub">${clientesInadimplentes.size} inadimplente(s)</div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">⚠️ Inadimplência</div>
+        <div class="dash-value ${taxaInadimplencia > 20 ? 'bad' : taxaInadimplencia > 0 ? 'warn' : 'ok'}">${taxaInadimplencia.toFixed(1)}%</div>
+        <div class="dash-sub">${empsAtrasados} contrato(s) atrasado(s)</div>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="item"><span class="label">Empréstimos ativos</span><span class="value">${empsAtivos}</span></div>
+      <div class="item"><span class="label">Empréstimos quitados</span><span class="value" style="color:var(--ok)">${empsQuitados}</span></div>
+    </div>
+  `;
+
+  // Lista de clientes inadimplentes
+  if (clientesInadimplentes.size > 0) {
+    const clientes = agruparPorCliente(emps);
+    const inadimplentes = clientes.filter(cli =>
+      cli.emprestimos.some(e => statusEmprestimo(e) === "atrasado"));
+
+    html += `<div class="section-title">🚨 Clientes em atraso</div>`;
+    inadimplentes.forEach(cli => {
+      let saldo = 0;
+      let maisAtrasado = 0;
+      cli.emprestimos.forEach(emp => {
+        if (statusEmprestimo(emp) === "atrasado") {
+          saldo += saldoDevedor(emp);
+          emp.parcelas.forEach(p => {
+            if (!p.pago) {
+              const dias = Math.floor((hojeZero() - fromISO(p.vencimento)) / 86400000);
+              if (dias > maisAtrasado) maisAtrasado = dias;
+            }
+          });
+        }
+      });
+
+      html += `
+        <div class="agenda-item atrasada" onclick="renderClienteDetalhe('${cli.key}')" style="cursor:pointer;">
+          <div class="agenda-info">
+            <div class="linha1">
+              <span class="nome">${escapeHtml(cli.nome)}</span>
+              <span class="valor">${brl(saldo)}</span>
+            </div>
+            <div class="detalhe">${escapeHtml(cli.telefone || "sem telefone")}</div>
+            <div class="quando">⚠️ ${maisAtrasado} dia(s) em atraso</div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  c.innerHTML = html;
+}
+
+// ============================================================
+// ✅ BACKUP – EXPORTAR
+// ============================================================
+function exportarBackup() {
+  const emps = getEmprestimos();
+  if (emps.length === 0) {
+    alert("Não há dados para exportar ainda.");
+    return;
+  }
+
+  const dados = {
+    app: "WEB CRÉDITO",
+    versao: 1,
+    exportadoEm: new Date().toISOString(),
+    totalEmprestimos: emps.length,
+    emprestimos: emps
+  };
+
+  const json = JSON.stringify(dados, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const hoje = new Date();
+  const nome = `webcredito_backup_${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,"0")}-${String(hoje.getDate()).padStart(2,"0")}.json`;
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = nome;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+// ============================================================
+// ✅ BACKUP – IMPORTAR
+// ============================================================
+function importarBackup(file) {
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    let dados;
+    try {
+      dados = JSON.parse(e.target.result);
+    } catch (err) {
+      alert("Arquivo inválido. Selecione um backup exportado pelo app.");
+      return;
+    }
+
+    if (!dados || !Array.isArray(dados.emprestimos)) {
+      alert("Arquivo inválido. Selecione um backup exportado pelo app.");
+      return;
+    }
+
+    const atuais = getEmprestimos();
+    const novos = dados.emprestimos;
+
+    mostrarConfirm(
+      "Restaurar backup?",
+      `Vai substituir os ${atuais.length} empréstimo(s) atuais pelos ${novos.length} do arquivo. Essa ação não pode ser desfeita.`,
+      () => {
+        saveEmprestimos(novos);
+        updateBadge();
+        alert("Backup restaurado com sucesso! ✅");
+        location.reload();
+      }
+    );
+  };
+  reader.readAsText(file);
+}
+
+// ============================================================
+// ✅ PIN – LÓGICA
+// ============================================================
+function hashPin(pin) {
+  // Hash simples (djb2) – não criptográfico, mas suficiente para evitar leitura direta
+  let h = 5381;
+  for (let i = 0; i < pin.length; i++) {
+    h = ((h << 5) + h) + pin.charCodeAt(i);
+    h = h & 0xffffffff;
+  }
+  return String(h >>> 0);
+}
+
+function getPinSalvo() {
+  return localStorage.getItem(CONFIG.PIN_KEY);
+}
+function salvarPin(pin) {
+  localStorage.setItem(CONFIG.PIN_KEY, hashPin(pin));
+}
+function conferirPin(pin) {
+  return getPinSalvo() === hashPin(pin);
+}
+function temPin() {
+  return !!getPinSalvo();
+}
+function isUnlocked() {
+  return sessionStorage.getItem(CONFIG.SESSION_UNLOCK) === "1";
+}
+function unlock() {
+  sessionStorage.setItem(CONFIG.SESSION_UNLOCK, "1");
+}
+function lock() {
+  sessionStorage.removeItem(CONFIG.SESSION_UNLOCK);
+}
+
+// Estado da tela de PIN
+let _pinBuffer = "";
+let _pinModo = "login";     // "login" | "criar" | "confirmar"
+let _pinTemp = "";          // guarda o PIN temporário ao criar
+
+function initPinScreen() {
+  if (isUnlocked()) {
+    document.getElementById("pinOverlay").classList.remove("show");
+    return;
+  }
+
+  _pinBuffer = "";
+  _pinTemp = "";
+
+  if (!temPin()) {
+    _pinModo = "criar";
+    document.getElementById("pinEmoji").textContent = "🆕";
+    document.getElementById("pinSubtitle").textContent = "Crie um PIN de 4 dígitos";
+    document.getElementById("pinLinkEsqueci").style.display = "none";
+  } else {
+    _pinModo = "login";
+    document.getElementById("pinEmoji").textContent = "🔒";
+    document.getElementById("pinSubtitle").textContent = "Digite seu PIN";
+    document.getElementById("pinLinkEsqueci").style.display = "block";
+  }
+
+  document.getElementById("pinError").textContent = "";
+  renderPinDots();
+  renderPinKeypad();
+  document.getElementById("pinOverlay").classList.add("show");
+}
+
+function renderPinDots() {
+  const box = document.getElementById("pinDots");
+  const dots = box.querySelectorAll(".pin-dot");
+  dots.forEach((d, i) => {
+    d.classList.toggle("filled", i < _pinBuffer.length);
+    d.classList.remove("error");
+  });
+}
+
+function renderPinKeypad() {
+  const kp = document.getElementById("pinKeypad");
+  kp.innerHTML = "";
+  const keys = ["1","2","3","4","5","6","7","8","9","back","0","ok"];
+  keys.forEach(k => {
+    const b = document.createElement("button");
+    b.type = "button";
+    if (k === "back") {
+      b.className = "pin-key pin-key-back";
+      b.textContent = "⌫";
+      b.onclick = () => pinBackspace();
+    } else if (k === "ok") {
+      b.className = "pin-key pin-key-ok";
+      b.textContent = "✓";
+      b.onclick = () => pinConfirmar();
+    } else {
+      b.className = "pin-key";
+      b.textContent = k;
+      b.onclick = () => pinDigito(k);
+    }
+    kp.appendChild(b);
+  });
+}
+
+function pinDigito(d) {
+  if (_pinBuffer.length >= 4) return;
+  _pinBuffer += d;
+  renderPinDots();
+
+  // Auto-confirma ao completar 4 dígitos
+  if (_pinBuffer.length === 4) {
+    setTimeout(pinConfirmar, 150);
+  }
+}
+
+function pinBackspace() {
+  _pinBuffer = _pinBuffer.slice(0, -1);
+  renderPinDots();
+  document.getElementById("pinError").textContent = "";
+}
+
+function pinConfirmar() {
+  if (_pinBuffer.length !== 4) {
+    document.getElementById("pinError").textContent = "Digite os 4 dígitos";
+    return;
+  }
+
+  if (_pinModo === "login") {
+    if (conferirPin(_pinBuffer)) {
+      unlock();
+      document.getElementById("pinOverlay").classList.remove("show");
+    } else {
+      pinErro("PIN incorreto");
+    }
+    return;
+  }
+
+  if (_pinModo === "criar") {
+    _pinTemp = _pinBuffer;
+    _pinBuffer = "";
+    _pinModo = "confirmar";
+    document.getElementById("pinSubtitle").textContent = "Confirme o PIN";
+    document.getElementById("pinError").textContent = "";
+    renderPinDots();
+    return;
+  }
+
+  if (_pinModo === "confirmar") {
+    if (_pinBuffer === _pinTemp) {
+      salvarPin(_pinTemp);
+      unlock();
+      document.getElementById("pinOverlay").classList.remove("show");
+    } else {
+      pinErro("Os PINs não batem. Tente de novo.");
+      _pinModo = "criar";
+      _pinTemp = "";
+      document.getElementById("pinSubtitle").textContent = "Crie um PIN de 4 dígitos";
+    }
+    return;
+  }
+}
+
+function pinErro(msg) {
+  document.getElementById("pinError").textContent = msg;
+  const dots = document.getElementById("pinDots").querySelectorAll(".pin-dot");
+  dots.forEach(d => d.classList.add("error"));
+  if (navigator.vibrate) navigator.vibrate(200);
+  setTimeout(() => {
+    _pinBuffer = "";
+    renderPinDots();
+  }, 500);
+}
+
+function abrirEsqueciPin() {
+  mostrarConfirm(
+    "Esqueci meu PIN",
+    "Para resetar o PIN você precisa apagar todos os dados do app (não tem como recuperar). Tem certeza?",
+    () => {
+      if (confirm("Última confirmação: TODOS os clientes e empréstimos serão apagados. Continuar?")) {
+        localStorage.removeItem(CONFIG.PIN_KEY);
+        localStorage.removeItem(CONFIG.STORAGE_KEY);
+        sessionStorage.removeItem(CONFIG.SESSION_UNLOCK);
+        location.reload();
+      }
+    }
+  );
+}
+
+// ============================================================
+// ✅ PIN – AJUSTES (trocar / bloquear)
+// ============================================================
+function abrirAjustes() {
+  if (!temPin()) {
+    alert("Você ainda não tem um PIN configurado.");
+    return;
+  }
+  document.getElementById("pinAtualInput").value = "";
+  document.getElementById("pinNovoInput").value = "";
+  document.getElementById("modalAjustes").classList.add("show");
+}
+
+function trocarPin() {
+  const atual = soDigitos(document.getElementById("pinAtualInput").value);
+  const novo = soDigitos(document.getElementById("pinNovoInput").value);
+
+  if (atual.length !== 4) { alert("Digite o PIN atual (4 dígitos)."); return; }
+  if (!conferirPin(atual)) { alert("PIN atual incorreto."); return; }
+  if (novo.length !== 4) { alert("O novo PIN deve ter 4 dígitos."); return; }
+
+  salvarPin(novo);
+  fecharModal("modalAjustes");
+  alert("PIN alterado com sucesso! ✅");
+}
+
+function bloquearAgora() {
+  lock();
+  fecharModal("modalAjustes");
+  initPinScreen();
+}
+
+// ============================================================
 // PAGAMENTO – MODAL (parcela completa)
 // ============================================================
 let _pagAtual = null;
@@ -1776,7 +2380,7 @@ function abrirLembrete(empId, nParcela) {
 }
 
 // ============================================================
-// ✅ EXTRATO – RESUMO DE PARCELAS
+// EXTRATO – RESUMO DE PARCELAS
 // ============================================================
 function abrirExtrato(empId) {
   const emp = getEmprestimos().find(e => e.id === empId);
@@ -2110,7 +2714,7 @@ function abrirFormNovo(prefill) {
   popularParcelasForm(prefill?.parcelas);
   atualizarPreviewForm();
 
-  ["fNome","fCpf","fTelefone","fValor","fData1"].forEach(id => {
+  ["fNome","fValor","fData1"].forEach(id => {
     const el = document.getElementById(id);
     if (el._bound) return;
     el._bound = true;
@@ -2119,8 +2723,6 @@ function abrirFormNovo(prefill) {
         formatarBRLSemCentavos(el);
         popularParcelasForm();
       }
-      if (id === "fCpf") el.value = aplicarMascaraCPF(el.value);
-      if (id === "fTelefone") el.value = formatTel(el.value);
       atualizarPreviewForm();
     });
     el.addEventListener("change", atualizarPreviewForm);
@@ -2268,7 +2870,7 @@ function mostrarConfirm(titulo, msg, onOk) {
   document.getElementById("modalConfirm").classList.add("show");
 }
 
-["modalPag","modalConfirm"].forEach(id => {
+["modalPag","modalConfirm","modalAjustes"].forEach(id => {
   const el = document.getElementById(id);
   el.addEventListener("click", (e) => {
     if (e.target === el) fecharModal(id);
@@ -2287,11 +2889,14 @@ function escapeHtml(s) {
 // ============================================================
 // INIT
 // ============================================================
+initPinScreen();
+
 setCpfUI("warn");
 atualizarUI();
 updateBadge();
 renderLista();
 renderAgenda();
+renderRelatorio();
 </script>
 </body>
 </html>
