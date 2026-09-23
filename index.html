@@ -81,8 +81,8 @@
   .btn-mini{
     width:auto; padding:8px 12px; font-size:13px; margin-top:0; border-radius:10px;
   }
- m .btn-icon{
-    width:breauto; padding:6px 10px;te margin-top:0; border-radius:10px;
+  .btn-icon{
+    width:auto; padding:6px 10px; margin-top:0; border-radius:10px;
     font-size:13px; font-weight:900;
   }
   .btn-juros{
@@ -113,7 +113,7 @@
     color:var(--ok);
   }
 
-  .btn-le{
+  .btn-lembrete{
     background:rgba(91,124,250,.15);
     color:var(--brand);
     border:1px solid rgba(91,124,250,.4);
@@ -596,8 +596,8 @@ function regras(valor) {
   if (valor <= 700) {
     return [
       { n: 4,  t: 0.209 },
-      { n: 6,  t: 0.185 },
-      { n: 10, t: 0.183 }
+      { n: 6,  t: 0.183 },
+      { n: 10, t: 0.182 }
     ];
   }
   if (valor <= 1000) {
@@ -609,8 +609,8 @@ function regras(valor) {
   }
   return [
     { n: 6,  t: 0.184 },
-    { n: 10, t: 0.179 },
-    { n: 12, t: 0.162 }
+    { n: 10, t: 0.177 },
+    { n: 12, t: 0.161 }
   ];
 }
 
