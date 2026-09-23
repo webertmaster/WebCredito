@@ -85,7 +85,6 @@
   }
   .btn-juros:disabled{ opacity:.5; }
 
-  /* ✅ NOVO – Botão copiar */
   .btn-copy{
     background:var(--field);
     border:1px solid var(--fieldLine);
@@ -106,28 +105,98 @@
     color:var(--ok);
   }
 
-  .legal{
-    margin-top:10px; font-size:12px; color:#9eb2e2;
-    text-align:center; font-style:italic; line-height:1.35;
-  }
-  footer{
-    text-align:center; font-size:11px; color:var(--neon);
-    padding:10px 0; letter-spacing:1px;
+  .btn-lembrete{
+    background:rgba(91,124,250,.15);
+    color:var(--brand);
+    border:1px solid rgba(91,124,250,.4);
+    font-weight:900;
   }
 
+  /* Score badges */
+  .score-badge{
+    font-size:10px; font-weight:900; padding:3px 9px; border-radius:999px;
+    text-transform:uppercase; letter-spacing:.5px; white-space:nowrap;
+    display:inline-block;
+  }
+  .score-otimo{ background:rgba(108,255,157,.15); color:var(--ok); }
+  .score-medio{ background:rgba(255,211,138,.15); color:var(--warn); }
+  .score-ruim{ background:rgba(255,124,124,.18); color:var(--bad); }
+  .score-novo{ background:rgba(91,124,250,.15); color:var(--brand); }
+
+  /* Client card */
+  .client-card{
+    background:var(--field); border:1px solid var(--fieldLine);
+    border-radius:12px; padding:12px; margin-bottom:10px;
+    cursor:pointer; transition:border-color .15s;
+  }
+  .client-card:hover{ border-color:var(--brand); }
+  .client-card .row{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .client-card .name{ font-weight:800; color:var(--text); font-size:15px; }
+  .client-card .meta{ font-size:12px; color:var(--muted); margin-top:4px; }
+
+  /* ✅ NOVO – Contador de parcelas */
+  .parcela-counter{
+    display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;
+    font-size:11px; font-weight:800;
+  }
+  .parcela-counter .cnt{
+    padding:3px 8px; border-radius:999px; background:rgba(42,58,99,.5);
+    display:inline-flex; align-items:center; gap:3px;
+  }
+  .parcela-counter .cnt-pagas{ color:var(--ok); background:rgba(108,255,157,.1); }
+  .parcela-counter .cnt-avencer{ color:var(--warn); background:rgba(255,211,138,.1); }
+  .parcela-counter .cnt-atrasadas{ color:var(--bad); background:rgba(255,124,124,.12); }
+
+  /* ✅ NOVO – Filtros da agenda */
+  .filtro-agenda{
+    display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;
+  }
+  .filtro-btn{
+    width:auto; padding:8px 12px; font-size:12px; font-weight:800;
+    background:var(--field); border:1px solid var(--fieldLine);
+    color:var(--muted); border-radius:999px; margin-top:0;
+    cursor:pointer; white-space:nowrap;
+  }
+  .filtro-btn.active{ background:var(--brand); color:#fff; border-color:var(--brand); }
+  .filtro-btn .cont{ opacity:.75; margin-left:4px; font-weight:900; }
+
+  /* ✅ NOVO – Item da agenda */
+  .agenda-item{
+    background:var(--field); border:1px solid var(--fieldLine);
+    border-radius:10px; padding:10px 12px; margin-bottom:8px;
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+  }
+  .agenda-item.atrasada{ border-color:rgba(255,124,124,.4); background:rgba(255,124,124,.04); }
+  .agenda-item.hoje{ border-color:rgba(255,211,138,.5); background:rgba(255,211,138,.05); }
+  .agenda-item.proxima{ border-color:rgba(91,124,250,.4); }
+  .agenda-item.quitado{ opacity:.5; }
+
+  .agenda-info{ flex:1; min-width:0; font-size:13px; }
+  .agenda-info .linha1{
+    display:flex; justify-content:space-between; align-items:center;
+    gap:8px; margin-bottom:3px;
+  }
+  .agenda-info .nome{ font-weight:800; font-size:14px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .agenda-info .detalhe{ color:var(--muted); font-size:12px; line-height:1.5; }
+  .agenda-info .valor{ color:var(--text); font-weight:800; }
+  .agenda-info .quando{ color:var(--muted); font-size:11px; font-weight:800; }
+  .agenda-item.atrasada .quando{ color:var(--bad); }
+  .agenda-item.hoje .quando{ color:var(--warn); }
+  .agenda-actions{ display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
+
   /* TABS */
-  .tabs{ display:flex; gap:8px; margin-bottom:12px; }
+  .tabs{ display:flex; gap:6px; margin-bottom:12px; }
   .tab{
-    flex:1; padding:12px; background:var(--field); border:1px solid var(--fieldLine);
-    border-radius:12px; color:var(--muted); font-size:14px; font-weight:800;
+    flex:1; padding:11px 6px; background:var(--field); border:1px solid var(--fieldLine);
+    border-radius:12px; color:var(--muted); font-size:13px; font-weight:800;
     cursor:pointer; margin-top:0; display:flex; align-items:center;
-    justify-content:center; gap:6px;
+    justify-content:center; gap:4px; white-space:nowrap;
   }
   .tab.active{ background:var(--brand); color:#fff; border-color:var(--brand); }
   .badge{
     display:inline-block; background:var(--brand); color:#fff;
-    border-radius:999px; padding:1px 8px; font-size:11px;
-    min-width:20px; text-align:center;
+    border-radius:999px; padding:1px 7px; font-size:10px;
+    min-width:18px; text-align:center;
   }
   .tab.active .badge{ background:rgba(255,255,255,.35); }
 
@@ -214,6 +283,7 @@
   }
   .parcela-item.paga{ opacity:.72; border-color:rgba(108,255,157,.35); }
   .parcela-item.vencida{ border-color:rgba(255,124,124,.4); }
+  .parcela-item.proxima{ border-color:rgba(91,124,250,.4); }
   .parcela-info{ flex:1; min-width:0; font-size:13px; }
   .parcela-info strong{ display:block; font-size:14px; margin-bottom:3px; }
   .parcela-info .datas{ color:var(--muted); font-size:12px; line-height:1.5; }
@@ -294,6 +364,9 @@
     <button type="button" class="tab" data-tab="cli">
       👥 Clientes <span class="badge" id="badgeCount" style="display:none">0</span>
     </button>
+    <button type="button" class="tab" data-tab="agenda">
+      📅 Agenda <span class="badge" id="badgeAgenda" style="display:none">0</span>
+    </button>
   </div>
 
   <!-- ===================== SIMULADOR ===================== -->
@@ -364,12 +437,13 @@
 
     <div class="card" id="view-lista">
       <div class="toolbar">
-        <input id="busca" placeholder="🔎 Buscar por nome ou CPF" />
+        <input id="busca" placeholder="🔎 Buscar cliente por nome ou CPF" />
         <button type="button" onclick="abrirFormNovo()">+ Novo</button>
       </div>
       <div id="listaClientes"></div>
     </div>
 
+    <div class="card" id="view-cliente" style="display:none"></div>
     <div class="card" id="view-detalhe" style="display:none"></div>
 
     <div class="card" id="view-form" style="display:none">
@@ -407,11 +481,23 @@
     </div>
 
   </div>
+
+  <!-- ===================== AGENDA ===================== -->
+  <div id="tab-agenda" style="display:none">
+    <div class="card">
+      <div class="detail-header" style="margin-bottom:10px;">
+        <h3>📅 Próximos vencimentos</h3>
+      </div>
+      <div class="filtro-agenda" id="filtrosAgenda"></div>
+      <div id="listaAgenda"></div>
+    </div>
+  </div>
+
 </div>
 
 <footer>webdev</footer>
 
-<!-- MODAL: confirmação de pagamento / comprovante -->
+<!-- MODAL: pagamento / comprovante / lembrete -->
 <div class="overlay" id="modalPag">
   <div class="modal">
     <h3 id="pagTitulo">Registrar pagamento</h3>
@@ -421,7 +507,6 @@
       <button class="btn-sec" onclick="fecharModal('modalPag')">Fechar</button>
       <button class="btn-ok" onclick="confirmarPagamento()">✓ Confirmar pagamento</button>
     </div>
-    <!-- ✅ NOVO: linha com WhatsApp + Copiar -->
     <div style="display:flex; gap:8px; margin-top:10px;">
       <button class="btn-wa" id="btnEnviarWa" onclick="enviarComprovantePagamento()" style="flex:1; margin-top:0;">📱 Enviar no WhatsApp</button>
       <button class="btn-copy" id="btnCopiarMsg" onclick="copiarMensagemComprovante()">📋 Copiar</button>
@@ -459,13 +544,13 @@ const CONFIG = {
   VALOR_MINIMO: 50,
   LIMITE: 1500,
   WHATSAPP: "5584987974972",
-  JUROS_ATRASO_MES: 0.30,   // 30% ao mês sobre parcela em atraso
+  JUROS_ATRASO_MES: 0.30,
   MULTA_ATRASO: 0,
   STORAGE_KEY: "webcredito_emprestimos_v3"
 };
 
 // ============================================================
-// ============ REGRAS DE JUROS (TABELA ORIGINAL) =============
+// REGRAS DE JUROS
 // ============================================================
 function regras(valor) {
   if (valor < 100) {
@@ -477,10 +562,10 @@ function regras(valor) {
   if (valor <= 500) {
     return [
       { n: 1, t: 0.25  },
-      { n: 2, t: 0.239 },
+      { n: 2, t: 0.241 },
       { n: 3, t: 0.236 },
-      { n: 4, t: 0.231 },
-      { n: 5, t: 0.230 }
+      { n: 4, t: 0.232 },
+      { n: 5, t: 0.231 }
     ];
   }
   if (valor <= 700) {
@@ -504,12 +589,10 @@ function regras(valor) {
   ];
 }
 
-// Parcela fixa (Price): p = principal, i = taxa mensal, n = nº parcelas
 function price(p, i, n) {
   return p * (i / (1 - Math.pow(1 + i, -n)));
 }
 
-// Retorna a taxa para valor+parcelas (fallback)
 function getTaxa(valor, n) {
   const found = regras(valor).find(r => r.n === n);
   if (found) return found.t;
@@ -615,7 +698,7 @@ function calcularPrimeiraParcela(diaEscolhido, minDias = 7) {
 }
 
 // ============================================================
-// GERAÇÃO DE PARCELAS MENSAIS
+// GERAÇÃO DE PARCELAS
 // ============================================================
 function gerarParcelas(dataBase, n, valorParcela) {
   const y = dataBase.getFullYear();
@@ -644,7 +727,6 @@ function gerarParcelas(dataBase, n, valorParcela) {
 
 // ============================================================
 // ATRASO – 30% ao mês sobre a parcela
-// Respeita jurosPagosAte (pagamentos parciais de juros)
 // ============================================================
 function calcularAtraso(p) {
   if (p.pago) return { dias: 0, juros: 0, multa: 0, total: 0 };
@@ -706,6 +788,88 @@ function proximaParcela(emp) {
 }
 
 // ============================================================
+// ✅ NOVO – CONTADOR DE PARCELAS
+// ============================================================
+function contarParcelas(parcelas) {
+  let pagas = 0, aVencer = 0, atrasadas = 0;
+  const hoje = hojeZero();
+  parcelas.forEach(p => {
+    if (p.pago) pagas++;
+    else if (fromISO(p.vencimento) < hoje) atrasadas++;
+    else aVencer++;
+  });
+  return { pagas, aVencer, atrasadas, total: parcelas.length };
+}
+
+function montarContadorHTML(c) {
+  let html = `<div class="parcela-counter">`;
+  if (c.pagas > 0)     html += `<span class="cnt cnt-pagas">✓ ${c.pagas} paga${c.pagas>1?'s':''}</span>`;
+  if (c.aVencer > 0)   html += `<span class="cnt cnt-avencer">⏳ ${c.aVencer} a vencer</span>`;
+  if (c.atrasadas > 0) html += `<span class="cnt cnt-atrasadas">⚠️ ${c.atrasadas} atrasada${c.atrasadas>1?'s':''}</span>`;
+  if (c.pagas === 0 && c.aVencer === 0 && c.atrasadas === 0) {
+    html += `<span class="cnt">Sem parcelas</span>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+// ============================================================
+// AGRUPAR POR CLIENTE
+// ============================================================
+function chaveCliente(emp) {
+  const doc = soDigitos(emp.cpf);
+  if (doc) return "cpf:" + doc;
+  return "nome:" + (emp.nome || "").toLowerCase().trim();
+}
+
+function agruparPorCliente(emprestimos) {
+  const mapa = {};
+  emprestimos.forEach(emp => {
+    const k = chaveCliente(emp);
+    if (!mapa[k]) {
+      mapa[k] = {
+        key: k,
+        cpf: emp.cpf,
+        nome: emp.nome,
+        telefone: emp.telefone,
+        emprestimos: []
+      };
+    }
+    mapa[k].emprestimos.push(emp);
+    if (emp.telefone && !mapa[k].telefone) mapa[k].telefone = emp.telefone;
+  });
+  return Object.values(mapa);
+}
+
+// ============================================================
+// SCORE DO CLIENTE
+// ============================================================
+function calcularScoreCliente(emprestimos) {
+  let totalPagas = 0;
+  let pagasComAtraso = 0;
+  let temAtrasoAtual = false;
+  const hoje = hojeZero();
+
+  emprestimos.forEach(emp => {
+    emp.parcelas.forEach(p => {
+      if (p.pago) {
+        totalPagas++;
+        const venc = fromISO(p.vencimento);
+        const pag = p.dataPagamento ? fromISO(p.dataPagamento) : venc;
+        if (pag > venc) pagasComAtraso++;
+      } else {
+        if (fromISO(p.vencimento) < hoje) temAtrasoAtual = true;
+      }
+    });
+  });
+
+  if (temAtrasoAtual) return { key: "ruim", label: "🚫 Inadimplente" };
+  if (totalPagas === 0) return { key: "novo", label: "🆕 Novo" };
+  if (pagasComAtraso > 0) return { key: "medio", label: "⚠️ Atrasa às vezes" };
+  return { key: "otimo", label: "⭐ Bom pagador" };
+}
+
+// ============================================================
 // ELEMENTOS – SIMULADOR
 // ============================================================
 const elResp = document.getElementById("responsavel");
@@ -721,6 +885,12 @@ const elResultado = document.getElementById("resultado");
 const elDiaVenc = document.getElementById("diaVenc");
 
 let cpfValido = false;
+
+let _voltarDetalhe = "lista";
+let _cpfClienteAtual = null;
+
+// ✅ NOVO – Estado do filtro da agenda
+let _filtroAgenda = "todos"; // todos | atrasadas | hoje | 7dias | 30dias
 
 // ============================================================
 // UI – CPF
@@ -931,12 +1101,14 @@ function enviarWhatsComLoading() {
 }
 
 // ============================================================
-// SALVAR DA SIMULAÇÃO → form pré-preenchido
+// SALVAR DA SIMULAÇÃO
 // ============================================================
 function salvarDaSimulacao() {
   const d = window._dados;
   if (!d) { alert("Faça a simulação primeiro."); return; }
   setTab("cli");
+  _voltarDetalhe = "lista";
+  _cpfClienteAtual = null;
   abrirFormNovo({
     nome: d.nome,
     cpf: d.cpf,
@@ -956,74 +1128,121 @@ function setTab(name) {
   });
   document.getElementById("tab-sim").style.display = (name === "sim") ? "block" : "none";
   document.getElementById("tab-cli").style.display = (name === "cli") ? "block" : "none";
+  document.getElementById("tab-agenda").style.display = (name === "agenda") ? "block" : "none";
+
   if (name === "cli") { voltarLista(); updateBadge(); }
+  if (name === "agenda") { renderAgenda(); }
 }
 document.querySelectorAll(".tab").forEach(btn => {
   btn.addEventListener("click", () => setTab(btn.dataset.tab));
 });
 
 // ============================================================
-// BADGE
+// BADGES
 // ============================================================
 function updateBadge() {
   const lista = getEmprestimos();
+
+  // Badge de clientes com empréstimo aberto
   const abertos = lista.filter(e => statusEmprestimo(e) !== "quitado").length;
   const b = document.getElementById("badgeCount");
   if (abertos > 0) { b.textContent = abertos; b.style.display = "inline-block"; }
   else b.style.display = "none";
+
+  // ✅ NOVO – Badge da agenda (parcelas atrasadas + vence hoje)
+  const hoje = hojeZero();
+  let urgentes = 0;
+  lista.forEach(emp => {
+    emp.parcelas.forEach(p => {
+      if (p.pago) return;
+      const dias = Math.floor((fromISO(p.vencimento) - hoje) / 86400000);
+      if (dias <= 0) urgentes++;
+    });
+  });
+  const ba = document.getElementById("badgeAgenda");
+  if (urgentes > 0) { ba.textContent = urgentes; ba.style.display = "inline-block"; }
+  else ba.style.display = "none";
 }
 
 // ============================================================
-// RENDER – LISTA
+// RENDER – LISTA DE CLIENTES (agrupado)
 // ============================================================
 function renderLista() {
   const termo = (document.getElementById("busca").value || "").toLowerCase().trim();
-  const todos = getEmprestimos().sort((a,b) => new Date(b.criadoEm) - new Date(a.criadoEm));
-  const lista = termo
-    ? todos.filter(e =>
-        e.nome.toLowerCase().includes(termo) ||
-        soDigitos(e.cpf).includes(soDigitos(termo)))
-    : todos;
+  const todos = getEmprestimos();
+  const clientes = agruparPorCliente(todos);
 
-  const c = document.getElementById("listaClientes");
+  clientes.sort((a, b) => {
+    const aAt = a.emprestimos.some(e => statusEmprestimo(e) === "atrasado") ? 0 : 1;
+    const bAt = b.emprestimos.some(e => statusEmprestimo(e) === "atrasado") ? 0 : 1;
+    if (aAt !== bAt) return aAt - bAt;
+    return a.nome.localeCompare(b.nome);
+  });
 
-  if (lista.length === 0) {
-    c.innerHTML = `
+  const filtrado = termo
+    ? clientes.filter(c =>
+        (c.nome || "").toLowerCase().includes(termo) ||
+        soDigitos(c.cpf).includes(soDigitos(termo)))
+    : clientes;
+
+  const el = document.getElementById("listaClientes");
+
+  if (filtrado.length === 0) {
+    el.innerHTML = `
       <div class="empty">
         <span class="emoji">📭</span>
-        ${todos.length === 0
-          ? "Nenhum empréstimo cadastrado.<br>Simule ou clique em <strong>+ Novo</strong>."
+        ${clientes.length === 0
+          ? "Nenhum cliente cadastrado.<br>Simule ou clique em <strong>+ Novo</strong>."
           : "Nenhum resultado para a busca."}
       </div>`;
     return;
   }
 
-  c.innerHTML = "";
-  lista.forEach(emp => {
-    const pagas = emp.parcelas.filter(p => p.pago).length;
-    const totalP = emp.parcelas.length;
-    const pct = totalP ? (pagas/totalP)*100 : 0;
-    const st = statusEmprestimo(emp);
-    const saldo = saldoDevedor(emp);
+  el.innerHTML = "";
+  filtrado.forEach(cli => {
+    const score = calcularScoreCliente(cli.emprestimos);
+
+    let ativos = 0;
+    let totalSaldo = 0;
+    let totalEmprestado = 0;
+    let temAtraso = false;
+    cli.emprestimos.forEach(emp => {
+      const st = statusEmprestimo(emp);
+      if (st !== "quitado") {
+        ativos++;
+        totalSaldo += saldoDevedor(emp);
+        totalEmprestado += emp.valorSolicitado;
+      }
+      if (st === "atrasado") temAtraso = true;
+    });
+
+    // ✅ NOVO – contador consolidado de todas as parcelas do cliente
+    let todasParcelas = [];
+    cli.emprestimos.forEach(e => { todasParcelas = todasParcelas.concat(e.parcelas); });
+    const contador = contarParcelas(todasParcelas);
 
     const div = document.createElement("div");
-    div.className = "loan-card";
-    div.onclick = () => renderDetalhe(emp.id);
+    div.className = "client-card";
+    div.onclick = () => renderClienteDetalhe(cli.key);
     div.innerHTML = `
       <div class="row">
         <div style="min-width:0;">
-          <div class="name">${escapeHtml(emp.nome)}</div>
-          <div class="meta">${brl(emp.valorSolicitado,0)} → ${emp.nParcelas}x de ${brl(emp.valorParcela)} · ${pagas}/${totalP}</div>
+          <div class="name">${escapeHtml(cli.nome)}</div>
+          <div class="meta">${cli.emprestimos.length} empréstimo(s) · ${ativos} ativo(s)</div>
         </div>
-        <span class="status-badge status-${st}">${statusLabel(st)}</span>
+        <span class="score-badge score-${score.key}">${score.label}</span>
       </div>
-      <div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div>
-      <div class="meta" style="margin-top:6px;display:flex;justify-content:space-between;">
-        <span>Saldo devedor:</span>
-        <strong style="color:${saldo>0?'var(--warn)':'var(--ok)'}">${brl(saldo)}</strong>
-      </div>
+
+      ${montarContadorHTML(contador)}
+
+      ${ativos > 0 ? `
+      <div class="meta" style="margin-top:8px; display:flex; justify-content:space-between; gap:8px;">
+        <span>Emprestado: <strong style="color:var(--text)">${brl(totalEmprestado,0)}</strong></span>
+        <span>Saldo: <strong style="color:${temAtraso?'var(--bad)':'var(--warn)'}">${brl(totalSaldo)}</strong></span>
+      </div>` : `
+      <div class="meta" style="margin-top:8px; color:var(--ok); font-weight:800;">✓ Todos os empréstimos quitados</div>`}
     `;
-    c.appendChild(div);
+    el.appendChild(div);
   });
 }
 document.getElementById("busca").addEventListener("input", renderLista);
@@ -1031,22 +1250,135 @@ document.getElementById("busca").addEventListener("input", renderLista);
 // ============================================================
 // VIEWS
 // ============================================================
-function voltarLista() {
+function esconderViewsCli() {
+  document.getElementById("view-lista").style.display = "none";
+  document.getElementById("view-cliente").style.display = "none";
   document.getElementById("view-detalhe").style.display = "none";
   document.getElementById("view-form").style.display = "none";
+}
+
+function voltarLista() {
+  esconderViewsCli();
   document.getElementById("view-lista").style.display = "block";
   renderLista();
 }
 
+function voltarDeDetalhe() {
+  if (_voltarDetalhe === "cliente" && _cpfClienteAtual) {
+    renderClienteDetalhe(_cpfClienteAtual);
+  } else {
+    voltarLista();
+  }
+}
+
 // ============================================================
-// RENDER – DETALHE
+// RENDER CLIENTE DETALHE
+// ============================================================
+function renderClienteDetalhe(clienteKey) {
+  const todos = getEmprestimos();
+  const clientes = agruparPorCliente(todos);
+  const cli = clientes.find(c => c.key === clienteKey);
+  if (!cli) { voltarLista(); return; }
+
+  _cpfClienteAtual = clienteKey;
+
+  esconderViewsCli();
+  const view = document.getElementById("view-cliente");
+  view.style.display = "block";
+
+  const score = calcularScoreCliente(cli.emprestimos);
+
+  let totalSaldo = 0;
+  let totalEmprestado = 0;
+  let totalPagoCli = 0;
+  let ativos = 0;
+  cli.emprestimos.forEach(emp => {
+    totalPagoCli += totalPago(emp);
+    if (statusEmprestimo(emp) !== "quitado") {
+      ativos++;
+      totalSaldo += saldoDevedor(emp);
+      totalEmprestado += emp.valorSolicitado;
+    }
+  });
+
+  // ✅ NOVO – contador consolidado do cliente
+  let todasParcelas = [];
+  cli.emprestimos.forEach(e => { todasParcelas = todasParcelas.concat(e.parcelas); });
+  const contador = contarParcelas(todasParcelas);
+
+  const empsOrd = [...cli.emprestimos].sort(
+    (a, b) => new Date(b.criadoEm) - new Date(a.criadoEm)
+  );
+
+  let html = `
+    <div class="detail-header">
+      <button class="btn-mini btn-sec" onclick="voltarLista()">← Clientes</button>
+      <h3>${escapeHtml(cli.nome)}</h3>
+    </div>
+
+    <div style="margin-bottom:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+      <span class="score-badge score-${score.key}" style="font-size:12px; padding:5px 12px;">${score.label}</span>
+      <span style="font-size:12px; color:var(--muted);">${cli.emprestimos.length} empréstimo(s)</span>
+    </div>
+
+    ${montarContadorHTML(contador)}
+
+    <div class="info-grid" style="margin-top:12px;">
+      <div class="item"><span class="label">CPF</span><span class="value">${escapeHtml(cli.cpf || "-")}</span></div>
+      <div class="item"><span class="label">Telefone</span><span class="value">${escapeHtml(cli.telefone || "-")}</span></div>
+      <div class="item"><span class="label">Ativos</span><span class="value">${ativos}</span></div>
+      <div class="item"><span class="label">Total pago</span><span class="value" style="color:var(--ok)">${brl(totalPagoCli)}</span></div>
+      <div class="item"><span class="label">Emprestado (ativo)</span><span class="value">${brl(totalEmprestado, 0)}</span></div>
+      <div class="item"><span class="label">Saldo devedor</span><span class="value" style="color:${totalSaldo>0?'var(--warn)':'var(--ok)'}">${brl(totalSaldo)}</span></div>
+    </div>
+
+    <div class="section-title">📋 Empréstimos do cliente</div>
+  `;
+
+  empsOrd.forEach(emp => {
+    const st = statusEmprestimo(emp);
+    const pagas = emp.parcelas.filter(p => p.pago).length;
+    const totalP = emp.nParcelas;
+    const pct = totalP ? (pagas / totalP) * 100 : 0;
+    const saldo = saldoDevedor(emp);
+    const criado = new Date(emp.criadoEm).toLocaleDateString("pt-BR");
+    const c = contarParcelas(emp.parcelas);
+
+    html += `
+      <div class="loan-card" onclick="abrirDetalheEmprestimo('${emp.id}')">
+        <div class="row">
+          <div style="min-width:0;">
+            <div class="name" style="font-size:14px;">${brl(emp.valorSolicitado, 0)} → ${emp.nParcelas}x de ${brl(emp.valorParcela)}</div>
+            <div class="meta">Criado em ${criado}</div>
+          </div>
+          <span class="status-badge status-${st}">${statusLabel(st)}</span>
+        </div>
+        ${montarContadorHTML(c)}
+        <div class="progress" style="margin-top:8px;"><div class="progress-bar" style="width:${pct}%"></div></div>
+        <div class="meta" style="margin-top:6px;display:flex;justify-content:space-between;">
+          <span>Saldo:</span>
+          <strong style="color:${saldo>0?'var(--warn)':'var(--ok)'}">${brl(saldo)}</strong>
+        </div>
+      </div>
+    `;
+  });
+
+  view.innerHTML = html;
+}
+
+function abrirDetalheEmprestimo(id) {
+  _voltarDetalhe = "cliente";
+  renderDetalhe(id);
+}
+
+// ============================================================
+// RENDER – DETALHE DO EMPRÉSTIMO
 // ============================================================
 function renderDetalhe(id) {
   const emp = getEmprestimos().find(e => e.id === id);
-  if (!emp) { voltarLista(); return; }
+  if (!emp) { voltarDeDetalhe(); return; }
 
-  document.getElementById("view-lista").style.display = "none";
-  document.getElementById("view-form").style.display = "none";
+  esconderViewsCli();
   const view = document.getElementById("view-detalhe");
   view.style.display = "block";
 
@@ -1058,9 +1390,12 @@ function renderDetalhe(id) {
   const taxaPct = (emp.taxaJuros || 0) * 100;
   const jurosTot = emp.valorTotal - emp.valorSolicitado;
 
+  // ✅ NOVO – contador de parcelas deste empréstimo
+  const contador = contarParcelas(emp.parcelas);
+
   let html = `
     <div class="detail-header">
-      <button class="btn-mini btn-sec" onclick="voltarLista()">← Voltar</button>
+      <button class="btn-mini btn-sec" onclick="voltarDeDetalhe()">← Voltar</button>
       <h3>${escapeHtml(emp.nome)}</h3>
       <button class="btn-mini btn-danger" onclick="excluirEmprestimo('${emp.id}')">🗑</button>
     </div>
@@ -1076,7 +1411,9 @@ function renderDetalhe(id) {
       <div class="item"><span class="label">Progresso</span><span class="value">${pagas}/${emp.nParcelas}</span></div>
     </div>
 
-    <div class="resumo-status">
+    ${montarContadorHTML(contador)}
+
+    <div class="resumo-status" style="margin-top:12px;">
       <div class="linha"><span>Juros total do contrato</span><strong style="color:var(--warn)">${brl(jurosTot)}</strong></div>
       <div class="linha"><span>Total pago</span><strong style="color:var(--ok)">${brl(pago)}</strong></div>
       ${prox ? `<div class="linha"><span>Próximo vencimento</span><strong>${formatBR(prox.vencimento)}</strong></div>` : ""}
@@ -1087,10 +1424,17 @@ function renderDetalhe(id) {
   `;
 
   const hoje = hojeZero();
+  const proxId = prox ? prox.n : null;
+
   emp.parcelas.forEach(p => {
     const atraso = calcularAtraso(p);
     const vencida = !p.pago && fromISO(p.vencimento) < hoje;
-    const cls = p.pago ? "paga" : (vencida ? "vencida" : "");
+    const ehProxima = p.n === proxId;
+
+    let cls = "";
+    if (p.pago) cls = "paga";
+    else if (vencida) cls = "vencida";
+    else if (ehProxima) cls = "proxima";
 
     let subInfo = `<div class="datas">Vencimento: ${formatBR(p.vencimento)} · Valor: ${brl(p.valor)}</div>`;
 
@@ -1112,20 +1456,27 @@ function renderDetalhe(id) {
     if (p.pago) {
       actions = `<button class="btn-icon btn-sec" onclick="desmarcarPagamento('${emp.id}',${p.n})">↺</button>`;
     } else {
+      const btnLembrete = ehProxima
+        ? `<button class="btn-icon btn-lembrete" onclick="abrirLembrete('${emp.id}',${p.n})">🔔 Lembrar</button>`
+        : "";
       if (atraso.dias > 0) {
         actions = `
+          ${btnLembrete}
           <button class="btn-icon btn-juros" onclick="abrirPagamentoJuros('${emp.id}',${p.n})">💸 Só juros</button>
           <button class="btn-icon btn-ok" onclick="abrirPagamento('${emp.id}',${p.n})">✓ Pagar</button>
         `;
       } else {
-        actions = `<button class="btn-icon btn-ok" onclick="abrirPagamento('${emp.id}',${p.n})">✓ Pagar</button>`;
+        actions = `
+          ${btnLembrete}
+          <button class="btn-icon btn-ok" onclick="abrirPagamento('${emp.id}',${p.n})">✓ Pagar</button>
+        `;
       }
     }
 
     html += `
       <div class="parcela-item ${cls}">
         <div class="parcela-info">
-          <strong>Parcela ${p.n}/${emp.nParcelas}</strong>
+          <strong>Parcela ${p.n}/${emp.nParcelas}${ehProxima ? ' · 🔔 Próxima' : ''}</strong>
           ${subInfo}
         </div>
         <div class="parcela-actions">${actions}</div>
@@ -1162,6 +1513,117 @@ function renderDetalhe(id) {
   }
 
   view.innerHTML = html;
+}
+
+// ============================================================
+// ✅ NOVO – RENDER AGENDA
+// ============================================================
+function renderAgenda() {
+  const emps = getEmprestimos();
+  const hoje = hojeZero();
+
+  // Coleta todas as parcelas em aberto
+  const itens = [];
+  emps.forEach(emp => {
+    emp.parcelas.forEach(p => {
+      if (p.pago) return;
+      const venc = fromISO(p.vencimento);
+      const dias = Math.floor((venc - hoje) / 86400000); // neg = atrasada
+      itens.push({ emp, p, venc, dias });
+    });
+  });
+
+  // Ordena: mais antiga (mais atrasada) primeiro
+  itens.sort((a, b) => a.venc - b.venc);
+
+  // Contadores
+  const cntAtrasadas = itens.filter(i => i.dias < 0).length;
+  const cntHoje = itens.filter(i => i.dias === 0).length;
+  const cnt7 = itens.filter(i => i.dias >= 1 && i.dias <= 7).length;
+  const cnt30 = itens.filter(i => i.dias >= 1 && i.dias <= 30).length;
+
+  // Filtros
+  const filtros = [
+    { id: "todos",     label: "Todas",     cont: itens.length },
+    { id: "atrasadas", label: "Atrasadas", cont: cntAtrasadas },
+    { id: "hoje",      label: "Hoje",      cont: cntHoje },
+    { id: "7dias",     label: "7 dias",    cont: cnt7 },
+    { id: "30dias",    label: "30 dias",   cont: cnt30 }
+  ];
+
+  const elFiltros = document.getElementById("filtrosAgenda");
+  elFiltros.innerHTML = "";
+  filtros.forEach(f => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "filtro-btn" + (_filtroAgenda === f.id ? " active" : "");
+    b.innerHTML = `${f.label}<span class="cont">${f.cont}</span>`;
+    b.onclick = () => { _filtroAgenda = f.id; renderAgenda(); };
+    elFiltros.appendChild(b);
+  });
+
+  // Aplica filtro
+  let filtrados = itens;
+  if (_filtroAgenda === "atrasadas") filtrados = itens.filter(i => i.dias < 0);
+  else if (_filtroAgenda === "hoje") filtrados = itens.filter(i => i.dias === 0);
+  else if (_filtroAgenda === "7dias") filtrados = itens.filter(i => i.dias >= 1 && i.dias <= 7);
+  else if (_filtroAgenda === "30dias") filtrados = itens.filter(i => i.dias >= 1 && i.dias <= 30);
+
+  const el = document.getElementById("listaAgenda");
+
+  if (filtrados.length === 0) {
+    el.innerHTML = `
+      <div class="empty">
+        <span class="emoji">✅</span>
+        Nenhuma parcela ${_filtroAgenda === "todos" ? "em aberto" : "neste filtro"}.
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = "";
+  filtrados.forEach(({ emp, p, dias }) => {
+    const atraso = calcularAtraso(p);
+
+    let cls = "";
+    let quandoTxt = "";
+    if (dias < 0) {
+      cls = "atrasada";
+      quandoTxt = `⚠️ ${Math.abs(dias)} dia${Math.abs(dias)>1?'s':''} em atraso`;
+    } else if (dias === 0) {
+      cls = "hoje";
+      quandoTxt = "🔔 Vence hoje";
+    } else if (dias === 1) {
+      cls = "proxima";
+      quandoTxt = "Vence amanhã";
+    } else if (dias <= 7) {
+      cls = "proxima";
+      quandoTxt = `Vence em ${dias} dias`;
+    } else {
+      quandoTxt = `Vence em ${dias} dias`;
+    }
+
+    const valorMostrar = p.valor + atraso.total;
+
+    const div = document.createElement("div");
+    div.className = `agenda-item ${cls}`;
+    div.innerHTML = `
+      <div class="agenda-info">
+        <div class="linha1">
+          <span class="nome">${escapeHtml(emp.nome)}</span>
+          <span class="valor">${brl(valorMostrar)}</span>
+        </div>
+        <div class="detalhe">
+          Parcela ${p.n}/${emp.nParcelas} · Venc. ${formatBR(p.vencimento)}
+        </div>
+        <div class="quando">${quandoTxt}</div>
+      </div>
+      <div class="agenda-actions">
+        <button class="btn-icon btn-lembrete" onclick="event.stopPropagation(); abrirLembrete('${emp.id}',${p.n})">🔔</button>
+        <button class="btn-icon btn-ok" onclick="event.stopPropagation(); abrirPagamento('${emp.id}',${p.n})">✓</button>
+      </div>
+    `;
+    el.appendChild(div);
+  });
 }
 
 // ============================================================
@@ -1231,7 +1693,58 @@ function abrirPagamentoJuros(empId, nParcela) {
 }
 
 // ============================================================
-// CONFIRMAR PAGAMENTO (decide pelo tipo)
+// LEMBRETE DE VENCIMENTO
+// ============================================================
+function abrirLembrete(empId, nParcela) {
+  const emp = getEmprestimos().find(e => e.id === empId);
+  if (!emp) return;
+  const p = emp.parcelas.find(x => x.n === nParcela);
+  if (!p || p.pago) return;
+
+  const atraso = calcularAtraso(p);
+  const tel = emp.telefone ? soDigitos(emp.telefone) : "";
+
+  let msg;
+  if (atraso.dias > 0) {
+    msg = `Olá, ${emp.nome}! 👋\n\n`;
+    msg += `Passando pra lembrar que sua parcela *${nParcela}/${emp.nParcelas}* venceu em *${formatBR(p.vencimento)}*, no valor de *${brl(p.valor)}*.\n\n`;
+    msg += `Atualmente há *${atraso.dias} dia(s)* de atraso.\n`;
+    msg += `Total atualizado: *${brl(p.valor + atraso.total)}*\n\n`;
+    msg += `Consegue dar um retorno? Obrigado!`;
+  } else {
+    msg = `Olá, ${emp.nome}! 👋\n\n`;
+    msg += `Passando pra lembrar que sua parcela *${nParcela}/${emp.nParcelas}* vence em *${formatBR(p.vencimento)}*, no valor de *${brl(p.valor)}*.\n\n`;
+    msg += `Qualquer dúvida, estou à disposição. Obrigado!`;
+  }
+
+  _comprovanteAtual = {
+    tipo: "lembrete",
+    empId, nParcela,
+    tel,
+    mensagem: msg
+  };
+
+  document.getElementById("pagTitulo").textContent = atraso.dias > 0
+    ? "Lembrete de parcela vencida"
+    : "Lembrete de vencimento";
+  document.getElementById("pagInfo").innerHTML = tel
+    ? `Telefone do cliente: <strong>${escapeHtml(emp.telefone)}</strong>`
+    : `<span style="color:var(--warn)">⚠️ Cadastre o telefone do cliente para enviar direto.</span>`;
+  document.getElementById("pagPreview").textContent = msg;
+
+  const acoes = document.querySelector("#modalPag .modal-actions");
+  const btnConfirmar = acoes.querySelector(".btn-ok");
+  btnConfirmar.style.display = "none";
+
+  const btnWa = document.getElementById("btnEnviarWa");
+  btnWa.textContent = tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
+  btnWa.onclick = enviarComprovantePagamento;
+
+  document.getElementById("modalPag").classList.add("show");
+}
+
+// ============================================================
+// CONFIRMAR PAGAMENTO
 // ============================================================
 function confirmarPagamento() {
   if (!_pagAtual) return;
@@ -1441,7 +1954,7 @@ function enviarComprovantePagamento() {
 }
 
 // ============================================================
-// ✅ NOVO – COPIAR MENSAGEM DO COMPROVANTE
+// COPIAR MENSAGEM
 // ============================================================
 async function copiarMensagemComprovante() {
   if (!_comprovanteAtual) return;
@@ -1449,11 +1962,9 @@ async function copiarMensagemComprovante() {
   const btn = document.getElementById("btnCopiarMsg");
 
   try {
-    // Tenta API moderna (HTTPS, navegadores atuais)
     if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(texto);
     } else {
-      // Fallback para navegadores antigos / http
       const ta = document.createElement("textarea");
       ta.value = texto;
       ta.style.position = "fixed";
@@ -1466,7 +1977,6 @@ async function copiarMensagemComprovante() {
       document.body.removeChild(ta);
     }
 
-    // Feedback visual
     const original = "📋 Copiar";
     btn.textContent = "✅ Copiado!";
     btn.classList.add("copiado");
@@ -1506,8 +2016,7 @@ function resetModalPag() {
 // FORM – NOVO EMPRÉSTIMO
 // ============================================================
 function abrirFormNovo(prefill) {
-  document.getElementById("view-lista").style.display = "none";
-  document.getElementById("view-detalhe").style.display = "none";
+  esconderViewsCli();
   document.getElementById("view-form").style.display = "block";
 
   const hoje = new Date();
@@ -1641,6 +2150,9 @@ function salvarFormEmprestimo() {
   updateBadge();
 
   document.getElementById("view-form").style.display = "none";
+
+  _voltarDetalhe = "lista";
+  _cpfClienteAtual = null;
   renderDetalhe(emp.id);
 }
 
@@ -1701,6 +2213,7 @@ setCpfUI("warn");
 atualizarUI();
 updateBadge();
 renderLista();
+renderAgenda();
 </script>
 </body>
 </html>
