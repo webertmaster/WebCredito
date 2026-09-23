@@ -1,631 +1,1468 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>WEB CRÉDITO – Simulador de Empréstimo</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>WEB CRÉDITO – Gestão de Empréstimos</title>
+<style>
+  :root{
+    --bg:#0b1220; --card:#121b2f; --line:#243255;
+    --field:#0f1730; --fieldLine:#2a3a63;
+    --text:#e7eefc; --muted:#b9c7ea;
+    --brand:#5b7cfa; --warn:#ffd38a; --ok:#6CFF9D;
+    --bad:#ff7c7c; --wa:#25D366; --neon:#39ff14;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    min-height:100vh; display:flex; flex-direction:column;
+  }
+  .wrap{ max-width:720px; margin:auto; padding:16px; flex:1; width:100%; }
+  .card{
+    background:var(--card); border-radius:16px; padding:16px;
+    border:1px solid var(--line); margin-bottom:12px;
+  }
+  .logo{ text-align:center; margin-bottom:12px; }
+  .logo h2{ margin:0; font-size:24px; font-weight:900; letter-spacing:1px; color:var(--brand); }
+  .logo span{ font-size:13px; color:var(--muted); }
 
-  <style>
-    :root{
-      --bg:#0b1220;
-      --card:#121b2f;
-      --line:#243255;
-      --field:#0f1730;
-      --fieldLine:#2a3a63;
-      --text:#e7eefc;
-      --muted:#b9c7ea;
-      --brand:#5b7cfa;
-      --warn:#ffd38a;
-      --ok:#6CFF9D;
-      --bad:#ff7c7c;
-      --wa:#25D366;
-      --neon:#39ff14;
-    }
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      background:var(--bg);
-      color:var(--text);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-    }
-    .wrap{ max-width:720px; margin:auto; padding:16px; flex:1; width:100%; }
-    .card{
-      background:var(--card);
-      border-radius:16px;
-      padding:16px;
-      border:1px solid var(--line);
-    }
+  label{ font-size:14px; color:var(--muted); display:block; margin-top:10px; }
+  input, select, button{
+    width:100%; padding:12px; margin-top:6px; border-radius:12px;
+    border:1px solid var(--fieldLine); background:var(--field);
+    color:#fff; font-size:16px; outline:none; font-family:inherit;
+  }
+  input:focus, select:focus{ border-color:rgba(91,124,250,.9); box-shadow:0 0 0 3px rgba(91,124,250,.15); }
+  button{ background:var(--brand); font-weight:800; border:none; cursor:pointer; margin-top:12px; }
+  button:disabled{ opacity:.5; cursor:not-allowed; }
 
-    .logo{ text-align:center; margin-bottom:12px; }
-    .logo h2{
-      margin:0;
-      font-size:26px;
-      font-weight:900;
-      letter-spacing:1px;
-      color:var(--brand);
-    }
-    .logo span{ font-size:13px; color:var(--muted); }
+  .hint{ font-size:13px; color:var(--warn); margin-top:6px; }
+  .hint-muted{ font-size:12px; color:var(--muted); margin-top:6px; font-style:italic; line-height:1.4; }
 
-    label{ font-size:14px; color:var(--muted); display:block; margin-top:10px; }
-    input, select, button{
-      width:100%;
-      padding:12px;
-      margin-top:6px;
-      border-radius:12px;
-      border:1px solid var(--fieldLine);
-      background:var(--field);
-      color:#fff;
-      font-size:16px;
-      outline:none;
-    }
-    input:focus, select:focus{
-      border-color:rgba(91,124,250,.9);
-      box-shadow:0 0 0 3px rgba(91,124,250,.15);
-    }
-    button{
-      background:var(--brand);
-      font-weight:800;
-      border:none;
-      cursor:pointer;
-      margin-top:12px;
-    }
-    button:disabled{ opacity:.5; cursor:not-allowed; }
+  .result{ margin-top:16px; padding-top:16px; border-top:1px dashed var(--fieldLine); display:none; }
+  .box{
+    background:var(--field); padding:12px; border-radius:12px;
+    margin-bottom:10px; border:1px solid rgba(42,58,99,.5);
+    font-size:14px;
+  }
+  .box strong{ font-size:16px; }
 
-    .hint{ font-size:13px; color:var(--warn); margin-top:6px; }
+  /* CPF */
+  .cpf-row{ position:relative; }
+  .cpf-row input{ padding-right:44px; }
+  .cpf-status-icon{
+    position:absolute; right:12px; top:50%; transform:translateY(-50%);
+    font-size:18px; opacity:.95; pointer-events:none;
+  }
+  .cpf-msg{ margin-top:6px; font-size:13px; color:var(--muted); }
+  .cpf-msg.ok{ color:var(--ok); } .cpf-msg.bad{ color:var(--bad); } .cpf-msg.warn{ color:var(--warn); }
+  .input-ok{ border-color:rgba(108,255,157,.65)!important; box-shadow:0 0 0 3px rgba(108,255,157,.10)!important; }
+  .input-bad{ border-color:rgba(255,124,124,.65)!important; box-shadow:0 0 0 3px rgba(255,124,124,.10)!important; }
 
-    .result{
-      margin-top:16px;
-      padding-top:16px;
-      border-top:1px dashed var(--fieldLine);
-      display:none;
-    }
-    .box{
-      background:var(--field);
-      padding:12px;
-      border-radius:12px;
-      margin-bottom:10px;
-      border:1px solid rgba(42,58,99,.5);
-    }
+  .btn-wa{ background:var(--wa); color:#fff; font-weight:900; border-radius:12px; padding:14px; margin-top:10px; }
+  .btn-sec{
+    background:var(--field); border:1px solid var(--fieldLine);
+    color:var(--text); font-weight:800; border-radius:12px; padding:14px; margin-top:8px;
+  }
+  .btn-ok{ background:var(--ok); color:#0b1220; font-weight:900; }
+  .btn-danger{
+    background:rgba(255,124,124,.15); color:var(--bad);
+    border:1px solid rgba(255,124,124,.35); font-weight:800;
+  }
+  .btn-mini{
+    width:auto; padding:8px 12px; font-size:13px; margin-top:0; border-radius:10px;
+  }
+  .btn-icon{
+    width:auto; padding:6px 10px; margin-top:0; border-radius:10px;
+    font-size:13px; font-weight:900;
+  }
 
-    /* CPF UI */
-    .cpf-row{ position:relative; }
-    .cpf-row input{ padding-right:44px; }
-    .cpf-status-icon{
-      position:absolute;
-      right:12px;
-      top:50%;
-      transform:translateY(-50%);
-      font-size:18px;
-      opacity:.95;
-      pointer-events:none;
-    }
-    .cpf-msg{
-      margin-top:6px;
-      font-size:13px;
-      color:var(--muted);
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-    .cpf-msg.ok{ color:var(--ok); }
-    .cpf-msg.bad{ color:var(--bad); }
-    .cpf-msg.warn{ color:var(--warn); }
+  .legal{
+    margin-top:10px; font-size:12px; color:#9eb2e2;
+    text-align:center; font-style:italic; line-height:1.35;
+  }
+  footer{
+    text-align:center; font-size:11px; color:var(--neon);
+    padding:10px 0; letter-spacing:1px;
+  }
 
-    .input-ok{ border-color:rgba(108,255,157,.65)!important; box-shadow:0 0 0 3px rgba(108,255,157,.10); }
-    .input-bad{ border-color:rgba(255,124,124,.65)!important; box-shadow:0 0 0 3px rgba(255,124,124,.10); }
+  /* TABS */
+  .tabs{ display:flex; gap:8px; margin-bottom:12px; }
+  .tab{
+    flex:1; padding:12px; background:var(--field); border:1px solid var(--fieldLine);
+    border-radius:12px; color:var(--muted); font-size:14px; font-weight:800;
+    cursor:pointer; margin-top:0; display:flex; align-items:center;
+    justify-content:center; gap:6px;
+  }
+  .tab.active{ background:var(--brand); color:#fff; border-color:var(--brand); }
+  .badge{
+    display:inline-block; background:var(--brand); color:#fff;
+    border-radius:999px; padding:1px 8px; font-size:11px;
+    min-width:20px; text-align:center;
+  }
+  .tab.active .badge{ background:rgba(255,255,255,.35); }
 
-    .btn-wa{
-      background:var(--wa);
-      color:#fff;
-      font-weight:900;
-      border:none;
-      border-radius:12px;
-      padding:14px;
-      cursor:pointer;
-      margin-top:10px;
-    }
+  /* LISTA */
+  .toolbar{ display:flex; gap:8px; margin-bottom:12px; }
+  .toolbar input{ margin-top:0; flex:1; }
+  .toolbar button{ margin-top:0; width:auto; padding:12px 16px; white-space:nowrap; }
 
-    .legal{
-      margin-top:10px;
-      font-size:12px;
-      color:#9eb2e2;
-      text-align:center;
-      font-style:italic;
-      line-height:1.35;
-    }
+  .loan-card{
+    background:var(--field); border:1px solid var(--fieldLine);
+    border-radius:12px; padding:12px; margin-bottom:10px;
+    cursor:pointer; transition:border-color .15s;
+  }
+  .loan-card:hover{ border-color:var(--brand); }
+  .loan-card .row{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
+  .loan-card .name{ font-weight:800; color:var(--text); font-size:15px; }
+  .loan-card .meta{ font-size:12px; color:var(--muted); margin-top:4px; }
+  .loan-card .progress{
+    margin-top:8px; height:6px; background:rgba(42,58,99,.7);
+    border-radius:99px; overflow:hidden;
+  }
+  .loan-card .progress-bar{
+    height:100%; background:linear-gradient(90deg,var(--brand),var(--ok));
+    border-radius:99px; transition:width .25s;
+  }
 
-    footer{
-      text-align:center;
-      font-size:11px;
-      color:var(--neon);
-      padding:10px 0;
-      letter-spacing:1px;
-    }
+  .status-badge{
+    font-size:10px; font-weight:900; padding:3px 9px; border-radius:999px;
+    text-transform:uppercase; letter-spacing:.5px; white-space:nowrap;
+  }
+  .status-em-dia{ background:rgba(108,255,157,.15); color:var(--ok); }
+  .status-atrasado{ background:rgba(255,124,124,.18); color:var(--bad); }
+  .status-quitado{ background:rgba(91,124,250,.18); color:var(--brand); }
 
-    /* Overlay */
-    .overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.55);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index:9999;
-      padding:16px;
-    }
-    .loader-card{
-      width:min(420px, 100%);
-      background:var(--card);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:16px;
-      text-align:center;
-    }
-    .loader-title{
-      margin:0 0 6px;
-      font-size:16px;
-      color:var(--text);
-      font-weight:900;
-    }
-    .loader-sub{
-      margin:0 0 12px;
-      font-size:13px;
-      color:var(--muted);
-    }
-    .progress-wrap{
-      width:100%;
-      background:var(--field);
-      border:1px solid var(--fieldLine);
-      border-radius:999px;
-      overflow:hidden;
-      height:14px;
-    }
-    .progress-bar{
-      height:100%;
-      width:0%;
-      background:var(--brand);
-      border-radius:999px;
-      transition:width .12s linear;
-    }
-    .progress-pct{
-      margin-top:10px;
-      font-size:14px;
-      color:var(--text);
-      font-weight:900;
-      letter-spacing:.5px;
-    }
-  </style>
+  .empty{
+    text-align:center; color:var(--muted); padding:40px 20px;
+    font-size:14px; line-height:1.5;
+  }
+  .empty .emoji{ font-size:34px; display:block; margin-bottom:10px; }
+
+  /* DETALHE */
+  .detail-header{
+    display:flex; align-items:center; gap:10px; margin-bottom:14px;
+  }
+  .detail-header h3{
+    margin:0; font-size:16px; flex:1; overflow:hidden;
+    text-overflow:ellipsis; white-space:nowrap;
+  }
+  .info-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;
+  }
+  .info-grid .item{
+    background:var(--field); border:1px solid var(--fieldLine);
+    border-radius:10px; padding:8px 10px;
+  }
+  .info-grid .item .label{
+    font-size:10px; color:var(--muted); display:block; margin-bottom:3px;
+    text-transform:uppercase; letter-spacing:.4px;
+  }
+  .info-grid .item .value{ font-size:14px; font-weight:800; word-break:break-word; }
+
+  .section-title{
+    font-size:12px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:.6px; margin:16px 0 8px; font-weight:800;
+  }
+
+  .resumo-status{
+    background:var(--field); border-radius:12px; padding:12px;
+    border:1px solid var(--fieldLine); margin-bottom:12px;
+  }
+  .resumo-status .linha{
+    display:flex; justify-content:space-between; font-size:13px; padding:5px 0;
+  }
+  .resumo-status .linha strong{ font-weight:800; }
+  .resumo-status .linha.destaque{
+    border-top:1px dashed var(--fieldLine); margin-top:6px;
+    padding-top:8px; font-size:15px;
+  }
+
+  .parcela-item{
+    background:var(--field); border:1px solid var(--fieldLine);
+    border-radius:10px; padding:10px 12px; margin-bottom:8px;
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+  }
+  .parcela-item.paga{ opacity:.72; border-color:rgba(108,255,157,.35); }
+  .parcela-item.vencida{ border-color:rgba(255,124,124,.4); }
+  .parcela-info{ flex:1; min-width:0; font-size:13px; }
+  .parcela-info strong{ display:block; font-size:14px; margin-bottom:3px; }
+  .parcela-info .datas{ color:var(--muted); font-size:12px; line-height:1.5; }
+  .parcela-atraso{ color:var(--bad); font-size:12px; margin-top:5px; line-height:1.4; }
+  .parcela-pago{ color:var(--ok); font-size:12px; margin-top:5px; line-height:1.5; }
+  .parcela-actions{ display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
+
+  .hist-item{
+    background:var(--field); border:1px solid rgba(108,255,157,.25);
+    border-radius:10px; padding:10px 12px; margin-bottom:8px; font-size:13px;
+  }
+  .hist-item .hist-head{
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;
+  }
+  .hist-item .hist-head strong{ color:var(--ok); }
+  .hist-item .hist-detail{ color:var(--muted); font-size:12px; line-height:1.5; }
+
+  /* MODAIS */
+  .overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,.6);
+    display:none; align-items:center; justify-content:center;
+    z-index:9999; padding:16px;
+  }
+  .overlay.show{ display:flex; }
+  .modal{
+    width:min(460px, 100%); background:var(--card);
+    border:1px solid var(--line); border-radius:16px;
+    padding:18px; max-height:92vh; overflow-y:auto;
+  }
+  .modal h3{ margin:0 0 6px; font-size:16px; }
+  .modal p{ margin:6px 0; font-size:13px; color:var(--muted); line-height:1.5; }
+  .modal .modal-actions{ display:flex; gap:8px; margin-top:14px; }
+  .modal .modal-actions button{ margin-top:0; }
+  .modal .preview{
+    background:var(--field); border:1px solid var(--fieldLine);
+    border-radius:10px; padding:12px; margin-top:12px;
+    font-size:13px; white-space:pre-wrap; line-height:1.5;
+    color:var(--text); max-height:240px; overflow-y:auto;
+  }
+  .overlay-loader{
+    position:fixed; inset:0; background:rgba(0,0,0,.55);
+    display:none; align-items:center; justify-content:center;
+    z-index:9998; padding:16px;
+  }
+  .overlay-loader.show{ display:flex; }
+  .loader-card{
+    width:min(420px, 100%); background:var(--card);
+    border:1px solid var(--line); border-radius:16px;
+    padding:16px; text-align:center;
+  }
+  .progress-wrap{
+    width:100%; background:var(--field); border:1px solid var(--fieldLine);
+    border-radius:999px; overflow:hidden; height:14px; margin-top:12px;
+  }
+  .progress-bar{
+    height:100%; width:0%; background:var(--brand);
+    border-radius:999px; transition:width .12s linear;
+  }
+  .progress-pct{
+    margin-top:10px; font-size:14px; color:var(--text);
+    font-weight:900; letter-spacing:.5px;
+  }
+</style>
 </head>
-
 <body>
-  <div class="wrap">
-    <div class="card">
+<div class="wrap">
 
-      <div class="logo">
-        <h2>WEB CRÉDITO</h2>
-        <span>Simulador de Empréstimo</span>
+  <div class="tabs">
+    <button type="button" class="tab active" data-tab="sim">💰 Simulador</button>
+    <button type="button" class="tab" data-tab="cli">
+      👥 Clientes <span class="badge" id="badgeCount" style="display:none">0</span>
+    </button>
+  </div>
+
+  <!-- ===================== SIMULADOR ===================== -->
+  <div class="card" id="tab-sim">
+    <div class="logo">
+      <h2>WEB CRÉDITO</h2>
+      <span>Simulador de Empréstimo</span>
+    </div>
+
+    <label>Responsável</label>
+    <input id="responsavel" placeholder="Nome completo" autocomplete="name" />
+
+    <label>CPF</label>
+    <div class="cpf-row">
+      <input id="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off" />
+      <div class="cpf-status-icon" id="cpfIcon">🪪</div>
+    </div>
+    <div class="cpf-msg warn" id="cpfMsg">Digite o CPF completo para validar</div>
+
+    <label>Telefone (WhatsApp do cliente)</label>
+    <input id="telefone" placeholder="(00) 00000-0000" maxlength="16" inputmode="numeric" />
+
+    <label>Valor desejado (R$)</label>
+    <input id="valor" inputmode="numeric" placeholder="Ex: 80" />
+    <div class="hint" id="info">Digite um valor válido</div>
+
+    <label>Parcelas</label>
+    <select id="parcelas" disabled>
+      <option value="">Informe um valor acima</option>
+    </select>
+
+    <label>Dia de vencimento (1ª parcela)</label>
+    <select id="diaVenc" disabled>
+      <option value="">Selecione um valor primeiro</option>
+    </select>
+    <div class="hint-muted">
+      A 1ª parcela cai no próximo vencimento disponível (mín. 7 dias).<br>
+      As demais são mensais a partir dessa data.
+    </div>
+
+    <button id="btnSimular" onclick="simular()" disabled>Simular</button>
+
+    <div class="result" id="resultado">
+      <div class="box">💳 Valor da parcela: <strong id="parcela"></strong></div>
+      <div class="box">📈 Juros total: <strong id="jurosTotal"></strong></div>
+      <div class="box">📊 Total a pagar: <strong id="total"></strong></div>
+      <div class="box">📅 1ª parcela: <strong id="primeiraParcela"></strong></div>
+
+      <div class="hint-muted" style="margin-bottom:8px;">
+        ⚠️ Parcelas em atraso terão <strong>juros de 30% ao mês</strong> (proporcional aos dias).
       </div>
 
-      <label>Responsável</label>
-      <input id="responsavel" placeholder="Nome do responsável" autocomplete="name" />
+      <button class="btn-wa" id="btnWhats" onclick="enviarWhatsComLoading()">
+        📱 Enviar simulação no WhatsApp
+      </button>
+      <button class="btn-sec" onclick="salvarDaSimulacao()">
+        💾 Salvar como Empréstimo
+      </button>
+
+      <div class="legal">
+        Simulação sem compromisso. Valores sujeitos à análise e aprovação.
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== CLIENTES ===================== -->
+  <div id="tab-cli" style="display:none">
+
+    <div class="card" id="view-lista">
+      <div class="toolbar">
+        <input id="busca" placeholder="🔎 Buscar por nome ou CPF" />
+        <button type="button" onclick="abrirFormNovo()">+ Novo</button>
+      </div>
+      <div id="listaClientes"></div>
+    </div>
+
+    <div class="card" id="view-detalhe" style="display:none"></div>
+
+    <div class="card" id="view-form" style="display:none">
+      <div class="detail-header">
+        <button class="btn-mini btn-sec" onclick="voltarLista()">← Voltar</button>
+        <h3 id="formTitulo">Novo Empréstimo</h3>
+      </div>
+
+      <label>Nome do cliente *</label>
+      <input id="fNome" placeholder="Nome completo" autocomplete="off" />
 
       <label>CPF</label>
-      <div class="cpf-row">
-        <input id="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off" />
-        <div class="cpf-status-icon" id="cpfIcon">🪪</div>
-      </div>
-      <div class="cpf-msg warn" id="cpfMsg">Digite o CPF completo para validar</div>
+      <input id="fCpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off" />
 
-      <label>Valor desejado (R$)</label>
-      <input id="valor" inputmode="numeric" placeholder="Ex: 80" />
-      <div class="hint" id="info">Digite um valor válido</div>
+      <label>Telefone (WhatsApp do cliente)</label>
+      <input id="fTelefone" placeholder="(00) 00000-0000" maxlength="16" inputmode="numeric" />
 
-      <label>Parcelas</label>
-      <select id="parcelas" disabled>
-        <option value="">Informe um valor acima</option>
+      <label>Valor solicitado (R$) *</label>
+      <input id="fValor" inputmode="numeric" placeholder="Ex: 800" />
+
+      <label>Parcelas *</label>
+      <select id="fParcelas">
+        <option value="">Informe o valor acima</option>
       </select>
 
-      <label>Dia de vencimento (1ª parcela)</label>
-      <select id="diaVenc" disabled>
-      <option value="">Selecione um valor primeiro</option>
-      </select>
-      <div class="hint" style="color:#b9c7ea">A 1ª parcela cai no próximo vencimento disponível (mín. 7 dias).</div>
-      
-      <button id="btnSimular" onclick="simular()" disabled>Simular</button>
+      <label>1ª parcela (vencimento) *</label>
+      <input id="fData1" type="date" />
 
-      <div class="result" id="resultado">
-        <div class="box">💳 Valor da parcela: <strong id="parcela"></strong></div>
-        <div class="box">📊 Total a pagar: <strong id="total"></strong></div>
-        <div class="box">📅 1ª parcela: <strong id="primeiraParcela"></strong></div>
-       
-        <button class="btn-wa" id="btnWhats" onclick="enviarWhatsComLoading()">
-          Solicitar análise no WhatsApp
-        </button>
-
-        <div class="legal">
-          Simulação sem compromisso. Valores sujeitos à análise e aprovação.
-        </div>
+      <div class="hint-muted" id="fPreview">
+        Preencha os campos para visualizar o resumo.
       </div>
 
+      <button class="btn-ok" onclick="salvarFormEmprestimo()">💾 Salvar Empréstimo</button>
+      <button class="btn-sec" onclick="voltarLista()">Cancelar</button>
+    </div>
+
+  </div>
+</div>
+
+<footer>webdev</footer>
+
+<!-- MODAL: confirmação de pagamento / comprovante -->
+<div class="overlay" id="modalPag">
+  <div class="modal">
+    <h3 id="pagTitulo">Registrar pagamento</h3>
+    <p id="pagInfo"></p>
+    <div class="preview" id="pagPreview"></div>
+    <div class="modal-actions">
+      <button class="btn-sec" onclick="fecharModal('modalPag')">Fechar</button>
+      <button class="btn-ok" onclick="confirmarPagamento()">✓ Confirmar pagamento</button>
+    </div>
+    <button class="btn-wa" onclick="enviarComprovantePagamento()">📱 Enviar comprovante no WhatsApp</button>
+  </div>
+</div>
+
+<!-- MODAL: confirmação simples -->
+<div class="overlay" id="modalConfirm">
+  <div class="modal">
+    <h3 id="confTitulo">Confirmação</h3>
+    <p id="confMsg"></p>
+    <div class="modal-actions">
+      <button class="btn-sec" onclick="fecharModal('modalConfirm')">Cancelar</button>
+      <button class="btn-ok" id="confBtnOk">Confirmar</button>
     </div>
   </div>
+</div>
 
-  <footer>webdev</footer>
-
-  <div class="overlay" id="overlay">
-    <div class="loader-card">
-      <p class="loader-title">Enviando sua solicitação…</p>
-      <p class="loader-sub">Aguarde um instante 👌</p>
-
-      <div class="progress-wrap">
-        <div class="progress-bar" id="progressBar"></div>
-      </div>
-      <div class="progress-pct" id="progressPct">0%</div>
-    </div>
+<!-- LOADER -->
+<div class="overlay-loader" id="overlayLoader">
+  <div class="loader-card">
+    <p style="margin:0 0 6px;font-size:16px;font-weight:900;">Enviando…</p>
+    <p style="margin:0 0 12px;font-size:13px;color:var(--muted);">Aguarde um instante 👌</p>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-pct" id="progressPct">0%</div>
   </div>
+</div>
 
 <script>
-  const VALOR_MINIMO = 50;
-  const LIMITE = 1500;
-  const WHATSAPP = "5584987974972";
+// ============================================================
+// CONFIG
+// ============================================================
+const CONFIG = {
+  VALOR_MINIMO: 50,
+  LIMITE: 1500,
+  WHATSAPP: "5584987974972",
+  JUROS_ATRASO_MES: 0.30,   // 30% ao mês sobre parcela em atraso
+  MULTA_ATRASO: 0,
+  STORAGE_KEY: "webcredito_emprestimos_v3"
+};
 
-  let cpfValido = false;
-
-  // ---------- Helpers (valor) ----------
-  function parseBRLInteiro(str) {
-    const digits = (str || "").replace(/\D/g, "");
-    if (!digits) return NaN;
-    return Number(digits);
-  }
-
-  function formatarBRLSemCentavos(inputEl) {
-    const digits = (inputEl.value || "").replace(/\D/g, "");
-    if (!digits) { inputEl.value = ""; return; }
-    const n = Number(digits);
-    inputEl.value = n.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    });
-  }
-
-  // ---------- CPF ----------
-  function somenteDigitos(str){ return (str || "").replace(/\D/g, ""); }
-
-  function aplicarMascaraCPF(v) {
-    v = somenteDigitos(v).slice(0, 11);
-    v = v.replace(/(\d{3})(\d)/, "$1.$2");
-    v = v.replace(/(\d{3})(\d)/, "$1.$2");
-    v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-    return v;
-  }
-
-  function cpfEhValido(cpf) {
-    cpf = somenteDigitos(cpf);
-    if (cpf.length !== 11) return false;
-    if (/^(\d)\1{10}$/.test(cpf)) return false;
-
-    let soma = 0;
-    for (let i = 0; i < 9; i++) soma += Number(cpf[i]) * (10 - i);
-    let d1 = (soma * 10) % 11;
-    if (d1 === 10) d1 = 0;
-    if (d1 !== Number(cpf[9])) return false;
-
-    soma = 0;
-    for (let i = 0; i < 10; i++) soma += Number(cpf[i]) * (11 - i);
-    let d2 = (soma * 10) % 11;
-    if (d2 === 10) d2 = 0;
-    if (d2 !== Number(cpf[10])) return false;
-
-    return true;
-  }
-
-  function setCpfUI(estado) {
-    elCPF.classList.remove("input-ok","input-bad");
-    elCPFMsg.classList.remove("warn","ok","bad");
-
-    if (estado === "ok") {
-      elCPF.classList.add("input-ok");
-      elCPFMsg.classList.add("ok");
-      elCPFMsg.textContent = "CPF válido ✅";
-      elCPFIcon.textContent = "✅";
-      return;
-    }
-    if (estado === "bad") {
-      elCPF.classList.add("input-bad");
-      elCPFMsg.classList.add("bad");
-      elCPFMsg.textContent = "CPF inválido ❌ (verifique os números)";
-      elCPFIcon.textContent = "❌";
-      return;
-    }
-    elCPFMsg.classList.add("warn");
-    elCPFMsg.textContent = "Digite o CPF completo para validar";
-    elCPFIcon.textContent = "🪪";
-  }
-
-  function validarCpfAtual() {
-    const dig = somenteDigitos(elCPF.value);
-    if (dig.length < 11) { cpfValido = false; setCpfUI("warn"); return; }
-    cpfValido = cpfEhValido(elCPF.value);
-    setCpfUI(cpfValido ? "ok" : "bad");
-  }
-
-  // ---------- Regras ----------
-  function regras(valor) {
-    // ✅ abaixo de 100 (1x e 2x)
-    if (valor < 100) {
-      return [
-        { n: 1, t: 0.32 },
-        { n: 2, t: 0.34 }
-      ];
-    }
-
-    if (valor <= 500) {
-      return [
-        { n: 1, t: 0.25  },
-        { n: 2, t: 0.239 },
-        { n: 3, t: 0.236 },
-        { n: 4, t: 0.231 },
-        { n: 5, t: 0.230 }
-      ];
-    }
-
-    if (valor <= 700) {
-      return [
-        { n: 4,  t: 0.209 },
-        { n: 6,  t: 0.183 },
-        { n: 10, t: 0.182 }
-      ];
-    }
-
-    if (valor <= 1000) {
-      return [
-        { n: 6,  t: 0.188 },
-        { n: 10, t: 0.180 },
-        { n: 12, t: 0.166 }
-      ];
-    }
-
+// ============================================================
+// ============ REGRAS DE JUROS (TABELA ORIGINAL) =============
+// ============================================================
+function regras(valor) {
+  if (valor < 100) {
     return [
-      { n: 6,  t: 0.184 },
-      { n: 10, t: 0.177 },
-      { n: 12, t: 0.161 }
+      { n: 1, t: 0.32 },
+      { n: 2, t: 0.34 }
     ];
   }
-
-  // Parcela fixa (Price)
-  function price(p, i, n) {
-    return p * (i / (1 - Math.pow(1 + i, -n)));
+  if (valor <= 500) {
+    return [
+      { n: 1, t: 0.25  },
+      { n: 2, t: 0.239 },
+      { n: 3, t: 0.236 },
+      { n: 4, t: 0.231 },
+      { n: 5, t: 0.230 }
+    ];
   }
-
-  // ---------- Primeira parcela (5 / 10 / 15 / 20) ----------
-function calcularPrimeiraParcelaPorDia(diaEscolhido, minDias = 7) {
-  const hoje = new Date();
-  const y = hoje.getFullYear();
-  const m = hoje.getMonth();
-
-  let candidato = new Date(y, m, diaEscolhido);
-
-  // se o dia já passou neste mês, vai para o próximo
-  if (candidato < hoje) {
-    candidato = new Date(y, m + 1, diaEscolhido);
+  if (valor <= 700) {
+    return [
+      { n: 4,  t: 0.209 },
+      { n: 6,  t: 0.183 },
+      { n: 10, t: 0.182 }
+    ];
   }
-
-  // se ficou perto demais, pula mais um mês
-  const diffDias = Math.ceil((candidato - hoje) / (1000 * 60 * 60 * 24));
-  if (diffDias < minDias) {
-    candidato = new Date(y, m + 1, diaEscolhido);
-    if (candidato < hoje) {
-      candidato = new Date(y, m + 2, diaEscolhido);
-    }
+  if (valor <= 1000) {
+    return [
+      { n: 6,  t: 0.188 },
+      { n: 10, t: 0.180 },
+      { n: 12, t: 0.166 }
+    ];
   }
+  return [
+    { n: 6,  t: 0.184 },
+    { n: 10, t: 0.177 },
+    { n: 12, t: 0.161 }
+  ];
+}
 
-  return candidato.toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric"
+// Parcela fixa (Price): p = principal, i = taxa mensal, n = nº parcelas
+function price(p, i, n) {
+  return p * (i / (1 - Math.pow(1 + i, -n)));
+}
+
+// Retorna a taxa para valor+parcelas (fallback)
+function getTaxa(valor, n) {
+  const found = regras(valor).find(r => r.n === n);
+  if (found) return found.t;
+  return 0.20; // fallback improvisado
+}
+
+// ============================================================
+// HELPERS – VALOR
+// ============================================================
+function parseBRLInteiro(str) {
+  const digits = (str || "").replace(/\D/g, "");
+  if (!digits) return NaN;
+  return Number(digits);
+}
+function formatarBRLSemCentavos(inputEl) {
+  const digits = (inputEl.value || "").replace(/\D/g, "");
+  if (!digits) { inputEl.value = ""; return; }
+  const n = Number(digits);
+  inputEl.value = n.toLocaleString("pt-BR", {
+    style: "currency", currency: "BRL",
+    minimumFractionDigits: 0, maximumFractionDigits: 0
+  });
+}
+function brl(v, decimals = 2) {
+  return (Number(v) || 0).toLocaleString("pt-BR", {
+    style: "currency", currency: "BRL",
+    minimumFractionDigits: decimals, maximumFractionDigits: decimals
   });
 }
 
-  // ---------- Elementos ----------
-  const elResp = document.getElementById("responsavel");
-  const elCPF  = document.getElementById("cpf");
-  const elCPFMsg = document.getElementById("cpfMsg");
-  const elCPFIcon = document.getElementById("cpfIcon");
-  const elValor = document.getElementById("valor");
-  const elParcelas = document.getElementById("parcelas");
-  const elInfo = document.getElementById("info");
-  const elBtnSim = document.getElementById("btnSimular");
-  const elResultado = document.getElementById("resultado");
-  const elDiaVenc = document.getElementById("diaVenc");
+// ============================================================
+// HELPERS – DATA
+// ============================================================
+function toISO(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${dd}`;
+}
+function fromISO(s) {
+  const [y, m, d] = s.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+function formatBR(s) {
+  if (!s) return "-";
+  if (s.includes("-")) {
+    const [y, m, d] = s.split("-");
+    return `${d}/${m}/${y}`;
+  }
+  return s;
+}
+function hojeZero() {
+  const h = new Date(); h.setHours(0,0,0,0); return h;
+}
+function formatTel(v) {
+  v = (v || "").replace(/\D/g, "").slice(0, 11);
+  if (v.length <= 2) return v;
+  if (v.length <= 6) return `(${v.slice(0,2)}) ${v.slice(2)}`;
+  if (v.length <= 10) return `(${v.slice(0,2)}) ${v.slice(2,6)}-${v.slice(6)}`;
+  return `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+}
+function soDigitos(v){ return (v||"").replace(/\D/g,""); }
 
-  // ---------- UI ----------
-  function atualizarUI() {
-    const nomeOk = elResp.value.trim().length > 0;
-    const v = parseBRLInteiro(elValor.value);
+// ============================================================
+// CPF
+// ============================================================
+function aplicarMascaraCPF(v) {
+  v = soDigitos(v).slice(0, 11);
+  v = v.replace(/(\d{3})(\d)/, "$1.$2");
+  v = v.replace(/(\d{3})(\d)/, "$1.$2");
+  v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  return v;
+}
+function cpfEhValido(cpf) {
+  cpf = soDigitos(cpf);
+  if (cpf.length !== 11) return false;
+  if (/^(\d)\1{10}$/.test(cpf)) return false;
+  let soma = 0;
+  for (let i = 0; i < 9; i++) soma += Number(cpf[i]) * (10 - i);
+  let d1 = (soma * 10) % 11; if (d1 === 10) d1 = 0;
+  if (d1 !== Number(cpf[9])) return false;
+  soma = 0;
+  for (let i = 0; i < 10; i++) soma += Number(cpf[i]) * (11 - i);
+  let d2 = (soma * 10) % 11; if (d2 === 10) d2 = 0;
+  if (d2 !== Number(cpf[10])) return false;
+  return true;
+}
 
-    elResultado.style.display = "none";
+// ============================================================
+// PRIMEIRA PARCELA
+// ============================================================
+function calcularPrimeiraParcela(diaEscolhido, minDias = 7) {
+  const hoje = new Date();
+  const y = hoje.getFullYear(), m = hoje.getMonth();
+  let c = new Date(y, m, diaEscolhido);
+  if (c < hoje) c = new Date(y, m + 1, diaEscolhido);
+  const diff = Math.ceil((c - hoje) / 86400000);
+  if (diff < minDias) {
+    c = new Date(y, m + 1, diaEscolhido);
+    if (c < hoje) c = new Date(y, m + 2, diaEscolhido);
+  }
+  return c;
+}
 
-    // ✅ IMPORTANTE: preservar a parcela selecionada
-    const selecionadaAntes = elParcelas.value;
+// ============================================================
+// GERAÇÃO DE PARCELAS MENSAIS
+// ============================================================
+function gerarParcelas(dataBase, n, valorParcela) {
+  const y = dataBase.getFullYear();
+  const m = dataBase.getMonth();
+  const d = dataBase.getDate();
+  const arr = [];
+  for (let i = 0; i < n; i++) {
+    const mm = m + i;
+    const yyyy = y + Math.floor(mm / 12);
+    const mes = mm % 12;
+    const ultimoDia = new Date(yyyy, mes + 1, 0).getDate();
+    const dia = Math.min(d, ultimoDia);
+    arr.push({
+      n: i + 1,
+      vencimento: toISO(new Date(yyyy, mes, dia)),
+      valor: valorParcela,
+      pago: false,
+      dataPagamento: null,
+      valorPago: null,
+      jurosAtraso: 0
+    });
+  }
+  return arr;
+}
 
-    // reset select
-    elParcelas.innerHTML = "";
-    elParcelas.disabled = true;
-    elDiaVenc.innerHTML = "";
-    elDiaVenc.disabled = true;
+// ============================================================
+// ATRASO – 30% ao mês sobre a parcela
+// ============================================================
+function calcularAtraso(p) {
+  if (p.pago) return { dias: 0, juros: 0, multa: 0, total: 0 };
+  const hoje = hojeZero();
+  const venc = fromISO(p.vencimento);
+  const dias = Math.floor((hoje - venc) / 86400000);
+  if (dias <= 0) return { dias: 0, juros: 0, multa: 0, total: 0 };
+  const juros = p.valor * CONFIG.JUROS_ATRASO_MES * (dias / 30);
+  const multa = p.valor * CONFIG.MULTA_ATRASO;
+  return { dias, juros, multa, total: juros + multa };
+}
 
-    if (!Number.isFinite(v) || v <= 0) {
-      elInfo.textContent = "Digite um valor válido";
-      elBtnSim.disabled = true;
-      const opt = document.createElement("option");
-      opt.value = ""; opt.textContent = "Informe um valor acima";
-      elParcelas.appendChild(opt);
-      return;
-    }
-   if (v < VALOR_MINIMO) {
-  elInfo.textContent = `⚠️ Valor mínimo permitido: R$ ${VALOR_MINIMO}`;
+// ============================================================
+// STORAGE
+// ============================================================
+function getEmprestimos() {
+  try { return JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY)) || []; }
+  catch(e){ return []; }
+}
+function saveEmprestimos(l) {
+  localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(l));
+}
+function novoId() {
+  return "emp_" + Date.now() + "_" + Math.random().toString(36).slice(2,7);
+}
+
+// ============================================================
+// STATUS / SALDOS
+// ============================================================
+function statusEmprestimo(emp) {
+  if (emp.parcelas.every(p => p.pago)) return "quitado";
+  const hoje = hojeZero();
+  const temAtraso = emp.parcelas.some(p => !p.pago && fromISO(p.vencimento) < hoje);
+  return temAtraso ? "atrasado" : "em-dia";
+}
+function statusLabel(s) {
+  return s === "quitado" ? "Quitado" : s === "atrasado" ? "Atrasado" : "Em dia";
+}
+function saldoDevedor(emp) {
+  let t = 0;
+  emp.parcelas.forEach(p => {
+    if (p.pago) return;
+    t += p.valor + calcularAtraso(p).total;
+  });
+  return t;
+}
+function totalPago(emp) {
+  return emp.parcelas.filter(p => p.pago).reduce((a,p) => a + (p.valorPago || p.valor), 0);
+}
+function proximaParcela(emp) {
+  return emp.parcelas.find(p => !p.pago) || null;
+}
+
+// ============================================================
+// ELEMENTOS – SIMULADOR
+// ============================================================
+const elResp = document.getElementById("responsavel");
+const elCPF  = document.getElementById("cpf");
+const elCPFMsg = document.getElementById("cpfMsg");
+const elCPFIcon = document.getElementById("cpfIcon");
+const elTelefone = document.getElementById("telefone");
+const elValor = document.getElementById("valor");
+const elParcelas = document.getElementById("parcelas");
+const elInfo = document.getElementById("info");
+const elBtnSim = document.getElementById("btnSimular");
+const elResultado = document.getElementById("resultado");
+const elDiaVenc = document.getElementById("diaVenc");
+
+let cpfValido = false;
+
+// ============================================================
+// UI – CPF
+// ============================================================
+function setCpfUI(estado) {
+  elCPF.classList.remove("input-ok","input-bad");
+  elCPFMsg.classList.remove("warn","ok","bad");
+  if (estado === "ok") {
+    elCPF.classList.add("input-ok");
+    elCPFMsg.classList.add("ok");
+    elCPFMsg.textContent = "CPF válido ✅";
+    elCPFIcon.textContent = "✅";
+    return;
+  }
+  if (estado === "bad") {
+    elCPF.classList.add("input-bad");
+    elCPFMsg.classList.add("bad");
+    elCPFMsg.textContent = "CPF inválido ❌";
+    elCPFIcon.textContent = "❌";
+    return;
+  }
+  elCPFMsg.classList.add("warn");
+  elCPFMsg.textContent = "Digite o CPF completo para validar";
+  elCPFIcon.textContent = "🪪";
+}
+function validarCpfAtual() {
+  const dig = soDigitos(elCPF.value);
+  if (dig.length < 11) { cpfValido = false; setCpfUI("warn"); return; }
+  cpfValido = cpfEhValido(elCPF.value);
+  setCpfUI(cpfValido ? "ok" : "bad");
+}
+
+// ============================================================
+// UI – SIMULADOR (agora usa tabela + Price)
+// ============================================================
+function atualizarUI() {
+  const nomeOk = elResp.value.trim().length > 0;
+  const v = parseBRLInteiro(elValor.value);
+
+  elResultado.style.display = "none";
+  const selAntes = elParcelas.value;
   elParcelas.innerHTML = "";
   elParcelas.disabled = true;
-  elBtnSim.disabled = true;
-  return;
+  elDiaVenc.innerHTML = "";
+  elDiaVenc.disabled = true;
+
+  if (!Number.isFinite(v) || v <= 0) {
+    elInfo.textContent = "Digite um valor válido";
+    elBtnSim.disabled = true;
+    const o = document.createElement("option");
+    o.value = ""; o.textContent = "Informe um valor acima";
+    elParcelas.appendChild(o);
+    return;
+  }
+  if (v < CONFIG.VALOR_MINIMO) {
+    elInfo.textContent = `⚠️ Valor mínimo: ${brl(CONFIG.VALOR_MINIMO,0)}`;
+    elBtnSim.disabled = true; return;
+  }
+  if (v > CONFIG.LIMITE) {
+    elInfo.textContent = `⚠️ Valor máximo: ${brl(CONFIG.LIMITE,0)}`;
+    elBtnSim.disabled = true;
+    const o = document.createElement("option");
+    o.value = ""; o.textContent = "Valor acima do limite";
+    elParcelas.appendChild(o);
+    return;
+  }
+
+  // ✅ Usa a tabela original + Price
+  regras(v).forEach(r => {
+    const opt = document.createElement("option");
+    opt.value = String(r.n);
+    const parc = price(v, r.t, r.n);
+    opt.textContent = `${r.n}x de ${brl(parc)} (${(r.t*100).toFixed(1)}% a.m.)`;
+    elParcelas.appendChild(opt);
+  });
+  elParcelas.disabled = false;
+  elInfo.textContent = "Selecione as parcelas";
+
+  elDiaVenc.innerHTML = "";
+  [5,10,15,20].forEach(d => {
+    const o = document.createElement("option");
+    o.value = String(d);
+    o.textContent = `Dia ${d}`;
+    elDiaVenc.appendChild(o);
+  });
+  elDiaVenc.disabled = false;
+
+  if (selAntes && [...elParcelas.options].some(o => o.value === selAntes)) {
+    elParcelas.value = selAntes;
+  }
+  elBtnSim.disabled = !(nomeOk && cpfValido && elParcelas.value && elDiaVenc.value);
 }
-    if (v > LIMITE) {
-      elInfo.textContent = "⚠️ Valor máximo permitido: R$ 1.500";
-      elBtnSim.disabled = true;
-      const opt = document.createElement("option");
-      opt.value = ""; opt.textContent = "Valor acima do limite";
-      elParcelas.appendChild(opt);
-      return;
-    }
 
-    const lista = regras(v);
-    lista.forEach(r => {
-      const opt = document.createElement("option");
-      opt.value = String(r.n);
-      opt.textContent = `${r.n}x`;
-      elParcelas.appendChild(opt);
-    });
-
-    elParcelas.disabled = false;
-    elInfo.textContent = "Selecione as parcelas";
-// preencher vencimentos (5/10/15/20)
-elDiaVenc.innerHTML = "";
-[5,10,15,20].forEach(d => {
-  const opt = document.createElement("option");
-  opt.value = String(d);
-  opt.textContent = `Dia ${d}`;
-  elDiaVenc.appendChild(opt);
+// ============================================================
+// EVENTOS – SIMULADOR
+// ============================================================
+elValor.addEventListener("paste", e => e.preventDefault());
+elValor.addEventListener("drop", e => e.preventDefault());
+elValor.addEventListener("keydown", e => {
+  const k = e.key;
+  if (["Backspace","Delete","ArrowLeft","ArrowRight","Home","End","Tab"].includes(k)) return;
+  if ((e.ctrlKey||e.metaKey) && (k==="v"||k==="V")) { e.preventDefault(); return; }
+  if (!/^\d$/.test(k)) e.preventDefault();
 });
-elDiaVenc.disabled = false;
-    // ✅ tentar restaurar seleção
-    if (selecionadaAntes && [...elParcelas.options].some(o => o.value === selecionadaAntes)) {
-      elParcelas.value = selecionadaAntes;
-    }
+elValor.addEventListener("input", () => { formatarBRLSemCentavos(elValor); atualizarUI(); });
+elResp.addEventListener("input", atualizarUI);
+elParcelas.addEventListener("change", atualizarUI);
+elDiaVenc.addEventListener("change", atualizarUI);
+elCPF.addEventListener("input", () => {
+  elCPF.value = aplicarMascaraCPF(elCPF.value);
+  validarCpfAtual();
+  atualizarUI();
+});
+elTelefone.addEventListener("input", () => {
+  elTelefone.value = formatTel(elTelefone.value);
+});
 
-    elBtnSim.disabled = !(nomeOk && cpfValido && elParcelas.value && elDiaVenc.value);
-  }
+// ============================================================
+// SIMULAR (usa tabela + Price)
+// ============================================================
+function simular() {
+  const nome = elResp.value.trim();
+  const cpf = elCPF.value.trim();
+  const tel = elTelefone.value.trim();
+  const v = parseBRLInteiro(elValor.value);
+  const p = Number(elParcelas.value);
 
-  // ---------- Eventos ----------
-  elValor.addEventListener("paste", (e) => e.preventDefault());
-  elValor.addEventListener("drop", (e) => e.preventDefault());
-  elValor.addEventListener("keydown", (e) => {
-    const key = e.key;
-    const permitidas = ["Backspace","Delete","ArrowLeft","ArrowRight","Home","End","Tab"];
-    if (permitidas.includes(key)) return;
+  if (!nome) { alert("Informe o responsável."); return; }
+  if (!cpfEhValido(cpf)) { alert("CPF inválido."); return; }
+  if (!Number.isFinite(v) || v <= 0) { alert("Digite um valor válido."); return; }
+  if (v < CONFIG.VALOR_MINIMO) { alert(`Valor mínimo: ${brl(CONFIG.VALOR_MINIMO,0)}`); return; }
+  if (v > CONFIG.LIMITE) { alert(`Valor máximo: ${brl(CONFIG.LIMITE,0)}`); return; }
+  if (!p) { alert("Selecione as parcelas."); return; }
 
-    if ((e.ctrlKey && (key === "v" || key === "V")) ||
-        (e.metaKey && (key === "v" || key === "V")) ||
-        (e.shiftKey && key === "Insert")) {
-      e.preventDefault(); return;
-    }
-    if (!/^\d$/.test(key)) e.preventDefault();
-  });
+  const r = regras(v).find(x => x.n === p);
+  if (!r) { alert("Opção inválida para este valor."); atualizarUI(); return; }
 
-  elValor.addEventListener("input", () => { formatarBRLSemCentavos(elValor); atualizarUI(); });
-  elResp.addEventListener("input", atualizarUI);
-  elParcelas.addEventListener("change", atualizarUI);
+  const parc = price(v, r.t, p);
+  const tot = parc * p;
+  const juros = tot - v;
 
-  elCPF.addEventListener("input", () => {
-    elCPF.value = aplicarMascaraCPF(elCPF.value);
-    validarCpfAtual();
-    atualizarUI();
-  });
+  const diaVenc = Number(elDiaVenc.value);
+  const data1 = calcularPrimeiraParcela(diaVenc, 7);
 
-  // ---------- Simular ----------
-  function simular() {
-    const nome = elResp.value.trim();
-    const cpf = elCPF.value.trim();
-    const v = parseBRLInteiro(elValor.value);
-    const p = Number(elParcelas.value);
+  document.getElementById("primeiraParcela").textContent =
+    data1.toLocaleDateString("pt-BR");
+  document.getElementById("parcela").textContent = brl(parc);
+  document.getElementById("jurosTotal").textContent = brl(juros);
+  document.getElementById("total").textContent = brl(tot);
 
-    if (!nome) { alert("Informe o responsável."); return; }
-    if (!cpfEhValido(cpf)) { alert("CPF inválido. Verifique e tente novamente."); return; }
-    if (!Number.isFinite(v) || v <= 0) { alert("Digite um valor válido."); return; }
-    if (v > LIMITE) { alert("⚠️ Valor máximo permitido: R$ 1.500"); return; }
+  elResultado.style.display = "block";
+  window._dados = {
+    nome, cpf, tel, v, p, parc, tot, juros,
+    taxa: r.t,
+    diaVenc,
+    dataPrimeira: data1.toLocaleDateString("pt-BR"),
+    dataPrimeiraISO: toISO(data1),
+    salvo: false
+  };
+}
 
-    const r = regras(v).find(x => x.n === p);
-    if (!r) { alert("Opção de parcelas inválida para este valor."); atualizarUI(); return; }
-
-    const parc = price(v, r.t, p);
-    const tot = parc * p;
-
-    const diaVenc = Number(elDiaVenc.value);
-    const dataPrimeira = calcularPrimeiraParcelaPorDia(diaVenc, 7);
-    document.getElementById("primeiraParcela").textContent = dataPrimeira;
-    document.getElementById("parcela").textContent =
-      parc.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
-    document.getElementById("total").textContent =
-      tot.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
-    elResultado.style.display = "block";
-    window._dados = { nome, cpf, v, p, parc, tot, diaVenc, dataPrimeira };
-  }
-
-  // ---------- WhatsApp ----------
-  function montarMensagem(d){
-    return `Olá! Gostaria de solicitar uma análise de empréstimo.
+// ============================================================
+// WHATSAPP – SIMULAÇÃO
+// ============================================================
+function montarMensagemSimulacao(d) {
+  return `Olá! Gostaria de solicitar uma análise de empréstimo.
 
 👤 Responsável: ${d.nome}
 🪪 CPF: ${d.cpf}
-
-💰 Valor solicitado: ${d.v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+${d.tel ? `📞 Telefone: ${d.tel}\n` : ""}
+💰 Valor solicitado: ${brl(d.v, 0)}
 📆 Parcelas: ${d.p}x
-💳 Valor da parcela: R$ ${d.parc.toFixed(2)}
-📊 Total a pagar: R$ ${d.tot.toFixed(2)}
-📅 1ª parcela (venc. dia ${d.diaVenc}): ${d.dataPrimeira}
+💳 Valor da parcela: ${brl(d.parc)}
+📈 Juros total: ${brl(d.juros)}
+📊 Total a pagar: ${brl(d.tot)}
+📅 1ª parcela: ${d.dataPrimeira}
 
 Fico no aguardo, obrigado.`;
+}
+
+function enviarWhatsComLoading() {
+  const d = window._dados;
+  if (!d) { alert("Faça a simulação primeiro."); return; }
+
+  const loader = document.getElementById("overlayLoader");
+  const bar = document.getElementById("progressBar");
+  const pct = document.getElementById("progressPct");
+  loader.classList.add("show");
+  bar.style.width = "0%";
+  pct.textContent = "0%";
+
+  const text = encodeURIComponent(montarMensagemSimulacao(d));
+  const deepLink = `whatsapp://send?phone=${CONFIG.WHATSAPP}&text=${text}`;
+  const webLink  = `https://wa.me/${CONFIG.WHATSAPP}?text=${text}`;
+
+  window.location.href = deepLink;
+  setTimeout(() => { window.location.href = webLink; }, 700);
+
+  let pr = 0;
+  const t = setInterval(() => {
+    pr = Math.min(100, pr + 10);
+    bar.style.width = pr + "%";
+    pct.textContent = pr + "%";
+    if (pr >= 100) {
+      clearInterval(t);
+      setTimeout(() => loader.classList.remove("show"), 400);
+    }
+  }, 70);
+}
+
+// ============================================================
+// SALVAR DA SIMULAÇÃO → form pré-preenchido
+// ============================================================
+function salvarDaSimulacao() {
+  const d = window._dados;
+  if (!d) { alert("Faça a simulação primeiro."); return; }
+  setTab("cli");
+  abrirFormNovo({
+    nome: d.nome,
+    cpf: d.cpf,
+    tel: d.tel,
+    valor: d.v,
+    parcelas: d.p,       // já vem travado na opção correta
+    data1: d.dataPrimeiraISO
+  });
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function setTab(name) {
+  document.querySelectorAll(".tab").forEach(b => {
+    b.classList.toggle("active", b.dataset.tab === name);
+  });
+  document.getElementById("tab-sim").style.display = (name === "sim") ? "block" : "none";
+  document.getElementById("tab-cli").style.display = (name === "cli") ? "block" : "none";
+  if (name === "cli") { voltarLista(); updateBadge(); }
+}
+document.querySelectorAll(".tab").forEach(btn => {
+  btn.addEventListener("click", () => setTab(btn.dataset.tab));
+});
+
+// ============================================================
+// BADGE
+// ============================================================
+function updateBadge() {
+  const lista = getEmprestimos();
+  const abertos = lista.filter(e => statusEmprestimo(e) !== "quitado").length;
+  const b = document.getElementById("badgeCount");
+  if (abertos > 0) { b.textContent = abertos; b.style.display = "inline-block"; }
+  else b.style.display = "none";
+}
+
+// ============================================================
+// RENDER – LISTA
+// ============================================================
+function renderLista() {
+  const termo = (document.getElementById("busca").value || "").toLowerCase().trim();
+  const todos = getEmprestimos().sort((a,b) => new Date(b.criadoEm) - new Date(a.criadoEm));
+  const lista = termo
+    ? todos.filter(e =>
+        e.nome.toLowerCase().includes(termo) ||
+        soDigitos(e.cpf).includes(soDigitos(termo)))
+    : todos;
+
+  const c = document.getElementById("listaClientes");
+
+  if (lista.length === 0) {
+    c.innerHTML = `
+      <div class="empty">
+        <span class="emoji">📭</span>
+        ${todos.length === 0
+          ? "Nenhum empréstimo cadastrado.<br>Simule ou clique em <strong>+ Novo</strong>."
+          : "Nenhum resultado para a busca."}
+      </div>`;
+    return;
   }
 
-  function enviarWhatsComLoading() {
-    const d = window._dados;
-    if (!d) { alert("Faça a simulação primeiro."); return; }
+  c.innerHTML = "";
+  lista.forEach(emp => {
+    const pagas = emp.parcelas.filter(p => p.pago).length;
+    const totalP = emp.parcelas.length;
+    const pct = totalP ? (pagas/totalP)*100 : 0;
+    const st = statusEmprestimo(emp);
+    const saldo = saldoDevedor(emp);
 
-    const overlay = document.getElementById("overlay");
-    const bar = document.getElementById("progressBar");
-    const pct = document.getElementById("progressPct");
+    const div = document.createElement("div");
+    div.className = "loan-card";
+    div.onclick = () => renderDetalhe(emp.id);
+    div.innerHTML = `
+      <div class="row">
+        <div style="min-width:0;">
+          <div class="name">${escapeHtml(emp.nome)}</div>
+          <div class="meta">${brl(emp.valorSolicitado,0)} → ${emp.nParcelas}x de ${brl(emp.valorParcela)} · ${pagas}/${totalP}</div>
+        </div>
+        <span class="status-badge status-${st}">${statusLabel(st)}</span>
+      </div>
+      <div class="progress"><div class="progress-bar" style="width:${pct}%"></div></div>
+      <div class="meta" style="margin-top:6px;display:flex;justify-content:space-between;">
+        <span>Saldo devedor:</span>
+        <strong style="color:${saldo>0?'var(--warn)':'var(--ok)'}">${brl(saldo)}</strong>
+      </div>
+    `;
+    c.appendChild(div);
+  });
+}
+document.getElementById("busca").addEventListener("input", renderLista);
 
-    overlay.style.display = "flex";
-    bar.style.width = "0%";
-    pct.textContent = "0%";
+// ============================================================
+// VIEWS
+// ============================================================
+function voltarLista() {
+  document.getElementById("view-detalhe").style.display = "none";
+  document.getElementById("view-form").style.display = "none";
+  document.getElementById("view-lista").style.display = "block";
+  renderLista();
+}
 
-    const msg = montarMensagem(d);
-    const text = encodeURIComponent(msg);
+// ============================================================
+// RENDER – DETALHE
+// ============================================================
+function renderDetalhe(id) {
+  const emp = getEmprestimos().find(e => e.id === id);
+  if (!emp) { voltarLista(); return; }
 
-    // ✅ iPhone FIX: tenta abrir o APP direto (sem depender do timer)
-    const deepLink = `whatsapp://send?phone=${WHATSAPP}&text=${text}`;
-    const webLink  = `https://wa.me/${WHATSAPP}?text=${text}`;
+  document.getElementById("view-lista").style.display = "none";
+  document.getElementById("view-form").style.display = "none";
+  const view = document.getElementById("view-detalhe");
+  view.style.display = "block";
 
-    // tenta abrir o app
-    window.location.href = deepLink;
+  const st = statusEmprestimo(emp);
+  const saldo = saldoDevedor(emp);
+  const pago = totalPago(emp);
+  const pagas = emp.parcelas.filter(p => p.pago).length;
+  const prox = proximaParcela(emp);
+  const taxaPct = (emp.taxaJuros || 0) * 100;
+  const jurosTot = emp.valorTotal - emp.valorSolicitado;
 
-    // fallback pro link web (se não tiver app / se bloquear)
-    setTimeout(() => {
-      window.location.href = webLink;
-    }, 700);
+  let html = `
+    <div class="detail-header">
+      <button class="btn-mini btn-sec" onclick="voltarLista()">← Voltar</button>
+      <h3>${escapeHtml(emp.nome)}</h3>
+      <button class="btn-mini btn-danger" onclick="excluirEmprestimo('${emp.id}')">🗑</button>
+    </div>
 
-    // animação só visual (não trava nada)
-    let progresso = 0;
-    const timer = setInterval(() => {
-      progresso = Math.min(100, progresso + 10);
-      bar.style.width = progresso + "%";
-      pct.textContent = progresso + "%";
-      if (progresso >= 100) {
-        clearInterval(timer);
-        setTimeout(() => { overlay.style.display = "none"; }, 400);
+    <div class="info-grid">
+      <div class="item"><span class="label">CPF</span><span class="value">${escapeHtml(emp.cpf || "-")}</span></div>
+      <div class="item"><span class="label">Telefone</span><span class="value">${escapeHtml(emp.telefone || "-")}</span></div>
+      <div class="item"><span class="label">Valor solicitado</span><span class="value">${brl(emp.valorSolicitado, 0)}</span></div>
+      <div class="item"><span class="label">Taxa mensal</span><span class="value">${taxaPct.toFixed(1)}%</span></div>
+      <div class="item"><span class="label">Parcela</span><span class="value">${emp.nParcelas}x de ${brl(emp.valorParcela)}</span></div>
+      <div class="item"><span class="label">Total a pagar</span><span class="value">${brl(emp.valorTotal)}</span></div>
+      <div class="item"><span class="label">Status</span><span class="value"><span class="status-badge status-${st}">${statusLabel(st)}</span></span></div>
+      <div class="item"><span class="label">Progresso</span><span class="value">${pagas}/${emp.nParcelas}</span></div>
+    </div>
+
+    <div class="resumo-status">
+      <div class="linha"><span>Juros total do contrato</span><strong style="color:var(--warn)">${brl(jurosTot)}</strong></div>
+      <div class="linha"><span>Total pago</span><strong style="color:var(--ok)">${brl(pago)}</strong></div>
+      ${prox ? `<div class="linha"><span>Próximo vencimento</span><strong>${formatBR(prox.vencimento)}</strong></div>` : ""}
+      <div class="linha destaque"><span>Saldo devedor</span><strong style="color:${saldo>0?'var(--warn)':'var(--ok)'}">${brl(saldo)}</strong></div>
+    </div>
+
+    <div class="section-title">📅 Parcelas</div>
+  `;
+
+  const hoje = hojeZero();
+  emp.parcelas.forEach(p => {
+    const atraso = calcularAtraso(p);
+    const vencida = !p.pago && fromISO(p.vencimento) < hoje;
+    const cls = p.pago ? "paga" : (vencida ? "vencida" : "");
+
+    let subInfo = `<div class="datas">Vencimento: ${formatBR(p.vencimento)} · Valor: ${brl(p.valor)}</div>`;
+    if (p.pago) {
+      subInfo += `<div class="parcela-pago">✓ Pago em ${formatBR(p.dataPagamento)} · Total: ${brl(p.valorPago)}</div>`;
+    } else if (atraso.dias > 0) {
+      subInfo += `<div class="parcela-atraso">
+        ⚠️ ${atraso.dias} dia(s) em atraso<br>
+        Juros (30%/mês): ${brl(atraso.juros)}<br>
+        Total com juros: <strong>${brl(p.valor + atraso.total)}</strong>
+      </div>`;
+    }
+
+    const actions = p.pago
+      ? `<button class="btn-icon btn-sec" onclick="desmarcarPagamento('${emp.id}',${p.n})">↺</button>`
+      : `<button class="btn-icon btn-ok" onclick="abrirPagamento('${emp.id}',${p.n})">✓ Pagar</button>`;
+
+    html += `
+      <div class="parcela-item ${cls}">
+        <div class="parcela-info">
+          <strong>Parcela ${p.n}/${emp.nParcelas}</strong>
+          ${subInfo}
+        </div>
+        <div class="parcela-actions">${actions}</div>
+      </div>
+    `;
+  });
+
+  html += `<div class="section-title">📜 Histórico de Pagamentos</div>`;
+  if (!emp.pagamentos || emp.pagamentos.length === 0) {
+    html += `<div class="empty" style="padding:20px;">Nenhum pagamento registrado.</div>`;
+  } else {
+    [...emp.pagamentos].sort((a,b)=>new Date(b.dataPagamento)-new Date(a.dataPagamento)).forEach(h => {
+      const extra = h.juros > 0
+        ? `<br><span style="color:var(--bad)">Juros de atraso: ${brl(h.juros)}</span>` : "";
+      html += `
+        <div class="hist-item">
+          <div class="hist-head">
+            <strong>Parcela ${h.n}</strong>
+            <span>${formatBR(h.dataPagamento)}</span>
+          </div>
+          <div class="hist-detail">
+            Valor base: ${brl(h.valorBase)} · <strong style="color:var(--ok)">Pago: ${brl(h.total)}</strong>
+            ${extra}
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  view.innerHTML = html;
+}
+
+// ============================================================
+// PAGAMENTO – MODAL
+// ============================================================
+let _pagAtual = null;
+
+function abrirPagamento(empId, nParcela) {
+  const emp = getEmprestimos().find(e => e.id === empId);
+  if (!emp) return;
+  const p = emp.parcelas.find(x => x.n === nParcela);
+  if (!p || p.pago) return;
+
+  const atraso = calcularAtraso(p);
+  const valorPago = p.valor + atraso.total;
+  const hoje = toISO(new Date());
+
+  _pagAtual = { empId, nParcela, atraso, valorPago, dataPagamento: hoje };
+
+  document.getElementById("pagTitulo").textContent = `Registrar pagamento da parcela ${nParcela}/${emp.nParcelas}`;
+  document.getElementById("pagInfo").innerHTML = atraso.dias > 0
+    ? `Vencimento: ${formatBR(p.vencimento)} · <span style="color:var(--bad)">${atraso.dias} dia(s) em atraso</span>`
+    : `Vencimento: ${formatBR(p.vencimento)} · No prazo`;
+
+  document.getElementById("pagPreview").textContent = atraso.dias > 0
+    ? `Valor da parcela: ${brl(p.valor)}\nJuros de atraso (30%/mês proporcional): ${brl(atraso.juros)}\n\nTotal a receber: ${brl(valorPago)}`
+    : `Valor a receber: ${brl(valorPago)}`;
+
+  resetModalPag();
+  document.getElementById("modalPag").classList.add("show");
+}
+
+function confirmarPagamento() {
+  if (!_pagAtual) return;
+  const { empId, nParcela, atraso, valorPago, dataPagamento } = _pagAtual;
+
+  const lista = getEmprestimos();
+  const emp = lista.find(e => e.id === empId);
+  if (!emp) return;
+  const p = emp.parcelas.find(x => x.n === nParcela);
+  if (!p || p.pago) return;
+
+  p.pago = true;
+  p.dataPagamento = dataPagamento;
+  p.valorPago = valorPago;
+  p.jurosAtraso = atraso.juros;
+
+  if (!emp.pagamentos) emp.pagamentos = [];
+  emp.pagamentos.push({
+    n: nParcela,
+    dataPagamento,
+    valorBase: p.valor,
+    juros: atraso.juros,
+    total: valorPago
+  });
+
+  saveEmprestimos(lista);
+  updateBadge();
+
+  fecharModal("modalPag");
+  renderDetalhe(empId);
+
+  // Abre o modal de comprovante
+  abrirComprovante(empId, nParcela);
+}
+
+function desmarcarPagamento(empId, nParcela) {
+  mostrarConfirm(
+    "Desmarcar pagamento?",
+    `Deseja realmente desmarcar a parcela ${nParcela}? O histórico deste pagamento será removido.`,
+    () => {
+      const lista = getEmprestimos();
+      const emp = lista.find(e => e.id === empId);
+      if (!emp) return;
+      const p = emp.parcelas.find(x => x.n === nParcela);
+      if (!p) return;
+      p.pago = false;
+      p.dataPagamento = null;
+      p.valorPago = null;
+      p.jurosAtraso = 0;
+      emp.pagamentos = (emp.pagamentos||[]).filter(h => h.n !== nParcela);
+      saveEmprestimos(lista);
+      updateBadge();
+      renderDetalhe(empId);
+    }
+  );
+}
+
+// ============================================================
+// COMPROVANTE – WhatsApp
+// ============================================================
+let _comprovanteAtual = null;
+
+function abrirComprovante(empId, nParcela) {
+  const emp = getEmprestimos().find(e => e.id === empId);
+  if (!emp) return;
+  const p = emp.parcelas.find(x => x.n === nParcela);
+  if (!p || !p.pago) return;
+
+  const pagas = emp.parcelas.filter(x => x.pago).length;
+  const restantes = emp.parcelas.length - pagas;
+  const saldo = saldoDevedor(emp);
+  const prox = proximaParcela(emp);
+
+  let msg = `Olá, ${emp.nome}! 👋\n\n`;
+  msg += `✅ Recebemos o pagamento da sua parcela *${nParcela}/${emp.nParcelas}* no valor de *${brl(p.valorPago)}*.\n`;
+  if (p.jurosAtraso > 0) {
+    msg += `_(inclui ${brl(p.jurosAtraso)} de juros por atraso)_\n`;
+  }
+  msg += `\n`;
+
+  if (restantes === 0) {
+    msg += `🎉 Parabéns! Seu empréstimo está *QUITADO*. Obrigado pela confiança!`;
+  } else {
+    msg += `📊 Parcelas pagas: *${pagas}/${emp.nParcelas}*\n`;
+    msg += `💰 Saldo restante: *${brl(saldo)}*\n`;
+    if (prox) msg += `📅 Próximo vencimento: *${formatBR(prox.vencimento)}* (parcela ${prox.n})\n`;
+    msg += `\nQualquer dúvida, estou à disposição. Obrigado!`;
+  }
+
+  _comprovanteAtual = {
+    empId, nParcela,
+    tel: emp.telefone ? soDigitos(emp.telefone) : "",
+    mensagem: msg
+  };
+
+  document.getElementById("pagTitulo").textContent = "Enviar comprovante ao cliente";
+  document.getElementById("pagInfo").innerHTML = _comprovanteAtual.tel
+    ? `Telefone do cliente: <strong>${escapeHtml(emp.telefone)}</strong>`
+    : `<span style="color:var(--warn)">⚠️ Cadastre o telefone do cliente para enviar direto.</span>`;
+  document.getElementById("pagPreview").textContent = msg;
+
+  // ajusta botões
+  const acoes = document.querySelector("#modalPag .modal-actions");
+  const btnConfirmar = acoes.querySelector(".btn-ok");
+  btnConfirmar.style.display = "none";
+
+  const btnWa = document.querySelector("#modalPag .btn-wa");
+  btnWa.textContent = _comprovanteAtual.tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
+  btnWa.onclick = enviarComprovantePagamento;
+
+  document.getElementById("modalPag").classList.add("show");
+}
+
+function enviarComprovantePagamento() {
+  if (!_comprovanteAtual) return;
+  const text = encodeURIComponent(_comprovanteAtual.mensagem);
+  const tel = _comprovanteAtual.tel;
+
+  const target = tel ? `phone=${tel}&text=${text}` : `text=${text}`;
+  const deepLink = `whatsapp://send?${target}`;
+  const webLink  = tel ? `https://wa.me/${tel}?text=${text}` : `https://wa.me/?text=${text}`;
+
+  window.location.href = deepLink;
+  setTimeout(() => { window.location.href = webLink; }, 700);
+
+  fecharModal("modalPag");
+}
+
+function resetModalPag() {
+  const acoes = document.querySelector("#modalPag .modal-actions");
+  const btnConfirmar = acoes.querySelector(".btn-ok");
+  btnConfirmar.style.display = "";
+  const btnWa = document.querySelector("#modalPag .btn-wa");
+  btnWa.textContent = "📱 Enviar comprovante no WhatsApp";
+  btnWa.onclick = enviarComprovantePagamento;
+  _comprovanteAtual = null;
+}
+
+// ============================================================
+// FORM – NOVO EMPRÉSTIMO (manual, usa tabela)
+// ============================================================
+function abrirFormNovo(prefill) {
+  document.getElementById("view-lista").style.display = "none";
+  document.getElementById("view-detalhe").style.display = "none";
+  document.getElementById("view-form").style.display = "block";
+
+  const hoje = new Date();
+  const daquiUmaSemana = new Date(hoje.getTime() + 7 * 86400000);
+
+  document.getElementById("fNome").value = prefill?.nome || "";
+  document.getElementById("fCpf").value = prefill?.cpf || "";
+  document.getElementById("fTelefone").value = prefill?.tel || "";
+  document.getElementById("fValor").value = prefill?.valor
+    ? brl(prefill.valor, 0) : "";
+  document.getElementById("fData1").value = prefill?.data1 || toISO(daquiUmaSemana);
+
+  // Popula parcelas com base no valor (se houver)
+  popularParcelasForm(prefill?.parcelas);
+  atualizarPreviewForm();
+
+  // listeners (uma vez)
+  ["fNome","fCpf","fTelefone","fValor","fData1"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el._bound) return;
+    el._bound = true;
+    el.addEventListener("input", () => {
+      if (id === "fValor") {
+        formatarBRLSemCentavos(el);
+        popularParcelasForm();
       }
-    }, 70);
+      if (id === "fCpf") el.value = aplicarMascaraCPF(el.value);
+      if (id === "fTelefone") el.value = formatTel(el.value);
+      atualizarPreviewForm();
+    });
+    el.addEventListener("change", atualizarPreviewForm);
+  });
+  const fParc = document.getElementById("fParcelas");
+  if (!fParc._bound) {
+    fParc._bound = true;
+    fParc.addEventListener("change", atualizarPreviewForm);
   }
+}
 
-  // init
-  setCpfUI("warn");
-  atualizarUI();
+function popularParcelasForm(prefN) {
+  const v = parseBRLInteiro(document.getElementById("fValor").value);
+  const sel = document.getElementById("fParcelas");
+  const nAntes = prefN || sel.value;
+  sel.innerHTML = "";
+
+  if (!Number.isFinite(v) || v < CONFIG.VALOR_MINIMO) {
+    const o = document.createElement("option");
+    o.value = ""; o.textContent = "Informe o valor acima";
+    sel.appendChild(o);
+    return;
+  }
+  const limite = Math.min(v, CONFIG.LIMITE);
+  regras(limite).forEach(r => {
+    const parc = price(limite, r.t, r.n);
+    const opt = document.createElement("option");
+    opt.value = String(r.n);
+    opt.textContent = `${r.n}x de ${brl(parc)} (${(r.t*100).toFixed(1)}% a.m.)`;
+    sel.appendChild(opt);
+  });
+  if (nAntes && [...sel.options].some(o => o.value === String(nAntes))) {
+    sel.value = String(nAntes);
+  }
+}
+
+function atualizarPreviewForm() {
+  const v = parseBRLInteiro(document.getElementById("fValor").value);
+  const n = Number(document.getElementById("fParcelas").value) || 0;
+  const data1 = document.getElementById("fData1").value;
+  const prev = document.getElementById("fPreview");
+
+  if (!Number.isFinite(v) || v <= 0 || n <= 0 || !data1) {
+    prev.textContent = "Preencha os campos para visualizar o resumo.";
+    return;
+  }
+  const t = getTaxa(v, n);
+  const parc = price(v, t, n);
+  const total = parc * n;
+  const juros = total - v;
+
+  const d1 = fromISO(data1);
+  const dt = gerarParcelas(d1, n, parc);
+  const ultima = dt[dt.length - 1];
+
+  prev.innerHTML = `
+    💡 <strong>${n}x de ${brl(parc)}</strong> (taxa ${(t*100).toFixed(1)}% a.m.)<br>
+    1ª parcela: <strong>${formatBR(toISO(d1))}</strong><br>
+    Última parcela: <strong>${formatBR(ultima.vencimento)}</strong><br>
+    Juros total: <strong>${brl(juros)}</strong><br>
+    Total a pagar: <strong>${brl(total)}</strong><br>
+    <span style="color:var(--warn)">⚠️ Parcelas em atraso: juros de 30% ao mês.</span>
+  `;
+}
+
+function salvarFormEmprestimo() {
+  const nome = document.getElementById("fNome").value.trim();
+  const cpf = document.getElementById("fCpf").value.trim();
+  const tel = document.getElementById("fTelefone").value.trim();
+  const v = parseBRLInteiro(document.getElementById("fValor").value);
+  const n = Number(document.getElementById("fParcelas").value);
+  const data1Str = document.getElementById("fData1").value;
+
+  if (!nome) { alert("Informe o nome do cliente."); return; }
+  if (cpf && !cpfEhValido(cpf)) { alert("CPF inválido."); return; }
+  if (!Number.isFinite(v) || v <= 0) { alert("Informe o valor solicitado."); return; }
+  if (v < CONFIG.VALOR_MINIMO) { alert(`Valor mínimo: ${brl(CONFIG.VALOR_MINIMO,0)}`); return; }
+  if (v > CONFIG.LIMITE) { alert(`Valor máximo: ${brl(CONFIG.LIMITE,0)}`); return; }
+  if (!n) { alert("Selecione o número de parcelas."); return; }
+  if (!data1Str) { alert("Informe a data da 1ª parcela."); return; }
+
+  const t = getTaxa(v, n);
+  const parc = price(v, t, n);
+  const total = parc * n;
+
+  const d1 = fromISO(data1Str);
+  const parcelas = gerarParcelas(d1, n, parc);
+
+  const emp = {
+    id: novoId(),
+    nome, cpf, telefone: tel,
+    valorSolicitado: v,
+    taxaJuros: t,
+    valorParcela: parc,
+    valorTotal: total,
+    nParcelas: n,
+    criadoEm: new Date().toISOString(),
+    parcelas,
+    pagamentos: []
+  };
+
+  const lista = getEmprestimos();
+  lista.push(emp);
+  saveEmprestimos(lista);
+  updateBadge();
+
+  document.getElementById("view-form").style.display = "none";
+  renderDetalhe(emp.id);
+}
+
+// ============================================================
+// EXCLUIR
+// ============================================================
+function excluirEmprestimo(id) {
+  mostrarConfirm(
+    "Excluir empréstimo?",
+    "Esta ação não pode ser desfeita. Todo o histórico de pagamentos será perdido.",
+    () => {
+      saveEmprestimos(getEmprestimos().filter(e => e.id !== id));
+      updateBadge();
+      voltarLista();
+    }
+  );
+}
+
+// ============================================================
+// MODAIS – utilitários
+// ============================================================
+function fecharModal(id) {
+  document.getElementById(id).classList.remove("show");
+  if (id === "modalPag") resetModalPag();
+  _pagAtual = null;
+}
+function mostrarConfirm(titulo, msg, onOk) {
+  document.getElementById("confTitulo").textContent = titulo;
+  document.getElementById("confMsg").textContent = msg;
+  const btn = document.getElementById("confBtnOk");
+  btn.onclick = () => {
+    fecharModal("modalConfirm");
+    onOk();
+  };
+  document.getElementById("modalConfirm").classList.add("show");
+}
+
+["modalPag","modalConfirm"].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener("click", (e) => {
+    if (e.target === el) fecharModal(id);
+  });
+});
+
+// ============================================================
+// HELPERS FINAIS
+// ============================================================
+function escapeHtml(s) {
+  return String(s || "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+// ============================================================
+// INIT
+// ============================================================
+setCpfUI("warn");
+atualizarUI();
+updateBadge();
+renderLista();
 </script>
 </body>
 </html>
