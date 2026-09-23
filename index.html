@@ -10,18 +10,27 @@
     --field:#0f1730; --fieldLine:#2a3a63;
     --text:#e7eefc; --muted:#b9c7ea;
     --brand:#5b7cfa; --warn:#ffd38a; --ok:#6CFF9D;
-    --bad:#ff7c7c; --wa:#25D366;;
- --neon:#39ff   14;
+    --bad:#ff7c7c; --wa:#25D366; --neon:#39ff14;
   }
-  *{ box border-sizing:border-box; }
+  *{ box-sizing:border-box; }
+  /* ✅ FIX 1 – evita overflow horizontal no body */
+  html, body{
+    overflow-x:hidden;
+    max-width:100%;
+    width:100%;
+  }
   body{
-:    margin:0; background:var(--1bg); color:var(--text);
-   px font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
     min-height:100vh; display:flex; flex-direction:column;
   }
   .wrap{ max-width:720px; margin:auto; padding:16px; flex:1; width:100%; }
   .card{
-    background:var(--card); border-radius:16px; padding:16px solid var(--line); margin-bottom:12px;
+    background:var(--card); border-radius:16px; padding:16px;
+    border:1px solid var(--line); margin-bottom:12px;
+    /* ✅ FIX 3 – card nunca estoura o pai */
+    max-width:100%;
+    overflow:hidden;
   }
   .logo{ text-align:center; margin-bottom:12px; }
   .logo h2{ margin:0; font-size:24px; font-weight:900; letter-spacing:1px; color:var(--brand); }
@@ -32,6 +41,7 @@
     width:100%; padding:12px; margin-top:6px; border-radius:12px;
     border:1px solid var(--fieldLine); background:var(--field);
     color:#fff; font-size:16px; outline:none; font-family:inherit;
+    max-width:100%;
   }
   input:focus, select:focus{ border-color:rgba(91,124,250,.9); box-shadow:0 0 0 3px rgba(91,124,250,.15); }
   button{ background:var(--brand); font-weight:800; border:none; cursor:pointer; margin-top:12px; }
@@ -191,6 +201,10 @@
     border-radius:12px; color:var(--muted); font-size:13px; font-weight:800;
     cursor:pointer; margin-top:0; display:flex; align-items:center;
     justify-content:center; gap:4px; white-space:nowrap;
+    /* ✅ FIX 2 – permite a tab encolher abaixo do conteúdo */
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
   .tab.active{ background:var(--brand); color:#fff; border-color:var(--brand); }
   .badge{
@@ -251,6 +265,7 @@
   .info-grid .item{
     background:var(--field); border:1px solid var(--fieldLine);
     border-radius:10px; padding:8px 10px;
+    min-width:0;
   }
   .info-grid .item .label{
     font-size:10px; color:var(--muted); display:block; margin-bottom:3px;
@@ -353,6 +368,20 @@
   .progress-pct{
     margin-top:10px; font-size:14px; color:var(--text);
     font-weight:900; letter-spacing:.5px;
+  }
+
+  /* ✅ FIX 4 – em telas estreitas, encolhe as tabs */
+  @media (max-width: 420px){
+    .tab{
+      font-size:11px;
+      padding:10px 4px;
+      gap:3px;
+    }
+    .tab .badge{
+      padding:1px 5px;
+      font-size:9px;
+      min-width:14px;
+    }
   }
 </style>
 </head>
@@ -497,7 +526,7 @@
 
 <footer>webdev</footer>
 
-<!-- MODAL: pagamento / comprovante / lembrete / extrato -->
+<!-- MODAL: pagamento / comprovante / lembrete -->
 <div class="overlay" id="modalPag">
   <div class="modal">
     <h3 id="pagTitulo">Registrar pagamento</h3>
@@ -1387,16 +1416,10 @@ function renderDetalhe(id) {
 
   const contador = contarParcelas(emp.parcelas);
 
-  // ✅ NOVO – Botão de extrato (só se não estiver quitado)
-  const btnExtrato = st !== "quitado"
-    ? `<button class="btn-mini btn-sec" onclick="abrirExtrato('${emp.id}')">📄</button>`
-    : "";
-
   let html = `
     <div class="detail-header">
       <button class="btn-mini btn-sec" onclick="voltarDeDetalhe()">← Voltar</button>
       <h3>${escapeHtml(emp.nome)}</h3>
-      ${btnExtrato}
       <button class="btn-mini btn-danger" onclick="excluirEmprestimo('${emp.id}')">🗑</button>
     </div>
 
@@ -1722,52 +1745,6 @@ function abrirLembrete(empId, nParcela) {
   document.getElementById("pagTitulo").textContent = atraso.dias > 0
     ? "Lembrete de parcela vencida"
     : "Lembrete de vencimento";
-  document.getElementById("pagInfo").innerHTML = tel
-    ? `Telefone do cliente: <strong>${escapeHtml(emp.telefone)}</strong>`
-    : `<span style="color:var(--warn)">⚠️ Cadastre o telefone do cliente para enviar direto.</span>`;
-  document.getElementById("pagPreview").textContent = msg;
-
-  const acoes = document.querySelector("#modalPag .modal-actions");
-  const btnConfirmar = acoes.querySelector(".btn-ok");
-  btnConfirmar.style.display = "none";
-
-  const btnWa = document.getElementById("btnEnviarWa");
-  btnWa.textContent = tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
-  btnWa.onclick = enviarComprovantePagamento;
-
-  document.getElementById("modalPag").classList.add("show");
-}
-
-// ============================================================
-// ✅ NOVO – EXTRATO / RESUMO DO EMPRÉSTIMO
-// ============================================================
-function abrirExtrato(empId) {
-  const emp = getEmprestimos().find(e => e.id === empId);
-  if (!emp) return;
-
-  const c = contarParcelas(emp.parcelas);
-  const prox = proximaParcela(emp);
-  const tel = emp.telefone ? soDigitos(emp.telefone) : "";
-
-  let msg = `Olá, ${emp.nome}! 👋\n\n`;
-  msg += `📋 Resumo do seu empréstimo:\n`;
-  msg += `💰 Valor: ${brl(emp.valorSolicitado, 0)} (${emp.nParcelas}x de ${brl(emp.valorParcela)})\n\n`;
-  msg += `✅ Pagas: ${c.pagas} de ${c.total}\n`;
-  msg += `⏳ Faltam: ${c.aVencer + c.atrasadas} parcela${(c.aVencer + c.atrasadas)>1?'s':''}\n`;
-  if (prox) {
-    msg += `📅 Próximo vencimento: ${formatBR(prox.vencimento)}\n`;
-  }
-  msg += `\nQualquer dúvida, estou à disposição!`;
-
-  _comprovanteAtual = {
-    tipo: "extrato",
-    empId,
-    nParcela: null,
-    tel,
-    mensagem: msg
-  };
-
-  document.getElementById("pagTitulo").textContent = "Resumo do empréstimo";
   document.getElementById("pagInfo").innerHTML = tel
     ? `Telefone do cliente: <strong>${escapeHtml(emp.telefone)}</strong>`
     : `<span style="color:var(--warn)">⚠️ Cadastre o telefone do cliente para enviar direto.</span>`;
