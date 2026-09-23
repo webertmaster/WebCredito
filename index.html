@@ -85,6 +85,27 @@
   }
   .btn-juros:disabled{ opacity:.5; }
 
+  /* ✅ NOVO – Botão copiar */
+  .btn-copy{
+    background:var(--field);
+    border:1px solid var(--fieldLine);
+    color:var(--text);
+    font-weight:800;
+    border-radius:12px;
+    padding:14px 16px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all .15s;
+    margin-top:0;
+    width:auto;
+  }
+  .btn-copy:hover{ border-color:var(--brand); }
+  .btn-copy.copiado{
+    background:rgba(108,255,157,.15);
+    border-color:rgba(108,255,157,.5);
+    color:var(--ok);
+  }
+
   .legal{
     margin-top:10px; font-size:12px; color:#9eb2e2;
     text-align:center; font-style:italic; line-height:1.35;
@@ -400,7 +421,11 @@
       <button class="btn-sec" onclick="fecharModal('modalPag')">Fechar</button>
       <button class="btn-ok" onclick="confirmarPagamento()">✓ Confirmar pagamento</button>
     </div>
-    <button class="btn-wa" onclick="enviarComprovantePagamento()">📱 Enviar comprovante no WhatsApp</button>
+    <!-- ✅ NOVO: linha com WhatsApp + Copiar -->
+    <div style="display:flex; gap:8px; margin-top:10px;">
+      <button class="btn-wa" id="btnEnviarWa" onclick="enviarComprovantePagamento()" style="flex:1; margin-top:0;">📱 Enviar no WhatsApp</button>
+      <button class="btn-copy" id="btnCopiarMsg" onclick="copiarMensagemComprovante()">📋 Copiar</button>
+    </div>
   </div>
 </div>
 
@@ -611,7 +636,7 @@ function gerarParcelas(dataBase, n, valorParcela) {
       dataPagamento: null,
       valorPago: null,
       jurosAtraso: 0,
-      jurosPagosAte: null   // data até quando os juros foram pagos (parcial)
+      jurosPagosAte: null
     });
   }
   return arr;
@@ -626,7 +651,6 @@ function calcularAtraso(p) {
   const hoje = hojeZero();
   const venc = fromISO(p.vencimento);
 
-  // Se o cliente já pagou juros até certa data, o juros só conta a partir dela
   let inicio = venc;
   if (p.jurosPagosAte) {
     const jpa = fromISO(p.jurosPagosAte);
@@ -1089,7 +1113,6 @@ function renderDetalhe(id) {
       actions = `<button class="btn-icon btn-sec" onclick="desmarcarPagamento('${emp.id}',${p.n})">↺</button>`;
     } else {
       if (atraso.dias > 0) {
-        // Parcela vencida: mostra botão de pagar juros + pagar parcela
         actions = `
           <button class="btn-icon btn-juros" onclick="abrirPagamentoJuros('${emp.id}',${p.n})">💸 Só juros</button>
           <button class="btn-icon btn-ok" onclick="abrirPagamento('${emp.id}',${p.n})">✓ Pagar</button>
@@ -1229,7 +1252,6 @@ function confirmarPagamentoParcela() {
   p.dataPagamento = dataPagamento;
   p.valorPago = valorPago;
   p.jurosAtraso = atraso.juros;
-  // ao quitar a parcela, limpa o marcador de juros pagos (não é mais necessário)
   p.jurosPagosAte = null;
 
   if (!emp.pagamentos) emp.pagamentos = [];
@@ -1260,8 +1282,6 @@ function confirmarPagamentoJuros() {
   const p = emp.parcelas.find(x => x.n === nParcela);
   if (!p || p.pago) return;
 
-  // Marca que os juros foram pagos até hoje.
-  // A parcela continua pendente.
   p.jurosPagosAte = dataPagamento;
 
   if (!emp.pagamentos) emp.pagamentos = [];
@@ -1356,7 +1376,7 @@ function abrirComprovante(empId, nParcela) {
   const btnConfirmar = acoes.querySelector(".btn-ok");
   btnConfirmar.style.display = "none";
 
-  const btnWa = document.querySelector("#modalPag .btn-wa");
+  const btnWa = document.getElementById("btnEnviarWa");
   btnWa.textContent = _comprovanteAtual.tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
   btnWa.onclick = enviarComprovantePagamento;
 
@@ -1395,7 +1415,7 @@ function abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento) {
   const btnConfirmar = acoes.querySelector(".btn-ok");
   btnConfirmar.style.display = "none";
 
-  const btnWa = document.querySelector("#modalPag .btn-wa");
+  const btnWa = document.getElementById("btnEnviarWa");
   btnWa.textContent = _comprovanteAtual.tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
   btnWa.onclick = enviarComprovantePagamento;
 
@@ -1421,6 +1441,46 @@ function enviarComprovantePagamento() {
 }
 
 // ============================================================
+// ✅ NOVO – COPIAR MENSAGEM DO COMPROVANTE
+// ============================================================
+async function copiarMensagemComprovante() {
+  if (!_comprovanteAtual) return;
+  const texto = _comprovanteAtual.mensagem;
+  const btn = document.getElementById("btnCopiarMsg");
+
+  try {
+    // Tenta API moderna (HTTPS, navegadores atuais)
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(texto);
+    } else {
+      // Fallback para navegadores antigos / http
+      const ta = document.createElement("textarea");
+      ta.value = texto;
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      ta.style.top = "0";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+
+    // Feedback visual
+    const original = "📋 Copiar";
+    btn.textContent = "✅ Copiado!";
+    btn.classList.add("copiado");
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove("copiado");
+    }, 1800);
+
+  } catch (err) {
+    alert("Não foi possível copiar automaticamente. Selecione o texto e copie manualmente.");
+  }
+}
+
+// ============================================================
 // RESET DO MODAL
 // ============================================================
 function resetModalPag() {
@@ -1428,9 +1488,17 @@ function resetModalPag() {
   const btnConfirmar = acoes.querySelector(".btn-ok");
   btnConfirmar.style.display = "";
   btnConfirmar.textContent = "✓ Confirmar pagamento";
-  const btnWa = document.querySelector("#modalPag .btn-wa");
+
+  const btnWa = document.getElementById("btnEnviarWa");
   btnWa.textContent = "📱 Enviar comprovante no WhatsApp";
   btnWa.onclick = enviarComprovantePagamento;
+
+  const btnCopy = document.getElementById("btnCopiarMsg");
+  if (btnCopy) {
+    btnCopy.textContent = "📋 Copiar";
+    btnCopy.classList.remove("copiado");
+  }
+
   _comprovanteAtual = null;
 }
 
