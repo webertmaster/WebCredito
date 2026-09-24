@@ -745,8 +745,8 @@
 // CONFIG
 // ============================================================
 const CONFIG = {
-  VALOR_MINIMO: 50,
-  LIMITE: 1500,
+  VALOR_MINIMO: 100,
+  LIMITE: 1800,
   WHATSAPP: "5584987974972",
   JUROS_ATRASO_MES: 0.30,
   MULTA_ATRASO: 0,
@@ -759,7 +759,7 @@ const CONFIG = {
 // REGRAS DE JUROS
 // ============================================================
 function regras(valor) {
-  if (valor < 100) {
+  if (valor < 200) {
     return [
       { n: 1, t: 0.32 },
       { n: 2, t: 0.34 }
@@ -777,8 +777,8 @@ function regras(valor) {
   if (valor <= 700) {
     return [
       { n: 4,  t: 0.209 },
-      { n: 6,  t: 0.183 },
-      { n: 10, t: 0.182 }
+      { n: 6,  t: 0.184 },
+      { n: 10, t: 0.183 }
     ];
   }
   if (valor <= 1000) {
