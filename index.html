@@ -14,11 +14,7 @@
     --neon-blue:#00e5ff;
   }
   *{ box-sizing:border-box; }
-  html, body{
-    overflow-x:hidden;
-    max-width:100%;
-    width:100%;
-  }
+  html, body{ overflow-x:hidden; max-width:100%; width:100%; }
   body{
     margin:0; background:var(--bg); color:var(--text);
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
@@ -28,8 +24,7 @@
   .card{
     background:var(--card); border-radius:16px; padding:16px;
     border:1px solid var(--line); margin-bottom:12px;
-    max-width:100%;
-    overflow:hidden;
+    max-width:100%; overflow:hidden;
   }
   .logo{ text-align:center; margin-bottom:12px; }
   .logo h2{ margin:0; font-size:24px; font-weight:900; letter-spacing:1px; color:var(--brand); }
@@ -57,7 +52,6 @@
   }
   .box strong{ font-size:16px; }
 
-  /* CPF */
   .cpf-row{ position:relative; }
   .cpf-row input{ padding-right:44px; }
   .cpf-status-icon{
@@ -70,121 +64,64 @@
   .input-bad{ border-color:rgba(255,124,124,.65)!important; box-shadow:0 0 0 3px rgba(255,124,124,.10)!important; }
 
   .btn-wa{ background:var(--wa); color:#fff; font-weight:900; border-radius:12px; padding:14px; margin-top:10px; }
-  .btn-sec{
-    background:var(--field); border:1px solid var(--fieldLine);
-    color:var(--text); font-weight:800; border-radius:12px; padding:14px; margin-top:8px;
-  }
+  .btn-sec{ background:var(--field); border:1px solid var(--fieldLine); color:var(--text); font-weight:800; border-radius:12px; padding:14px; margin-top:8px; }
   .btn-ok{ background:var(--ok); color:#0b1220; font-weight:900; }
-  .btn-danger{
-    background:rgba(255,124,124,.15); color:var(--bad);
-    border:1px solid rgba(255,124,124,.35); font-weight:800;
-  }
-  .btn-mini{
-    width:auto; padding:8px 12px; font-size:13px; margin-top:0; border-radius:10px;
-  }
-  .btn-icon{
-    width:auto; padding:6px 10px; margin-top:0; border-radius:10px;
-    font-size:13px; font-weight:900;
-  }
-  .btn-juros{
-    background:rgba(255,211,138,.15);
-    color:var(--warn);
-    border:1px solid rgba(255,211,138,.4);
-    font-weight:900;
-  }
-  .btn-juros:disabled{ opacity:.5; }
-
-  .btn-copy{
-    background:var(--field);
-    border:1px solid var(--fieldLine);
-    color:var(--text);
-    font-weight:800;
-    border-radius:12px;
-    padding:14px 16px;
-    cursor:pointer;
-    white-space:nowrap;
-    transition:all .15s;
-    margin-top:0;
-    width:auto;
-  }
+  .btn-danger{ background:rgba(255,124,124,.15); color:var(--bad); border:1px solid rgba(255,124,124,.35); font-weight:800; }
+  .btn-rene{ background:rgba(255,211,138,.15); color:var(--warn); border:1px solid rgba(255,211,138,.4); font-weight:900; }
+  .btn-mini{ width:auto; padding:8px 12px; font-size:13px; margin-top:0; border-radius:10px; }
+  .btn-icon{ width:auto; padding:6px 10px; margin-top:0; border-radius:10px; font-size:13px; font-weight:900; }
+  .btn-juros{ background:rgba(255,211,138,.15); color:var(--warn); border:1px solid rgba(255,211,138,.4); font-weight:900; }
+  .btn-copy{ background:var(--field); border:1px solid var(--fieldLine); color:var(--text); font-weight:800; border-radius:12px; padding:14px 16px; cursor:pointer; white-space:nowrap; transition:all .15s; margin-top:0; width:auto; }
   .btn-copy:hover{ border-color:var(--brand); }
-  .btn-copy.copiado{
-    background:rgba(108,255,157,.15);
-    border-color:rgba(108,255,157,.5);
-    color:var(--ok);
-  }
+  .btn-copy.copiado{ background:rgba(108,255,157,.15); border-color:rgba(108,255,157,.5); color:var(--ok); }
+  .btn-lembrete{ background:rgba(91,124,250,.15); color:var(--brand); border:1px solid rgba(91,124,250,.4); font-weight:900; }
 
-  .btn-lembrete{
-    background:rgba(91,124,250,.15);
-    color:var(--brand);
-    border:1px solid rgba(91,124,250,.4);
-    font-weight:900;
-  }
-
-  /* Score badges */
-  .score-badge{
-    font-size:10px; font-weight:900; padding:3px 9px; border-radius:999px;
-    text-transform:uppercase; letter-spacing:.5px; white-space:nowrap;
-    display:inline-block;
-  }
+  .score-badge{ font-size:10px; font-weight:900; padding:3px 9px; border-radius:999px; text-transform:uppercase; letter-spacing:.5px; white-space:nowrap; display:inline-block; }
   .score-otimo{ background:rgba(108,255,157,.15); color:var(--ok); }
   .score-medio{ background:rgba(255,211,138,.15); color:var(--warn); }
   .score-ruim{ background:rgba(255,124,124,.18); color:var(--bad); }
   .score-novo{ background:rgba(91,124,250,.15); color:var(--brand); }
 
-  /* Client card */
-  .client-card{
-    background:var(--field); border:1px solid var(--fieldLine);
-    border-radius:12px; padding:12px; margin-bottom:10px;
-    cursor:pointer; transition:border-color .15s;
-  }
+  .client-card{ background:var(--field); border:1px solid var(--fieldLine); border-radius:12px; padding:12px; margin-bottom:10px; cursor:pointer; transition:border-color .15s; }
   .client-card:hover{ border-color:var(--brand); }
   .client-card .row{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
   .client-card .name{ font-weight:800; color:var(--text); font-size:15px; }
   .client-card .meta{ font-size:12px; color:var(--muted); margin-top:4px; }
 
-  /* Contador de parcelas */
-  .parcela-counter{
-    display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;
-    font-size:11px; font-weight:800;
-  }
-  .parcela-counter .cnt{
-    padding:3px 8px; border-radius:999px; background:rgba(42,58,99,.5);
-    display:inline-flex; align-items:center; gap:3px;
-  }
+  .parcela-counter{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; font-size:11px; font-weight:800; }
+  .parcela-counter .cnt{ padding:3px 8px; border-radius:999px; background:rgba(42,58,99,.5); display:inline-flex; align-items:center; gap:3px; }
   .parcela-counter .cnt-pagas{ color:var(--ok); background:rgba(108,255,157,.1); }
   .parcela-counter .cnt-avencer{ color:var(--warn); background:rgba(255,211,138,.1); }
   .parcela-counter .cnt-atrasadas{ color:var(--bad); background:rgba(255,124,124,.12); }
 
-  /* Filtros da agenda */
-  .filtro-agenda{
-    display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;
-  }
-  .filtro-btn{
-    width:auto; padding:8px 12px; font-size:12px; font-weight:800;
+  /* ✅ Filtros da lista de clientes */
+  .filtros-lista{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .filtro-cli{
+    width:auto; padding:7px 11px; font-size:12px; font-weight:800;
     background:var(--field); border:1px solid var(--fieldLine);
     color:var(--muted); border-radius:999px; margin-top:0;
     cursor:pointer; white-space:nowrap;
   }
+  .filtro-cli.active{ background:var(--brand); color:#fff; border-color:var(--brand); }
+  .filtro-cli .cont{ opacity:.75; margin-left:4px; font-weight:900; }
+
+  .ordem-row{ display:flex; gap:8px; align-items:center; margin-bottom:12px; }
+  .ordem-row label{ margin:0; font-size:12px; color:var(--muted); flex-shrink:0; font-weight:800; }
+  .ordem-row select{ margin-top:0; font-size:13px; padding:8px 10px; flex:1; }
+
+  .filtro-agenda{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+  .filtro-btn{ width:auto; padding:8px 12px; font-size:12px; font-weight:800; background:var(--field); border:1px solid var(--fieldLine); color:var(--muted); border-radius:999px; margin-top:0; cursor:pointer; white-space:nowrap; }
   .filtro-btn.active{ background:var(--brand); color:#fff; border-color:var(--brand); }
   .filtro-btn .cont{ opacity:.75; margin-left:4px; font-weight:900; }
 
-  /* Item da agenda */
-  .agenda-item{
-    background:var(--field); border:1px solid var(--fieldLine);
-    border-radius:10px; padding:10px 12px; margin-bottom:8px;
-    display:flex; justify-content:space-between; align-items:center; gap:10px;
-  }
+  .agenda-item{ background:var(--field); border:1px solid var(--fieldLine); border-radius:10px; padding:10px 12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:10px; }
   .agenda-item.atrasada{ border-color:rgba(255,124,124,.4); background:rgba(255,124,124,.04); }
   .agenda-item.hoje{ border-color:rgba(255,211,138,.5); background:rgba(255,211,138,.05); }
   .agenda-item.proxima{ border-color:rgba(91,124,250,.4); }
   .agenda-item.quitado{ opacity:.5; }
 
   .agenda-info{ flex:1; min-width:0; font-size:13px; }
-  .agenda-info .linha1{
-    display:flex; justify-content:space-between; align-items:center;
-    gap:8px; margin-bottom:3px;
-  }
+  .agenda-info .linha1{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:3px; }
   .agenda-info .nome{ font-weight:800; font-size:14px; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .agenda-info .detalhe{ color:var(--muted); font-size:12px; line-height:1.5; }
   .agenda-info .valor{ color:var(--text); font-weight:800; }
@@ -193,324 +130,147 @@
   .agenda-item.hoje .quando{ color:var(--warn); }
   .agenda-actions{ display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
 
-  /* TABS */
   .tabs{ display:flex; gap:6px; margin-bottom:12px; }
-  .tab{
-    flex:1; padding:11px 6px; background:var(--field); border:1px solid var(--fieldLine);
-    border-radius:12px; color:var(--muted); font-size:13px; font-weight:800;
-    cursor:pointer; margin-top:0; display:flex; align-items:center;
-    justify-content:center; gap:4px; white-space:nowrap;
-    min-width:0;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
+  .tab{ flex:1; padding:11px 6px; background:var(--field); border:1px solid var(--fieldLine); border-radius:12px; color:var(--muted); font-size:13px; font-weight:800; cursor:pointer; margin-top:0; display:flex; align-items:center; justify-content:center; gap:4px; white-space:nowrap; min-width:0; overflow:hidden; text-overflow:ellipsis; }
   .tab.active{ background:var(--brand); color:#fff; border-color:var(--brand); }
-  .badge{
-    display:inline-block; background:var(--brand); color:#fff;
-    border-radius:999px; padding:1px 7px; font-size:10px;
-    min-width:18px; text-align:center;
-  }
+  .badge{ display:inline-block; background:var(--brand); color:#fff; border-radius:999px; padding:1px 7px; font-size:10px; min-width:18px; text-align:center; }
   .tab.active .badge{ background:rgba(255,255,255,.35); }
 
-  /* LISTA */
-  .toolbar{ display:flex; gap:8px; margin-bottom:12px; }
+  .toolbar{ display:flex; gap:8px; margin-bottom:10px; }
   .toolbar input{ margin-top:0; flex:1; }
   .toolbar button{ margin-top:0; width:auto; padding:12px 16px; white-space:nowrap; }
 
-  .loan-card{
-    background:var(--field); border:1px solid var(--fieldLine);
-    border-radius:12px; padding:12px; margin-bottom:10px;
-    cursor:pointer; transition:border-color .15s;
-  }
+  .loan-card{ background:var(--field); border:1px solid var(--fieldLine); border-radius:12px; padding:12px; margin-bottom:10px; cursor:pointer; transition:border-color .15s; }
   .loan-card:hover{ border-color:var(--brand); }
+  .loan-card.renegociado{ opacity:.6; border-style:dashed; cursor:default; }
+  .loan-card.renegociado:hover{ border-color:var(--fieldLine); }
   .loan-card .row{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
   .loan-card .name{ font-weight:800; color:var(--text); font-size:15px; }
   .loan-card .meta{ font-size:12px; color:var(--muted); margin-top:4px; }
-  .loan-card .progress{
-    margin-top:8px; height:6px; background:rgba(42,58,99,.7);
-    border-radius:99px; overflow:hidden;
-  }
-  .loan-card .progress-bar{
-    height:100%; background:linear-gradient(90deg,var(--brand),var(--ok));
-    border-radius:99px; transition:width .25s;
-  }
+  .loan-card .progress{ margin-top:8px; height:6px; background:rgba(42,58,99,.7); border-radius:99px; overflow:hidden; }
+  .loan-card .progress-bar{ height:100%; background:linear-gradient(90deg,var(--brand),var(--ok)); border-radius:99px; transition:width .25s; }
 
-  .status-badge{
-    font-size:10px; font-weight:900; padding:3px 9px; border-radius:999px;
-    text-transform:uppercase; letter-spacing:.5px; white-space:nowrap;
-  }
+  .status-badge{ font-size:10px; font-weight:900; padding:3px 9px; border-radius:999px; text-transform:uppercase; letter-spacing:.5px; white-space:nowrap; }
   .status-em-dia{ background:rgba(108,255,157,.15); color:var(--ok); }
   .status-atrasado{ background:rgba(255,124,124,.18); color:var(--bad); }
   .status-quitado{ background:rgba(91,124,250,.18); color:var(--brand); }
+  .status-renegociado{ background:rgba(255,211,138,.18); color:var(--warn); }
 
-  .empty{
-    text-align:center; color:var(--muted); padding:40px 20px;
-    font-size:14px; line-height:1.5;
-  }
+  .empty{ text-align:center; color:var(--muted); padding:40px 20px; font-size:14px; line-height:1.5; }
   .empty .emoji{ font-size:34px; display:block; margin-bottom:10px; }
 
-  /* DETALHE */
-  .detail-header{
-    display:flex; align-items:center; gap:10px; margin-bottom:14px;
-  }
-  .detail-header h3{
-    margin:0; font-size:16px; flex:1; overflow:hidden;
-    text-overflow:ellipsis; white-space:nowrap;
-  }
-  .info-grid{
-    display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;
-  }
-  .info-grid .item{
-    background:var(--field); border:1px solid var(--fieldLine);
-    border-radius:10px; padding:8px 10px;
-    min-width:0;
-  }
-  .info-grid .item .label{
-    font-size:10px; color:var(--muted); display:block; margin-bottom:3px;
-    text-transform:uppercase; letter-spacing:.4px;
-  }
+  .detail-header{ display:flex; align-items:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .detail-header h3{ margin:0; font-size:16px; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+
+  .info-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+  .info-grid .item{ background:var(--field); border:1px solid var(--fieldLine); border-radius:10px; padding:8px 10px; min-width:0; }
+  .info-grid .item .label{ font-size:10px; color:var(--muted); display:block; margin-bottom:3px; text-transform:uppercase; letter-spacing:.4px; }
   .info-grid .item .value{ font-size:14px; font-weight:800; word-break:break-word; }
 
-  .section-title{
-    font-size:12px; color:var(--muted); text-transform:uppercase;
-    letter-spacing:.6px; margin:16px 0 8px; font-weight:800;
-  }
+  .section-title{ font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; margin:16px 0 8px; font-weight:800; }
 
-  .resumo-status{
-    background:var(--field); border-radius:12px; padding:12px;
-    border:1px solid var(--fieldLine); margin-bottom:12px;
-  }
-  .resumo-status .linha{
-    display:flex; justify-content:space-between; font-size:13px; padding:5px 0;
-  }
+  .resumo-status{ background:var(--field); border-radius:12px; padding:12px; border:1px solid var(--fieldLine); margin-bottom:12px; }
+  .resumo-status .linha{ display:flex; justify-content:space-between; font-size:13px; padding:5px 0; }
   .resumo-status .linha strong{ font-weight:800; }
-  .resumo-status .linha.destaque{
-    border-top:1px dashed var(--fieldLine); margin-top:6px;
-    padding-top:8px; font-size:15px;
-  }
+  .resumo-status .linha.destaque{ border-top:1px dashed var(--fieldLine); margin-top:6px; padding-top:8px; font-size:15px; }
 
-  .parcela-item{
-    background:var(--field); border:1px solid var(--fieldLine);
-    border-radius:10px; padding:10px 12px; margin-bottom:8px;
-    display:flex; justify-content:space-between; align-items:center; gap:10px;
-  }
+  .aviso-rene{ background:rgba(255,211,138,.12); border:1px solid rgba(255,211,138,.35); border-radius:12px; padding:12px; margin-bottom:12px; font-size:13px; line-height:1.5; color:var(--warn); }
+  .aviso-rene strong{ color:var(--warn); }
+
+  .parcela-item{ background:var(--field); border:1px solid var(--fieldLine); border-radius:10px; padding:10px 12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; gap:10px; }
   .parcela-item.paga{ opacity:.72; border-color:rgba(108,255,157,.35); }
   .parcela-item.vencida{ border-color:rgba(255,124,124,.4); }
   .parcela-item.proxima{ border-color:rgba(91,124,250,.4); }
+  .parcela-item.hist{ opacity:.5; }
   .parcela-info{ flex:1; min-width:0; font-size:13px; }
   .parcela-info strong{ display:block; font-size:14px; margin-bottom:3px; }
   .parcela-info .datas{ color:var(--muted); font-size:12px; line-height:1.5; }
   .parcela-atraso{ color:var(--bad); font-size:12px; margin-top:5px; line-height:1.4; }
   .parcela-pago{ color:var(--ok); font-size:12px; margin-top:5px; line-height:1.5; }
-  .parcela-juros-pago{
-    color:var(--warn); font-size:12px; margin-top:5px; line-height:1.5;
-  }
+  .parcela-juros-pago{ color:var(--warn); font-size:12px; margin-top:5px; line-height:1.5; }
   .parcela-actions{ display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
 
-  .hist-item{
-    background:var(--field); border:1px solid rgba(108,255,157,.25);
-    border-radius:10px; padding:10px 12px; margin-bottom:8px; font-size:13px;
-  }
-  .hist-item.juros{
-    border-color:rgba(255,211,138,.3);
-  }
-  .hist-item .hist-head{
-    display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;
-    gap:8px;
-  }
+  .hist-item{ background:var(--field); border:1px solid rgba(108,255,157,.25); border-radius:10px; padding:10px 12px; margin-bottom:8px; font-size:13px; }
+  .hist-item.juros{ border-color:rgba(255,211,138,.3); }
+  .hist-item .hist-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; gap:8px; }
   .hist-item .hist-head strong{ color:var(--ok); }
   .hist-item.juros .hist-head strong{ color:var(--warn); }
   .hist-item .hist-detail{ color:var(--muted); font-size:12px; line-height:1.5; }
 
-  /* ✅ DASHBOARD */
-  .dash-grid{
-    display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;
-  }
-  .dash-card{
-    background:var(--field); border:1px solid var(--fieldLine);
-    border-radius:12px; padding:12px;
-  }
+  .dash-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+  .dash-card{ background:var(--field); border:1px solid var(--fieldLine); border-radius:12px; padding:12px; }
   .dash-card.full{ grid-column: 1 / -1; }
-  .dash-label{
-    font-size:10px; color:var(--muted); text-transform:uppercase;
-    letter-spacing:.5px; margin-bottom:6px; font-weight:800;
-  }
-  .dash-value{
-    font-size:19px; font-weight:900; color:var(--text); word-break:break-word;
-    line-height:1.15;
-  }
+  .dash-label{ font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; font-weight:800; }
+  .dash-value{ font-size:19px; font-weight:900; color:var(--text); word-break:break-word; line-height:1.15; }
   .dash-value.ok{ color:var(--ok); }
   .dash-value.warn{ color:var(--warn); }
   .dash-value.bad{ color:var(--bad); }
   .dash-value.brand{ color:var(--brand); }
   .dash-sub{ font-size:11px; color:var(--muted); margin-top:4px; }
 
-  /* ✅ BOTÕES DE BACKUP */
-  .backup-row{
-    display:flex; gap:8px; margin-top:8px;
-  }
-  .backup-row button{
-    flex:1; margin-top:0; padding:12px 8px; font-size:13px;
-  }
+  .backup-row{ display:flex; gap:8px; margin-top:8px; }
+  .backup-row button{ flex:1; margin-top:0; padding:12px 8px; font-size:13px; }
 
-  /* ✅ TELA DE PIN */
-  .pin-overlay{
-    position:fixed; inset:0; background:var(--bg);
-    display:none; align-items:center; justify-content:center;
-    z-index:99999; padding:20px;
-  }
+  .pin-overlay{ position:fixed; inset:0; background:var(--bg); display:none; align-items:center; justify-content:center; z-index:99999; padding:20px; }
   .pin-overlay.show{ display:flex; }
-  .pin-card{
-    width:min(340px, 100%); background:var(--card);
-    border:1px solid var(--line); border-radius:20px;
-    padding:24px 20px; text-align:center;
-  }
-  .pin-emoji{
-    font-size:44px; display:block; margin-bottom:8px;
-  }
-  .pin-title{
-    font-size:22px; font-weight:900; color:var(--brand);
-    letter-spacing:1px; margin:0 0 4px;
-  }
-  .pin-subtitle{
-    font-size:13px; color:var(--muted); margin:0 0 20px;
-  }
-  .pin-dots{
-    display:flex; justify-content:center; gap:12px;
-    margin-bottom:22px; min-height:20px;
-  }
-  .pin-dot{
-    width:14px; height:14px; border-radius:50%;
-    background:transparent; border:2px solid var(--fieldLine);
-    transition:all .15s;
-  }
+  .pin-card{ width:min(340px, 100%); background:var(--card); border:1px solid var(--line); border-radius:20px; padding:24px 20px; text-align:center; }
+  .pin-emoji{ font-size:44px; display:block; margin-bottom:8px; }
+  .pin-title{ font-size:22px; font-weight:900; color:var(--brand); letter-spacing:1px; margin:0 0 4px; }
+  .pin-subtitle{ font-size:13px; color:var(--muted); margin:0 0 20px; }
+  .pin-dots{ display:flex; justify-content:center; gap:12px; margin-bottom:22px; min-height:20px; }
+  .pin-dot{ width:14px; height:14px; border-radius:50%; background:transparent; border:2px solid var(--fieldLine); transition:all .15s; }
   .pin-dot.filled{ background:var(--brand); border-color:var(--brand); }
   .pin-dot.error{ background:var(--bad); border-color:var(--bad); }
-  .pin-keypad{
-    display:grid; grid-template-columns:repeat(3, 1fr);
-    gap:10px;
-  }
-  .pin-key{
-    aspect-ratio:1; padding:0; margin:0;
-    font-size:22px; font-weight:800;
-    background:var(--field); border:1px solid var(--fieldLine);
-    color:var(--text); border-radius:14px;
-    cursor:pointer; display:flex; align-items:center; justify-content:center;
-    transition:all .1s;
-    width:100%;
-  }
+  .pin-keypad{ display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
+  .pin-key{ aspect-ratio:1; padding:0; margin:0; font-size:22px; font-weight:800; background:var(--field); border:1px solid var(--fieldLine); color:var(--text); border-radius:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .1s; width:100%; }
   .pin-key:active{ background:var(--brand); border-color:var(--brand); }
   .pin-key.pin-key-ok{ background:var(--ok); color:#0b1220; border-color:var(--ok); }
   .pin-key.pin-key-back{ color:var(--warn); }
-  .pin-link{
-    background:transparent; border:none; color:var(--muted);
-    font-size:12px; margin-top:16px; text-decoration:underline;
-    cursor:pointer; padding:6px; width:auto;
-  }
+  .pin-link{ background:transparent; border:none; color:var(--muted); font-size:12px; margin-top:16px; text-decoration:underline; cursor:pointer; padding:6px; width:auto; }
   .pin-link:hover{ color:var(--text); }
-  .pin-error-msg{
-    font-size:13px; color:var(--bad); margin-top:10px;
-    min-height:18px; font-weight:800;
-  }
+  .pin-error-msg{ font-size:13px; color:var(--bad); margin-top:10px; min-height:18px; font-weight:800; }
 
-  /* MODAIS */
-  .overlay{
-    position:fixed; inset:0; background:rgba(0,0,0,.6);
-    display:none; align-items:center; justify-content:center;
-    z-index:9999; padding:16px;
-  }
+  .overlay{ position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:9999; padding:16px; }
   .overlay.show{ display:flex; }
-  .modal{
-    width:min(460px, 100%); background:var(--card);
-    border:1px solid var(--line); border-radius:16px;
-    padding:18px; max-height:92vh; overflow-y:auto;
-  }
+  .modal{ width:min(460px, 100%); background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px; max-height:92vh; overflow-y:auto; }
   .modal h3{ margin:0 0 6px; font-size:16px; }
   .modal p{ margin:6px 0; font-size:13px; color:var(--muted); line-height:1.5; }
   .modal .modal-actions{ display:flex; gap:8px; margin-top:14px; }
   .modal .modal-actions button{ margin-top:0; }
-  .modal .preview{
-    background:var(--field); border:1px solid var(--fieldLine);
-    border-radius:10px; padding:12px; margin-top:12px;
-    font-size:13px; white-space:pre-wrap; line-height:1.5;
-    color:var(--text); max-height:240px; overflow-y:auto;
-  }
-  .overlay-loader{
-    position:fixed; inset:0; background:rgba(0,0,0,.55);
-    display:none; align-items:center; justify-content:center;
-    z-index:9998; padding:16px;
-  }
+  .modal .preview{ background:var(--field); border:1px solid var(--fieldLine); border-radius:10px; padding:12px; margin-top:12px; font-size:13px; white-space:pre-wrap; line-height:1.5; color:var(--text); max-height:240px; overflow-y:auto; }
+  .overlay-loader{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:9998; padding:16px; }
   .overlay-loader.show{ display:flex; }
-  .loader-card{
-    width:min(420px, 100%); background:var(--card);
-    border:1px solid var(--line); border-radius:16px;
-    padding:16px; text-align:center;
-  }
-  .progress-wrap{
-    width:100%; background:var(--field); border:1px solid var(--fieldLine);
-    border-radius:999px; overflow:hidden; height:14px; margin-top:12px;
-  }
-  .progress-bar{
-    height:100%; width:0%; background:var(--brand);
-    border-radius:999px; transition:width .12s linear;
-  }
-  .progress-pct{
-    margin-top:10px; font-size:14px; color:var(--text);
-    font-weight:900; letter-spacing:.5px;
-  }
+  .loader-card{ width:min(420px, 100%); background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; text-align:center; }
+  .progress-wrap{ width:100%; background:var(--field); border:1px solid var(--fieldLine); border-radius:999px; overflow:hidden; height:14px; margin-top:12px; }
+  .progress-bar{ height:100%; width:0%; background:var(--brand); border-radius:999px; transition:width .12s linear; }
+  .progress-pct{ margin-top:10px; font-size:14px; color:var(--text); font-weight:900; letter-spacing:.5px; }
 
-  /* RODAPÉ */
-  footer{
-    text-align:center; font-size:11px; padding:10px 0;
-    letter-spacing:1px;
-  }
-  footer .footer-dev{
-    color:var(--neon-blue);
-    text-shadow:0 0 8px rgba(0,229,255,.7), 0 0 16px rgba(0,229,255,.35);
-    font-weight:800;
-  }
-  footer .footer-sep{ color:var(--muted); margin:0 6px; }
-  footer .footer-link{
-    color:var(--muted); background:none; border:none;
-    font-size:11px; padding:0; margin:0;
-    text-decoration:underline; cursor:pointer;
-    font-family:inherit;
-  }
+  footer{ text-align:center; font-size:11px; padding:10px 0; letter-spacing:1px; display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:nowrap; white-space:nowrap; }
+  footer .footer-dev{ color:var(--neon-blue); text-shadow:0 0 8px rgba(0,229,255,.7), 0 0 16px rgba(0,229,255,.35); font-weight:800; }
+  footer .footer-sep{ color:var(--muted); margin:0 2px; }
+  footer .footer-link{ color:var(--muted); background:none; border:none; font-size:11px; padding:0; margin:0; text-decoration:underline; cursor:pointer; font-family:inherit; }
 
   @media (max-width: 420px){
-    .tab{
-      font-size:11px;
-      padding:10px 4px;
-      gap:3px;
-    }
-    .tab .badge{
-      padding:1px 5px;
-      font-size:9px;
-      min-width:14px;
-    }
+    .tab{ font-size:11px; padding:10px 4px; gap:3px; }
+    .tab .badge{ padding:1px 5px; font-size:9px; min-width:14px; }
   }
 </style>
 </head>
 <body>
 
-<!-- ===================== TELA DE PIN ===================== -->
 <div class="pin-overlay" id="pinOverlay">
   <div class="pin-card">
     <span class="pin-emoji" id="pinEmoji">🔒</span>
     <h2 class="pin-title">WEB CRÉDITO</h2>
     <p class="pin-subtitle" id="pinSubtitle">Digite seu PIN</p>
-
     <div class="pin-dots" id="pinDots">
       <div class="pin-dot"></div>
       <div class="pin-dot"></div>
       <div class="pin-dot"></div>
       <div class="pin-dot"></div>
     </div>
-
     <div class="pin-keypad" id="pinKeypad"></div>
-
     <div class="pin-error-msg" id="pinError"></div>
-
     <button class="pin-link" id="pinLinkEsqueci" onclick="abrirEsqueciPin()">Esqueci meu PIN</button>
   </div>
 </div>
@@ -528,7 +288,6 @@
     <button type="button" class="tab" data-tab="rel">📊</button>
   </div>
 
-  <!-- ===================== SIMULADOR ===================== -->
   <div class="card" id="tab-sim">
     <div class="logo">
       <h2>WEB CRÉDITO</h2>
@@ -591,13 +350,25 @@
     </div>
   </div>
 
-  <!-- ===================== CLIENTES ===================== -->
   <div id="tab-cli" style="display:none">
 
     <div class="card" id="view-lista">
       <div class="toolbar">
         <input id="busca" placeholder="🔎 Buscar cliente por nome ou CPF" />
         <button type="button" onclick="abrirFormNovo()">+ Novo</button>
+      </div>
+      <!-- ✅ NOVO: filtros -->
+      <div class="filtros-lista" id="filtrosLista"></div>
+      <!-- ✅ NOVO: ordenação -->
+      <div class="ordem-row">
+        <label>Ordenar:</label>
+        <select id="ordemLista" onchange="renderLista()">
+          <option value="inteligente">Inteligente (atrasados primeiro)</option>
+          <option value="recentes">Mais recentes</option>
+          <option value="divida">Maior dívida</option>
+          <option value="atraso">Mais atrasado</option>
+          <option value="alfabetica">A-Z</option>
+        </select>
       </div>
       <div id="listaClientes"></div>
     </div>
@@ -641,7 +412,6 @@
 
   </div>
 
-  <!-- ===================== AGENDA ===================== -->
   <div id="tab-agenda" style="display:none">
     <div class="card">
       <div class="detail-header" style="margin-bottom:10px;">
@@ -652,7 +422,6 @@
     </div>
   </div>
 
-  <!-- ===================== RELATÓRIO / DASHBOARD ===================== -->
   <div id="tab-rel" style="display:none">
     <div class="card">
       <div class="detail-header" style="margin-bottom:14px;">
@@ -683,7 +452,7 @@
   <button class="footer-link" onclick="abrirAjustes()">⚙️ Ajustes</button>
 </footer>
 
-<!-- MODAL: pagamento / comprovante / lembrete / extrato -->
+<!-- MODAL: pagamento -->
 <div class="overlay" id="modalPag">
   <div class="modal">
     <h3 id="pagTitulo">Registrar pagamento</h3>
@@ -712,7 +481,37 @@
   </div>
 </div>
 
-<!-- MODAL: ajustes (trocar PIN) -->
+<!-- ✅ NOVO MODAL: Renegociação -->
+<div class="overlay" id="modalRene">
+  <div class="modal">
+    <h3>🔄 Renegociar empréstimo</h3>
+    <p style="margin-bottom:12px;">
+      O saldo devedor será transferido para um <strong>novo contrato</strong>. O contrato atual ficará arquivado como "renegociado".
+    </p>
+
+    <div class="preview" id="renePreview"></div>
+
+    <label>Novo valor (R$)</label>
+    <input id="reneValor" inputmode="numeric" placeholder="Ex: 800" />
+
+    <label>Novas parcelas</label>
+    <select id="reneParcelas"></select>
+
+    <label>1ª parcela (vencimento)</label>
+    <input id="reneData1" type="date" />
+
+    <div class="hint-muted" id="reneDetalhes">
+      Ajuste os campos conforme o combinado com o cliente.
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-sec" onclick="fecharModal('modalRene')">Cancelar</button>
+      <button class="btn-ok" onclick="confirmarRenegociacao()">✓ Confirmar renegociação</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: ajustes -->
 <div class="overlay" id="modalAjustes">
   <div class="modal">
     <h3>⚙️ Ajustes</h3>
@@ -745,8 +544,8 @@
 // CONFIG
 // ============================================================
 const CONFIG = {
-  VALOR_MINIMO: 100,
-  LIMITE: 1800,
+  VALOR_MINIMO: 50,
+  LIMITE: 2000,                 // ✅ Aumentado de 1500 para 2000
   WHATSAPP: "5584987974972",
   JUROS_ATRASO_MES: 0.30,
   MULTA_ATRASO: 0,
@@ -759,7 +558,7 @@ const CONFIG = {
 // REGRAS DE JUROS
 // ============================================================
 function regras(valor) {
-  if (valor < 200) {
+  if (valor < 100) {
     return [
       { n: 1, t: 0.32 },
       { n: 2, t: 0.34 }
@@ -777,8 +576,8 @@ function regras(valor) {
   if (valor <= 700) {
     return [
       { n: 4,  t: 0.209 },
-      { n: 6,  t: 0.184 },
-      { n: 10, t: 0.183 }
+      { n: 6,  t: 0.183 },
+      { n: 10, t: 0.182 }
     ];
   }
   if (valor <= 1000) {
@@ -788,6 +587,7 @@ function regras(valor) {
       { n: 12, t: 0.166 }
     ];
   }
+  // ✅ 1000+ (agora cobre até 2000)
   return [
     { n: 6,  t: 0.184 },
     { n: 10, t: 0.177 },
@@ -888,7 +688,7 @@ function cpfEhValido(cpf) {
 }
 
 // ============================================================
-// MÁSCARAS – EVENT DELEGATION (à prova de bugs)
+// MÁSCARAS – EVENT DELEGATION
 // ============================================================
 document.addEventListener("input", (e) => {
   const el = e.target;
@@ -954,19 +754,17 @@ function gerarParcelas(dataBase, n, valorParcela) {
 }
 
 // ============================================================
-// ATRASO – 30% ao mês sobre a parcela
+// ATRASO
 // ============================================================
 function calcularAtraso(p) {
   if (p.pago) return { dias: 0, juros: 0, multa: 0, total: 0 };
   const hoje = hojeZero();
   const venc = fromISO(p.vencimento);
-
   let inicio = venc;
   if (p.jurosPagosAte) {
     const jpa = fromISO(p.jurosPagosAte);
     if (jpa > inicio) inicio = jpa;
   }
-
   const dias = Math.floor((hoje - inicio) / 86400000);
   if (dias <= 0) return { dias: 0, juros: 0, multa: 0, total: 0 };
   const juros = p.valor * CONFIG.JUROS_ATRASO_MES * (dias / 30);
@@ -989,18 +787,23 @@ function novoId() {
 }
 
 // ============================================================
-// STATUS / SALDOS
+// STATUS / SALDOS (com renegociado)
 // ============================================================
 function statusEmprestimo(emp) {
+  if (emp.renegociado) return "renegociado";
   if (emp.parcelas.every(p => p.pago)) return "quitado";
   const hoje = hojeZero();
   const temAtraso = emp.parcelas.some(p => !p.pago && fromISO(p.vencimento) < hoje);
   return temAtraso ? "atrasado" : "em-dia";
 }
 function statusLabel(s) {
-  return s === "quitado" ? "Quitado" : s === "atrasado" ? "Atrasado" : "Em dia";
+  if (s === "quitado") return "Quitado";
+  if (s === "atrasado") return "Atrasado";
+  if (s === "renegociado") return "Renegociado";
+  return "Em dia";
 }
 function saldoDevedor(emp) {
+  if (emp.renegociado) return 0;   // ✅ dívida foi transferida
   let t = 0;
   emp.parcelas.forEach(p => {
     if (p.pago) return;
@@ -1070,7 +873,7 @@ function agruparPorCliente(emprestimos) {
 }
 
 // ============================================================
-// SCORE DO CLIENTE
+// SCORE
 // ============================================================
 function calcularScoreCliente(emprestimos) {
   let totalPagas = 0;
@@ -1079,6 +882,7 @@ function calcularScoreCliente(emprestimos) {
   const hoje = hojeZero();
 
   emprestimos.forEach(emp => {
+    if (emp.renegociado) return;   // ✅ não conta pra score
     emp.parcelas.forEach(p => {
       if (p.pago) {
         totalPagas++;
@@ -1113,11 +917,11 @@ const elResultado = document.getElementById("resultado");
 const elDiaVenc = document.getElementById("diaVenc");
 
 let cpfValido = false;
-
 let _voltarDetalhe = "lista";
 let _cpfClienteAtual = null;
-
 let _filtroAgenda = "todos";
+let _filtroCliente = "todos";   // ✅ NOVO
+let _reneAtual = null;          // ✅ NOVO
 
 // ============================================================
 // UI – CPF
@@ -1329,12 +1133,8 @@ function salvarDaSimulacao() {
   _voltarDetalhe = "lista";
   _cpfClienteAtual = null;
   abrirFormNovo({
-    nome: d.nome,
-    cpf: d.cpf,
-    tel: d.tel,
-    valor: d.v,
-    parcelas: d.p,
-    data1: d.dataPrimeiraISO
+    nome: d.nome, cpf: d.cpf, tel: d.tel,
+    valor: d.v, parcelas: d.p, data1: d.dataPrimeiraISO
   });
 }
 
@@ -1363,8 +1163,10 @@ document.querySelectorAll(".tab").forEach(btn => {
 // ============================================================
 function updateBadge() {
   const lista = getEmprestimos();
-
-  const abertos = lista.filter(e => statusEmprestimo(e) !== "quitado").length;
+  const abertos = lista.filter(e => {
+    const st = statusEmprestimo(e);
+    return st === "em-dia" || st === "atrasado";
+  }).length;
   const b = document.getElementById("badgeCount");
   if (abertos > 0) { b.textContent = abertos; b.style.display = "inline-block"; }
   else b.style.display = "none";
@@ -1372,6 +1174,7 @@ function updateBadge() {
   const hoje = hojeZero();
   let urgentes = 0;
   lista.forEach(emp => {
+    if (emp.renegociado) return;
     emp.parcelas.forEach(p => {
       if (p.pago) return;
       const dias = Math.floor((fromISO(p.vencimento) - hoje) / 86400000);
@@ -1384,48 +1187,122 @@ function updateBadge() {
 }
 
 // ============================================================
-// RENDER – LISTA DE CLIENTES
+// ✅ CLASSIFICAR CLIENTE (para filtros)
+// ============================================================
+function classificarCliente(cli) {
+  const temAtiva = cli.emprestimos.some(e => !e.renegociado);
+  if (!temAtiva) return "quitados";
+  const temAtraso = cli.emprestimos.some(e => !e.renegociado && statusEmprestimo(e) === "atrasado");
+  if (temAtraso) return "atrasados";
+  const temAberto = cli.emprestimos.some(e => !e.renegociado && statusEmprestimo(e) !== "quitado");
+  if (temAberto) return "em-dia";
+  return "quitados";
+}
+
+// ============================================================
+// ✅ RENDER – FILTROS DA LISTA
+// ============================================================
+function renderFiltrosLista(clientes) {
+  const cont = { todos: clientes.length, "em-dia": 0, atrasados: 0, quitados: 0 };
+  clientes.forEach(cli => { cont[classificarCliente(cli)]++; });
+
+  const filtros = [
+    { id: "todos",     label: "Todos" },
+    { id: "em-dia",    label: "Em dia" },
+    { id: "atrasados", label: "Atrasados" },
+    { id: "quitados",  label: "Quitados" }
+  ];
+
+  const box = document.getElementById("filtrosLista");
+  box.innerHTML = "";
+  filtros.forEach(f => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "filtro-cli" + (_filtroCliente === f.id ? " active" : "");
+    b.innerHTML = `${f.label}<span class="cont">${cont[f.id] || 0}</span>`;
+    b.onclick = () => { _filtroCliente = f.id; renderLista(); };
+    box.appendChild(b);
+  });
+}
+
+// ============================================================
+// ✅ RENDER – LISTA DE CLIENTES (com filtros + ordenação)
 // ============================================================
 function renderLista() {
   const termo = (document.getElementById("busca").value || "").toLowerCase().trim();
   const todos = getEmprestimos();
-  const clientes = agruparPorCliente(todos);
+  let clientes = agruparPorCliente(todos);
 
+  // Filtro de busca
+  if (termo) {
+    clientes = clientes.filter(c =>
+      (c.nome || "").toLowerCase().includes(termo) ||
+      soDigitos(c.cpf).includes(soDigitos(termo)));
+  }
+
+  // Render filtros (sempre com a lista completa pós-busca)
+  renderFiltrosLista(clientes);
+
+  // Aplica filtro de status
+  if (_filtroCliente !== "todos") {
+    clientes = clientes.filter(c => classificarCliente(c) === _filtroCliente);
+  }
+
+  // Ordenação
+  const ordem = document.getElementById("ordemLista").value;
   clientes.sort((a, b) => {
-    const aAt = a.emprestimos.some(e => statusEmprestimo(e) === "atrasado") ? 0 : 1;
-    const bAt = b.emprestimos.some(e => statusEmprestimo(e) === "atrasado") ? 0 : 1;
-    if (aAt !== bAt) return aAt - bAt;
-    return a.nome.localeCompare(b.nome);
-  });
+    const calcAtivo = (cli) => {
+      let saldo = 0, maisAtraso = 0;
+      cli.emprestimos.forEach(e => {
+        if (e.renegociado) return;
+        if (statusEmprestimo(e) !== "quitado") saldo += saldoDevedor(e);
+        e.parcelas.forEach(p => {
+          if (!p.pago) {
+            const dias = Math.floor((hojeZero() - fromISO(p.vencimento)) / 86400000);
+            if (dias > maisAtraso) maisAtraso = dias;
+          }
+        });
+      });
+      return { saldo, maisAtraso };
+    };
 
-  const filtrado = termo
-    ? clientes.filter(c =>
-        (c.nome || "").toLowerCase().includes(termo) ||
-        soDigitos(c.cpf).includes(soDigitos(termo)))
-    : clientes;
+    if (ordem === "inteligente") {
+      const aAt = classificarCliente(a) === "atrasados" ? 0 : 1;
+      const bAt = classificarCliente(b) === "atrasados" ? 0 : 1;
+      if (aAt !== bAt) return aAt - bAt;
+      return a.nome.localeCompare(b.nome);
+    }
+    if (ordem === "alfabetica") return a.nome.localeCompare(b.nome);
+    if (ordem === "divida") return calcAtivo(b).saldo - calcAtivo(a).saldo;
+    if (ordem === "atraso") return calcAtivo(b).maisAtraso - calcAtivo(a).maisAtraso;
+    if (ordem === "recentes") {
+      const aMax = Math.max(...a.emprestimos.map(e => new Date(e.criadoEm).getTime()), 0);
+      const bMax = Math.max(...b.emprestimos.map(e => new Date(e.criadoEm).getTime()), 0);
+      return bMax - aMax;
+    }
+    return 0;
+  });
 
   const el = document.getElementById("listaClientes");
 
-  if (filtrado.length === 0) {
+  if (clientes.length === 0) {
     el.innerHTML = `
       <div class="empty">
         <span class="emoji">📭</span>
-        ${clientes.length === 0
+        ${todos.length === 0
           ? "Nenhum cliente cadastrado.<br>Simule ou clique em <strong>+ Novo</strong>."
-          : "Nenhum resultado para a busca."}
+          : "Nenhum resultado para a busca/filtro."}
       </div>`;
     return;
   }
 
   el.innerHTML = "";
-  filtrado.forEach(cli => {
+  clientes.forEach(cli => {
     const score = calcularScoreCliente(cli.emprestimos);
 
-    let ativos = 0;
-    let totalSaldo = 0;
-    let totalEmprestado = 0;
-    let temAtraso = false;
+    let ativos = 0, totalSaldo = 0, totalEmprestado = 0, temAtraso = false;
     cli.emprestimos.forEach(emp => {
+      if (emp.renegociado) return;
       const st = statusEmprestimo(emp);
       if (st !== "quitado") {
         ativos++;
@@ -1436,7 +1313,10 @@ function renderLista() {
     });
 
     let todasParcelas = [];
-    cli.emprestimos.forEach(e => { todasParcelas = todasParcelas.concat(e.parcelas); });
+    cli.emprestimos.forEach(e => {
+      if (e.renegociado) return;
+      todasParcelas = todasParcelas.concat(e.parcelas);
+    });
     const contador = contarParcelas(todasParcelas);
 
     const div = document.createElement("div");
@@ -1450,9 +1330,7 @@ function renderLista() {
         </div>
         <span class="score-badge score-${score.key}">${score.label}</span>
       </div>
-
       ${montarContadorHTML(contador)}
-
       ${ativos > 0 ? `
       <div class="meta" style="margin-top:8px; display:flex; justify-content:space-between; gap:8px;">
         <span>Emprestado: <strong style="color:var(--text)">${brl(totalEmprestado,0)}</strong></span>
@@ -1474,13 +1352,11 @@ function esconderViewsCli() {
   document.getElementById("view-detalhe").style.display = "none";
   document.getElementById("view-form").style.display = "none";
 }
-
 function voltarLista() {
   esconderViewsCli();
   document.getElementById("view-lista").style.display = "block";
   renderLista();
 }
-
 function voltarDeDetalhe() {
   if (_voltarDetalhe === "cliente" && _cpfClienteAtual) {
     renderClienteDetalhe(_cpfClienteAtual);
@@ -1499,19 +1375,16 @@ function renderClienteDetalhe(clienteKey) {
   if (!cli) { voltarLista(); return; }
 
   _cpfClienteAtual = clienteKey;
-
   esconderViewsCli();
   const view = document.getElementById("view-cliente");
   view.style.display = "block";
 
   const score = calcularScoreCliente(cli.emprestimos);
 
-  let totalSaldo = 0;
-  let totalEmprestado = 0;
-  let totalPagoCli = 0;
-  let ativos = 0;
+  let totalSaldo = 0, totalEmprestado = 0, totalPagoCli = 0, ativos = 0;
   cli.emprestimos.forEach(emp => {
     totalPagoCli += totalPago(emp);
+    if (emp.renegociado) return;
     if (statusEmprestimo(emp) !== "quitado") {
       ativos++;
       totalSaldo += saldoDevedor(emp);
@@ -1520,7 +1393,10 @@ function renderClienteDetalhe(clienteKey) {
   });
 
   let todasParcelas = [];
-  cli.emprestimos.forEach(e => { todasParcelas = todasParcelas.concat(e.parcelas); });
+  cli.emprestimos.forEach(e => {
+    if (e.renegociado) return;
+    todasParcelas = todasParcelas.concat(e.parcelas);
+  });
   const contador = contarParcelas(todasParcelas);
 
   const empsOrd = [...cli.emprestimos].sort(
@@ -1560,6 +1436,21 @@ function renderClienteDetalhe(clienteKey) {
     const saldo = saldoDevedor(emp);
     const criado = new Date(emp.criadoEm).toLocaleDateString("pt-BR");
     const c = contarParcelas(emp.parcelas);
+
+    if (emp.renegociado) {
+      html += `
+        <div class="loan-card renegociado">
+          <div class="row">
+            <div style="min-width:0;">
+              <div class="name" style="font-size:14px;">${brl(emp.valorSolicitado, 0)} → ${emp.nParcelas}x de ${brl(emp.valorParcela)}</div>
+              <div class="meta">Criado em ${criado} · arquivado</div>
+            </div>
+            <span class="status-badge status-renegociado">🔄 Renegociado</span>
+          </div>
+        </div>
+      `;
+      return;
+    }
 
     html += `
       <div class="loan-card" onclick="abrirDetalheEmprestimo('${emp.id}')">
@@ -1606,11 +1497,16 @@ function renderDetalhe(id) {
   const prox = proximaParcela(emp);
   const taxaPct = (emp.taxaJuros || 0) * 100;
   const jurosTot = emp.valorTotal - emp.valorSolicitado;
-
   const contador = contarParcelas(emp.parcelas);
+  const isRene = !!emp.renegociado;
 
-  const btnExtrato = st !== "quitado"
+  // Botões do header (só mostra se NÃO estiver quitado/renegociado)
+  const ativo = !isRene && st !== "quitado";
+  const btnExtrato = ativo
     ? `<button class="btn-mini btn-sec" onclick="abrirExtrato('${emp.id}')">📄</button>`
+    : "";
+  const btnRene = ativo
+    ? `<button class="btn-mini btn-rene" onclick="abrirRenegociacao('${emp.id}')">🔄</button>`
     : "";
 
   let html = `
@@ -1618,9 +1514,26 @@ function renderDetalhe(id) {
       <button class="btn-mini btn-sec" onclick="voltarDeDetalhe()">← Voltar</button>
       <h3>${escapeHtml(emp.nome)}</h3>
       ${btnExtrato}
+      ${btnRene}
       <button class="btn-mini btn-danger" onclick="excluirEmprestimo('${emp.id}')">🗑</button>
     </div>
+  `;
 
+  // Aviso se foi renegociado
+  if (isRene) {
+    const novo = getEmprestimos().find(e => e.id === emp.renegociado.paraId);
+    html += `
+      <div class="aviso-rene">
+        🔄 Este empréstimo foi <strong>renegociado</strong> em ${formatBR(emp.renegociado.em.slice(0,10))}.
+        ${novo ? `O saldo foi transferido para o <strong>novo contrato</strong> de ${brl(novo.valorSolicitado, 0)} em ${novo.nParcelas}x.` : ""}
+        <div style="margin-top:8px;">
+          <button class="btn-mini btn-sec" onclick="abrirDetalheEmprestimo('${emp.renegociado.paraId}')">Ver novo contrato →</button>
+        </div>
+      </div>
+    `;
+  }
+
+  html += `
     <div class="info-grid">
       <div class="item"><span class="label">CPF</span><span class="value">${escapeHtml(emp.cpf || "-")}</span></div>
       <div class="item"><span class="label">Telefone</span><span class="value">${escapeHtml(emp.telefone || "-")}</span></div>
@@ -1637,7 +1550,7 @@ function renderDetalhe(id) {
     <div class="resumo-status" style="margin-top:12px;">
       <div class="linha"><span>Juros total do contrato</span><strong style="color:var(--warn)">${brl(jurosTot)}</strong></div>
       <div class="linha"><span>Total pago</span><strong style="color:var(--ok)">${brl(pago)}</strong></div>
-      ${prox ? `<div class="linha"><span>Próximo vencimento</span><strong>${formatBR(prox.vencimento)}</strong></div>` : ""}
+      ${prox && !isRene ? `<div class="linha"><span>Próximo vencimento</span><strong>${formatBR(prox.vencimento)}</strong></div>` : ""}
       <div class="linha destaque"><span>Saldo devedor</span><strong style="color:${saldo>0?'var(--warn)':'var(--ok)'}">${brl(saldo)}</strong></div>
     </div>
 
@@ -1650,22 +1563,21 @@ function renderDetalhe(id) {
   emp.parcelas.forEach(p => {
     const atraso = calcularAtraso(p);
     const vencida = !p.pago && fromISO(p.vencimento) < hoje;
-    const ehProxima = p.n === proxId;
+    const ehProxima = !isRene && p.n === proxId;
 
     let cls = "";
-    if (p.pago) cls = "paga";
+    if (isRene) cls = "hist";
+    else if (p.pago) cls = "paga";
     else if (vencida) cls = "vencida";
     else if (ehProxima) cls = "proxima";
 
     let subInfo = `<div class="datas">Vencimento: ${formatBR(p.vencimento)} · Valor: ${brl(p.valor)}</div>`;
-
     if (p.jurosPagosAte) {
       subInfo += `<div class="parcela-juros-pago">💰 Juros pagos até ${formatBR(p.jurosPagosAte)}</div>`;
     }
-
     if (p.pago) {
       subInfo += `<div class="parcela-pago">✓ Pago em ${formatBR(p.dataPagamento)} · Total: ${brl(p.valorPago)}</div>`;
-    } else if (atraso.dias > 0) {
+    } else if (!isRene && atraso.dias > 0) {
       subInfo += `<div class="parcela-atraso">
         ⚠️ ${atraso.dias} dia(s) em atraso<br>
         Juros (30%/mês): ${brl(atraso.juros)}<br>
@@ -1674,7 +1586,9 @@ function renderDetalhe(id) {
     }
 
     let actions = "";
-    if (p.pago) {
+    if (isRene) {
+      // sem botões em contrato renegociado
+    } else if (p.pago) {
       actions = `<button class="btn-icon btn-sec" onclick="desmarcarPagamento('${emp.id}',${p.n})">↺</button>`;
     } else {
       const btnLembrete = ehProxima
@@ -1742,9 +1656,10 @@ function renderDetalhe(id) {
 function renderAgenda() {
   const emps = getEmprestimos();
   const hoje = hojeZero();
-
   const itens = [];
+
   emps.forEach(emp => {
+    if (emp.renegociado) return;   // ✅ pula renegociados
     emp.parcelas.forEach(p => {
       if (p.pago) return;
       const venc = fromISO(p.vencimento);
@@ -1843,44 +1758,37 @@ function renderAgenda() {
 }
 
 // ============================================================
-// ✅ RELATÓRIO / DASHBOARD
+// RELATÓRIO
 // ============================================================
 function renderRelatorio() {
   const emps = getEmprestimos();
   const c = document.getElementById("relatorioContent");
 
-  // Totais gerais
-  let totalEmprestadoAtivo = 0;
-  let totalAReceber = 0;
-  let totalRecebido = 0;
-  let totalJurosRecebidos = 0;
-  let empsAtivos = 0;
-  let empsQuitados = 0;
-  let empsAtrasados = 0;
-
+  let totalEmprestadoAtivo = 0, totalAReceber = 0, totalRecebido = 0, totalJurosRecebidos = 0;
+  let empsAtivos = 0, empsQuitados = 0, empsAtrasados = 0, empsRene = 0;
   const clientesInadimplentes = new Set();
 
   emps.forEach(emp => {
-    const st = statusEmprestimo(emp);
-    if (st === "quitado") {
-      empsQuitados++;
-    } else {
-      empsAtivos++;
-      totalEmprestadoAtivo += emp.valorSolicitado;
-      totalAReceber += saldoDevedor(emp);
-      if (st === "atrasado") {
-        empsAtrasados++;
-        clientesInadimplentes.add(chaveCliente(emp));
+    if (emp.renegociado) { empsRene++; }
+    else {
+      const st = statusEmprestimo(emp);
+      if (st === "quitado") empsQuitados++;
+      else {
+        empsAtivos++;
+        totalEmprestadoAtivo += emp.valorSolicitado;
+        totalAReceber += saldoDevedor(emp);
+        if (st === "atrasado") {
+          empsAtrasados++;
+          clientesInadimplentes.add(chaveCliente(emp));
+        }
       }
     }
 
-    // Pagamentos
     (emp.pagamentos || []).forEach(h => {
       totalRecebido += h.total;
       if (h.juros && h.juros > 0) totalJurosRecebidos += h.juros;
     });
 
-    // Parcelas pagas (se não tiver histórico, conta o valor base)
     emp.parcelas.forEach(p => {
       if (p.pago && (!emp.pagamentos || emp.pagamentos.length === 0)) {
         totalRecebido += (p.valorPago || p.valor);
@@ -1891,8 +1799,7 @@ function renderRelatorio() {
 
   const totalClientes = agruparPorCliente(emps).length;
   const taxaInadimplencia = totalClientes > 0
-    ? (clientesInadimplentes.size / totalClientes) * 100
-    : 0;
+    ? (clientesInadimplentes.size / totalClientes) * 100 : 0;
 
   let html = `
     <div class="dash-grid">
@@ -1929,22 +1836,23 @@ function renderRelatorio() {
     </div>
 
     <div class="info-grid">
-      <div class="item"><span class="label">Empréstimos ativos</span><span class="value">${empsAtivos}</span></div>
-      <div class="item"><span class="label">Empréstimos quitados</span><span class="value" style="color:var(--ok)">${empsQuitados}</span></div>
+      <div class="item"><span class="label">Ativos</span><span class="value">${empsAtivos}</span></div>
+      <div class="item"><span class="label">Quitados</span><span class="value" style="color:var(--ok)">${empsQuitados}</span></div>
+      <div class="item"><span class="label">Renegociados</span><span class="value" style="color:var(--warn)">${empsRene}</span></div>
+      <div class="item"><span class="label">Atrasados</span><span class="value" style="color:var(--bad)">${empsAtrasados}</span></div>
     </div>
   `;
 
-  // Lista de clientes inadimplentes
   if (clientesInadimplentes.size > 0) {
     const clientes = agruparPorCliente(emps);
     const inadimplentes = clientes.filter(cli =>
-      cli.emprestimos.some(e => statusEmprestimo(e) === "atrasado"));
+      cli.emprestimos.some(e => !e.renegociado && statusEmprestimo(e) === "atrasado"));
 
     html += `<div class="section-title">🚨 Clientes em atraso</div>`;
     inadimplentes.forEach(cli => {
-      let saldo = 0;
-      let maisAtrasado = 0;
+      let saldo = 0, maisAtrasado = 0;
       cli.emprestimos.forEach(emp => {
+        if (emp.renegociado) return;
         if (statusEmprestimo(emp) === "atrasado") {
           saldo += saldoDevedor(emp);
           emp.parcelas.forEach(p => {
@@ -1955,7 +1863,6 @@ function renderRelatorio() {
           });
         }
       });
-
       html += `
         <div class="agenda-item atrasada" onclick="renderClienteDetalhe('${cli.key}')" style="cursor:pointer;">
           <div class="agenda-info">
@@ -1975,301 +1882,184 @@ function renderRelatorio() {
 }
 
 // ============================================================
-// ✅ BACKUP – EXPORTAR
+// ✅ RENEGOCIAÇÃO
 // ============================================================
-function exportarBackup() {
-  const emps = getEmprestimos();
-  if (emps.length === 0) {
-    alert("Não há dados para exportar ainda.");
-    return;
-  }
+function abrirRenegociacao(empId) {
+  const emp = getEmprestimos().find(e => e.id === empId);
+  if (!emp) return;
+  if (emp.renegociado) { alert("Este empréstimo já foi renegociado."); return; }
 
-  const dados = {
-    app: "WEB CRÉDITO",
-    versao: 1,
-    exportadoEm: new Date().toISOString(),
-    totalEmprestimos: emps.length,
-    emprestimos: emps
-  };
+  const st = statusEmprestimo(emp);
+  if (st === "quitado") { alert("Este empréstimo já está quitado."); return; }
 
-  const json = JSON.stringify(dados, null, 2);
-  const blob = new Blob([json], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
+  const saldo = saldoDevedor(emp);
 
-  const hoje = new Date();
-  const nome = `webcredito_backup_${hoje.getFullYear()}-${String(hoje.getMonth()+1).padStart(2,"0")}-${String(hoje.getDate()).padStart(2,"0")}.json`;
+  _reneAtual = { empId, saldoOriginal: saldo };
 
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = nome;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
+  document.getElementById("renePreview").innerHTML = `
+    <strong>Contrato atual:</strong><br>
+    💰 Valor original: ${brl(emp.valorSolicitado, 0)} (${emp.nParcelas}x de ${brl(emp.valorParcela)})<br>
+    📊 Saldo devedor: <strong style="color:var(--warn)">${brl(saldo)}</strong><br>
+    ${st === "atrasado" ? `<span style="color:var(--bad)">⚠️ Contrato em atraso</span>` : ""}
+  `;
 
-// ============================================================
-// ✅ BACKUP – IMPORTAR
-// ============================================================
-function importarBackup(file) {
-  if (!file) return;
+  // Preenche os campos
+  const dataPadrao = calcularPrimeiraParcela(5, 7);
+  document.getElementById("reneValor").value = brl(saldo, 0);
+  document.getElementById("reneData1").value = toISO(dataPadrao);
 
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    let dados;
-    try {
-      dados = JSON.parse(e.target.result);
-    } catch (err) {
-      alert("Arquivo inválido. Selecione um backup exportado pelo app.");
-      return;
-    }
+  popularParcelasRene(saldo);
+  atualizarPreviewRene();
 
-    if (!dados || !Array.isArray(dados.emprestimos)) {
-      alert("Arquivo inválido. Selecione um backup exportado pelo app.");
-      return;
-    }
-
-    const atuais = getEmprestimos();
-    const novos = dados.emprestimos;
-
-    mostrarConfirm(
-      "Restaurar backup?",
-      `Vai substituir os ${atuais.length} empréstimo(s) atuais pelos ${novos.length} do arquivo. Essa ação não pode ser desfeita.`,
-      () => {
-        saveEmprestimos(novos);
-        updateBadge();
-        alert("Backup restaurado com sucesso! ✅");
-        location.reload();
+  // Bind dos listeners (uma vez)
+  ["reneValor","reneData1"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el._boundRene) return;
+    el._boundRene = true;
+    el.addEventListener("input", () => {
+      if (id === "reneValor") {
+        formatarBRLSemCentavos(el);
+        const v = parseBRLInteiro(el.value);
+        popularParcelasRene(v);
       }
-    );
-  };
-  reader.readAsText(file);
-}
-
-// ============================================================
-// ✅ PIN – LÓGICA
-// ============================================================
-function hashPin(pin) {
-  // Hash simples (djb2) – não criptográfico, mas suficiente para evitar leitura direta
-  let h = 5381;
-  for (let i = 0; i < pin.length; i++) {
-    h = ((h << 5) + h) + pin.charCodeAt(i);
-    h = h & 0xffffffff;
+      atualizarPreviewRene();
+    });
+    el.addEventListener("change", atualizarPreviewRene);
+  });
+  const selP = document.getElementById("reneParcelas");
+  if (!selP._boundRene) {
+    selP._boundRene = true;
+    selP.addEventListener("change", atualizarPreviewRene);
   }
-  return String(h >>> 0);
+
+  document.getElementById("modalRene").classList.add("show");
 }
 
-function getPinSalvo() {
-  return localStorage.getItem(CONFIG.PIN_KEY);
-}
-function salvarPin(pin) {
-  localStorage.setItem(CONFIG.PIN_KEY, hashPin(pin));
-}
-function conferirPin(pin) {
-  return getPinSalvo() === hashPin(pin);
-}
-function temPin() {
-  return !!getPinSalvo();
-}
-function isUnlocked() {
-  return sessionStorage.getItem(CONFIG.SESSION_UNLOCK) === "1";
-}
-function unlock() {
-  sessionStorage.setItem(CONFIG.SESSION_UNLOCK, "1");
-}
-function lock() {
-  sessionStorage.removeItem(CONFIG.SESSION_UNLOCK);
+function popularParcelasRene(valor) {
+  const sel = document.getElementById("reneParcelas");
+  const antes = sel.value;
+  sel.innerHTML = "";
+
+  if (!Number.isFinite(valor) || valor < CONFIG.VALOR_MINIMO) {
+    const o = document.createElement("option");
+    o.value = ""; o.textContent = "Informe um valor";
+    sel.appendChild(o);
+    return;
+  }
+  regras(valor).forEach(r => {
+    const parc = price(valor, r.t, r.n);
+    const opt = document.createElement("option");
+    opt.value = String(r.n);
+    opt.textContent = `${r.n}x de ${brl(parc)} (${(r.t*100).toFixed(1)}% a.m.)`;
+    sel.appendChild(opt);
+  });
+  if (antes && [...sel.options].some(o => o.value === antes)) {
+    sel.value = antes;
+  }
 }
 
-// Estado da tela de PIN
-let _pinBuffer = "";
-let _pinModo = "login";     // "login" | "criar" | "confirmar"
-let _pinTemp = "";          // guarda o PIN temporário ao criar
+function atualizarPreviewRene() {
+  const v = parseBRLInteiro(document.getElementById("reneValor").value);
+  const n = Number(document.getElementById("reneParcelas").value) || 0;
+  const data1 = document.getElementById("reneData1").value;
+  const det = document.getElementById("reneDetalhes");
 
-function initPinScreen() {
-  if (isUnlocked()) {
-    document.getElementById("pinOverlay").classList.remove("show");
+  if (!Number.isFinite(v) || v <= 0 || n <= 0 || !data1) {
+    det.textContent = "Ajuste os campos conforme o combinado com o cliente.";
     return;
   }
 
-  _pinBuffer = "";
-  _pinTemp = "";
+  const t = getTaxa(v, n);
+  const parc = price(v, t, n);
+  const total = parc * n;
+  const juros = total - v;
+  const saldo = _reneAtual ? _reneAtual.saldoOriginal : 0;
+  const diferenca = v - saldo;
 
-  if (!temPin()) {
-    _pinModo = "criar";
-    document.getElementById("pinEmoji").textContent = "🆕";
-    document.getElementById("pinSubtitle").textContent = "Crie um PIN de 4 dígitos";
-    document.getElementById("pinLinkEsqueci").style.display = "none";
+  let avisoDiferenca = "";
+  if (Math.abs(diferenca) > 0.01) {
+    if (diferenca > 0) {
+      avisoDiferenca = `<span style="color:var(--bad)">⚠️ Novo valor é ${brl(diferenca)} MAIOR que o saldo (dívida cresce).</span>`;
+    } else {
+      avisoDiferenca = `<span style="color:var(--ok)">✓ Abatendo ${brl(-diferenca)} do saldo (dívida diminui).</span>`;
+    }
   } else {
-    _pinModo = "login";
-    document.getElementById("pinEmoji").textContent = "🔒";
-    document.getElementById("pinSubtitle").textContent = "Digite seu PIN";
-    document.getElementById("pinLinkEsqueci").style.display = "block";
+    avisoDiferenca = `<span style="color:var(--brand)">= valor igual ao saldo devedor atual.</span>`;
   }
 
-  document.getElementById("pinError").textContent = "";
-  renderPinDots();
-  renderPinKeypad();
-  document.getElementById("pinOverlay").classList.add("show");
+  det.innerHTML = `
+    💡 <strong>${n}x de ${brl(parc)}</strong> (taxa ${(t*100).toFixed(1)}% a.m.)<br>
+    Juros total: <strong>${brl(juros)}</strong><br>
+    Total a pagar: <strong>${brl(total)}</strong><br>
+    ${avisoDiferenca}
+  `;
 }
 
-function renderPinDots() {
-  const box = document.getElementById("pinDots");
-  const dots = box.querySelectorAll(".pin-dot");
-  dots.forEach((d, i) => {
-    d.classList.toggle("filled", i < _pinBuffer.length);
-    d.classList.remove("error");
-  });
-}
+function confirmarRenegociacao() {
+  if (!_reneAtual) return;
+  const empId = _reneAtual.empId;
+  const v = parseBRLInteiro(document.getElementById("reneValor").value);
+  const n = Number(document.getElementById("reneParcelas").value);
+  const data1Str = document.getElementById("reneData1").value;
 
-function renderPinKeypad() {
-  const kp = document.getElementById("pinKeypad");
-  kp.innerHTML = "";
-  const keys = ["1","2","3","4","5","6","7","8","9","back","0","ok"];
-  keys.forEach(k => {
-    const b = document.createElement("button");
-    b.type = "button";
-    if (k === "back") {
-      b.className = "pin-key pin-key-back";
-      b.textContent = "⌫";
-      b.onclick = () => pinBackspace();
-    } else if (k === "ok") {
-      b.className = "pin-key pin-key-ok";
-      b.textContent = "✓";
-      b.onclick = () => pinConfirmar();
-    } else {
-      b.className = "pin-key";
-      b.textContent = k;
-      b.onclick = () => pinDigito(k);
-    }
-    kp.appendChild(b);
-  });
-}
+  if (!Number.isFinite(v) || v <= 0) { alert("Informe o novo valor."); return; }
+  if (!n) { alert("Selecione o número de parcelas."); return; }
+  if (!data1Str) { alert("Informe a data da 1ª parcela."); return; }
 
-function pinDigito(d) {
-  if (_pinBuffer.length >= 4) return;
-  _pinBuffer += d;
-  renderPinDots();
+  const lista = getEmprestimos();
+  const emp = lista.find(e => e.id === empId);
+  if (!emp) return;
+  if (emp.renegociado) { alert("Este empréstimo já foi renegociado."); return; }
 
-  // Auto-confirma ao completar 4 dígitos
-  if (_pinBuffer.length === 4) {
-    setTimeout(pinConfirmar, 150);
-  }
-}
+  const t = getTaxa(v, n);
+  const parc = price(v, t, n);
+  const total = parc * n;
+  const d1 = fromISO(data1Str);
+  const parcelas = gerarParcelas(d1, n, parc);
 
-function pinBackspace() {
-  _pinBuffer = _pinBuffer.slice(0, -1);
-  renderPinDots();
-  document.getElementById("pinError").textContent = "";
-}
+  // Novo contrato
+  const novo = {
+    id: novoId(),
+    nome: emp.nome,
+    cpf: emp.cpf,
+    telefone: emp.telefone,
+    valorSolicitado: v,
+    taxaJuros: t,
+    valorParcela: parc,
+    valorTotal: total,
+    nParcelas: n,
+    criadoEm: new Date().toISOString(),
+    parcelas,
+    pagamentos: [],
+    renegociadoDe: empId
+  };
 
-function pinConfirmar() {
-  if (_pinBuffer.length !== 4) {
-    document.getElementById("pinError").textContent = "Digite os 4 dígitos";
-    return;
-  }
+  // Marca o antigo como renegociado
+  emp.renegociado = {
+    em: new Date().toISOString(),
+    paraId: novo.id
+  };
 
-  if (_pinModo === "login") {
-    if (conferirPin(_pinBuffer)) {
-      unlock();
-      document.getElementById("pinOverlay").classList.remove("show");
-    } else {
-      pinErro("PIN incorreto");
-    }
-    return;
-  }
+  lista.push(novo);
+  saveEmprestimos(lista);
+  updateBadge();
+  fecharModal("modalRene");
+  _reneAtual = null;
 
-  if (_pinModo === "criar") {
-    _pinTemp = _pinBuffer;
-    _pinBuffer = "";
-    _pinModo = "confirmar";
-    document.getElementById("pinSubtitle").textContent = "Confirme o PIN";
-    document.getElementById("pinError").textContent = "";
-    renderPinDots();
-    return;
-  }
+  alert(`Empréstimo renegociado! ✅\n\nNovo contrato:\n${n}x de ${brl(parc)} (total ${brl(total)})`);
 
-  if (_pinModo === "confirmar") {
-    if (_pinBuffer === _pinTemp) {
-      salvarPin(_pinTemp);
-      unlock();
-      document.getElementById("pinOverlay").classList.remove("show");
-    } else {
-      pinErro("Os PINs não batem. Tente de novo.");
-      _pinModo = "criar";
-      _pinTemp = "";
-      document.getElementById("pinSubtitle").textContent = "Crie um PIN de 4 dígitos";
-    }
-    return;
-  }
-}
-
-function pinErro(msg) {
-  document.getElementById("pinError").textContent = msg;
-  const dots = document.getElementById("pinDots").querySelectorAll(".pin-dot");
-  dots.forEach(d => d.classList.add("error"));
-  if (navigator.vibrate) navigator.vibrate(200);
-  setTimeout(() => {
-    _pinBuffer = "";
-    renderPinDots();
-  }, 500);
-}
-
-function abrirEsqueciPin() {
-  mostrarConfirm(
-    "Esqueci meu PIN",
-    "Para resetar o PIN você precisa apagar todos os dados do app (não tem como recuperar). Tem certeza?",
-    () => {
-      if (confirm("Última confirmação: TODOS os clientes e empréstimos serão apagados. Continuar?")) {
-        localStorage.removeItem(CONFIG.PIN_KEY);
-        localStorage.removeItem(CONFIG.STORAGE_KEY);
-        sessionStorage.removeItem(CONFIG.SESSION_UNLOCK);
-        location.reload();
-      }
-    }
-  );
+  _voltarDetalhe = "cliente";
+  renderDetalhe(novo.id);
 }
 
 // ============================================================
-// ✅ PIN – AJUSTES (trocar / bloquear)
-// ============================================================
-function abrirAjustes() {
-  if (!temPin()) {
-    alert("Você ainda não tem um PIN configurado.");
-    return;
-  }
-  document.getElementById("pinAtualInput").value = "";
-  document.getElementById("pinNovoInput").value = "";
-  document.getElementById("modalAjustes").classList.add("show");
-}
-
-function trocarPin() {
-  const atual = soDigitos(document.getElementById("pinAtualInput").value);
-  const novo = soDigitos(document.getElementById("pinNovoInput").value);
-
-  if (atual.length !== 4) { alert("Digite o PIN atual (4 dígitos)."); return; }
-  if (!conferirPin(atual)) { alert("PIN atual incorreto."); return; }
-  if (novo.length !== 4) { alert("O novo PIN deve ter 4 dígitos."); return; }
-
-  salvarPin(novo);
-  fecharModal("modalAjustes");
-  alert("PIN alterado com sucesso! ✅");
-}
-
-function bloquearAgora() {
-  lock();
-  fecharModal("modalAjustes");
-  initPinScreen();
-}
-
-// ============================================================
-// PAGAMENTO – MODAL (parcela completa)
+// PAGAMENTO – MODAL
 // ============================================================
 let _pagAtual = null;
 
 function abrirPagamento(empId, nParcela) {
   const emp = getEmprestimos().find(e => e.id === empId);
-  if (!emp) return;
+  if (!emp || emp.renegociado) return;
   const p = emp.parcelas.find(x => x.n === nParcela);
   if (!p || p.pago) return;
 
@@ -2292,12 +2082,9 @@ function abrirPagamento(empId, nParcela) {
   document.getElementById("modalPag").classList.add("show");
 }
 
-// ============================================================
-// PAGAMENTO – MODAL (SÓ JUROS)
-// ============================================================
 function abrirPagamentoJuros(empId, nParcela) {
   const emp = getEmprestimos().find(e => e.id === empId);
-  if (!emp) return;
+  if (!emp || emp.renegociado) return;
   const p = emp.parcelas.find(x => x.n === nParcela);
   if (!p || p.pago) return;
 
@@ -2329,7 +2116,7 @@ function abrirPagamentoJuros(empId, nParcela) {
 }
 
 // ============================================================
-// LEMBRETE DE VENCIMENTO
+// LEMBRETE
 // ============================================================
 function abrirLembrete(empId, nParcela) {
   const emp = getEmprestimos().find(e => e.id === empId);
@@ -2353,25 +2140,17 @@ function abrirLembrete(empId, nParcela) {
     msg += `Qualquer dúvida, estou à disposição. Obrigado!`;
   }
 
-  _comprovanteAtual = {
-    tipo: "lembrete",
-    empId, nParcela,
-    tel,
-    mensagem: msg
-  };
+  _comprovanteAtual = { tipo: "lembrete", empId, nParcela, tel, mensagem: msg };
 
   document.getElementById("pagTitulo").textContent = atraso.dias > 0
-    ? "Lembrete de parcela vencida"
-    : "Lembrete de vencimento";
+    ? "Lembrete de parcela vencida" : "Lembrete de vencimento";
   document.getElementById("pagInfo").innerHTML = tel
     ? `Telefone do cliente: <strong>${escapeHtml(emp.telefone)}</strong>`
     : `<span style="color:var(--warn)">⚠️ Cadastre o telefone do cliente para enviar direto.</span>`;
   document.getElementById("pagPreview").textContent = msg;
 
   const acoes = document.querySelector("#modalPag .modal-actions");
-  const btnConfirmar = acoes.querySelector(".btn-ok");
-  btnConfirmar.style.display = "none";
-
+  acoes.querySelector(".btn-ok").style.display = "none";
   const btnWa = document.getElementById("btnEnviarWa");
   btnWa.textContent = tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
   btnWa.onclick = enviarComprovantePagamento;
@@ -2380,7 +2159,7 @@ function abrirLembrete(empId, nParcela) {
 }
 
 // ============================================================
-// EXTRATO – RESUMO DE PARCELAS
+// EXTRATO
 // ============================================================
 function abrirExtrato(empId) {
   const emp = getEmprestimos().find(e => e.id === empId);
@@ -2395,18 +2174,10 @@ function abrirExtrato(empId) {
   msg += `💰 Valor: ${brl(emp.valorSolicitado, 0)} (${emp.nParcelas}x de ${brl(emp.valorParcela)})\n\n`;
   msg += `✅ Pagas: ${c.pagas} de ${c.total}\n`;
   msg += `⏳ Faltam: ${c.aVencer + c.atrasadas} parcela${(c.aVencer + c.atrasadas)>1?'s':''}\n`;
-  if (prox) {
-    msg += `📅 Próximo vencimento: ${formatBR(prox.vencimento)}\n`;
-  }
+  if (prox) msg += `📅 Próximo vencimento: ${formatBR(prox.vencimento)}\n`;
   msg += `\nQualquer dúvida, estou à disposição!`;
 
-  _comprovanteAtual = {
-    tipo: "extrato",
-    empId,
-    nParcela: null,
-    tel,
-    mensagem: msg
-  };
+  _comprovanteAtual = { tipo: "extrato", empId, nParcela: null, tel, mensagem: msg };
 
   document.getElementById("pagTitulo").textContent = "Resumo do empréstimo";
   document.getElementById("pagInfo").innerHTML = tel
@@ -2415,9 +2186,7 @@ function abrirExtrato(empId) {
   document.getElementById("pagPreview").textContent = msg;
 
   const acoes = document.querySelector("#modalPag .modal-actions");
-  const btnConfirmar = acoes.querySelector(".btn-ok");
-  btnConfirmar.style.display = "none";
-
+  acoes.querySelector(".btn-ok").style.display = "none";
   const btnWa = document.getElementById("btnEnviarWa");
   btnWa.textContent = tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
   btnWa.onclick = enviarComprovantePagamento;
@@ -2436,7 +2205,6 @@ function confirmarPagamento() {
 
 function confirmarPagamentoParcela() {
   const { empId, nParcela, atraso, valorPago, dataPagamento } = _pagAtual;
-
   const lista = getEmprestimos();
   const emp = lista.find(e => e.id === empId);
   if (!emp) return;
@@ -2451,26 +2219,19 @@ function confirmarPagamentoParcela() {
 
   if (!emp.pagamentos) emp.pagamentos = [];
   emp.pagamentos.push({
-    tipo: "parcela",
-    n: nParcela,
-    dataPagamento,
-    valorBase: p.valor,
-    juros: atraso.juros,
-    total: valorPago
+    tipo: "parcela", n: nParcela, dataPagamento,
+    valorBase: p.valor, juros: atraso.juros, total: valorPago
   });
 
   saveEmprestimos(lista);
   updateBadge();
-
   fecharModal("modalPag");
   renderDetalhe(empId);
-
   abrirComprovante(empId, nParcela);
 }
 
 function confirmarPagamentoJuros() {
   const { empId, nParcela, atraso, valorPago, dataPagamento } = _pagAtual;
-
   const lista = getEmprestimos();
   const emp = lista.find(e => e.id === empId);
   if (!emp) return;
@@ -2478,33 +2239,26 @@ function confirmarPagamentoJuros() {
   if (!p || p.pago) return;
 
   p.jurosPagosAte = dataPagamento;
-
   if (!emp.pagamentos) emp.pagamentos = [];
   emp.pagamentos.push({
-    tipo: "juros",
-    n: nParcela,
-    dataPagamento,
-    valorBase: p.valor,
-    juros: atraso.juros,
-    total: valorPago
+    tipo: "juros", n: nParcela, dataPagamento,
+    valorBase: p.valor, juros: atraso.juros, total: valorPago
   });
 
   saveEmprestimos(lista);
   updateBadge();
-
   fecharModal("modalPag");
   renderDetalhe(empId);
-
   abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento);
 }
 
 // ============================================================
-// DESMARCAR PAGAMENTO
+// DESMARCAR
 // ============================================================
 function desmarcarPagamento(empId, nParcela) {
   mostrarConfirm(
     "Desmarcar pagamento?",
-    `Deseja realmente desmarcar a parcela ${nParcela}? Todo o histórico deste pagamento (parcela e juros) será removido.`,
+    `Deseja realmente desmarcar a parcela ${nParcela}? Todo o histórico deste pagamento será removido.`,
     () => {
       const lista = getEmprestimos();
       const emp = lista.find(e => e.id === empId);
@@ -2525,7 +2279,7 @@ function desmarcarPagamento(empId, nParcela) {
 }
 
 // ============================================================
-// COMPROVANTE – Pagamento de parcela completa
+// COMPROVANTES
 // ============================================================
 let _comprovanteAtual = null;
 
@@ -2541,11 +2295,8 @@ function abrirComprovante(empId, nParcela) {
 
   let msg = `Olá, ${emp.nome}! 👋\n\n`;
   msg += `✅ Recebemos o pagamento da sua parcela *${nParcela}/${emp.nParcelas}* no valor de *${brl(p.valorPago)}*.\n`;
-  if (p.jurosAtraso > 0) {
-    msg += `_(inclui ${brl(p.jurosAtraso)} de juros por atraso)_\n`;
-  }
+  if (p.jurosAtraso > 0) msg += `_(inclui ${brl(p.jurosAtraso)} de juros por atraso)_\n`;
   msg += `\n`;
-
   if (restantes === 0) {
     msg += `🎉 Parabéns! Seu empréstimo está *QUITADO*. Obrigado pela confiança!`;
   } else {
@@ -2554,12 +2305,8 @@ function abrirComprovante(empId, nParcela) {
     msg += `\nQualquer dúvida, estou à disposição. Obrigado!`;
   }
 
-  _comprovanteAtual = {
-    tipo: "parcela",
-    empId, nParcela,
-    tel: emp.telefone ? soDigitos(emp.telefone) : "",
-    mensagem: msg
-  };
+  _comprovanteAtual = { tipo: "parcela", empId, nParcela,
+    tel: emp.telefone ? soDigitos(emp.telefone) : "", mensagem: msg };
 
   document.getElementById("pagTitulo").textContent = "Enviar comprovante ao cliente";
   document.getElementById("pagInfo").innerHTML = _comprovanteAtual.tel
@@ -2568,9 +2315,7 @@ function abrirComprovante(empId, nParcela) {
   document.getElementById("pagPreview").textContent = msg;
 
   const acoes = document.querySelector("#modalPag .modal-actions");
-  const btnConfirmar = acoes.querySelector(".btn-ok");
-  btnConfirmar.style.display = "none";
-
+  acoes.querySelector(".btn-ok").style.display = "none";
   const btnWa = document.getElementById("btnEnviarWa");
   btnWa.textContent = _comprovanteAtual.tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
   btnWa.onclick = enviarComprovantePagamento;
@@ -2578,9 +2323,6 @@ function abrirComprovante(empId, nParcela) {
   document.getElementById("modalPag").classList.add("show");
 }
 
-// ============================================================
-// COMPROVANTE – Pagamento SOMENTE de juros
-// ============================================================
 function abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento) {
   const emp = getEmprestimos().find(e => e.id === empId);
   if (!emp) return;
@@ -2593,12 +2335,8 @@ function abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento) {
   msg += `_(os juros voltam a contar a partir de ${formatBR(dataPagamento)})_\n\n`;
   msg += `Qualquer dúvida, estou à disposição. Obrigado!`;
 
-  _comprovanteAtual = {
-    tipo: "juros",
-    empId, nParcela,
-    tel: emp.telefone ? soDigitos(emp.telefone) : "",
-    mensagem: msg
-  };
+  _comprovanteAtual = { tipo: "juros", empId, nParcela,
+    tel: emp.telefone ? soDigitos(emp.telefone) : "", mensagem: msg };
 
   document.getElementById("pagTitulo").textContent = "Enviar comprovante de juros";
   document.getElementById("pagInfo").innerHTML = _comprovanteAtual.tel
@@ -2607,9 +2345,7 @@ function abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento) {
   document.getElementById("pagPreview").textContent = msg;
 
   const acoes = document.querySelector("#modalPag .modal-actions");
-  const btnConfirmar = acoes.querySelector(".btn-ok");
-  btnConfirmar.style.display = "none";
-
+  acoes.querySelector(".btn-ok").style.display = "none";
   const btnWa = document.getElementById("btnEnviarWa");
   btnWa.textContent = _comprovanteAtual.tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
   btnWa.onclick = enviarComprovantePagamento;
@@ -2618,31 +2354,24 @@ function abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento) {
 }
 
 // ============================================================
-// ENVIO DO COMPROVANTE
+// ENVIO / COPIAR
 // ============================================================
 function enviarComprovantePagamento() {
   if (!_comprovanteAtual) return;
   const text = encodeURIComponent(_comprovanteAtual.mensagem);
   const tel = _comprovanteAtual.tel;
-
   const target = tel ? `phone=${tel}&text=${text}` : `text=${text}`;
   const deepLink = `whatsapp://send?${target}`;
   const webLink  = tel ? `https://wa.me/${tel}?text=${text}` : `https://wa.me/?text=${text}`;
-
   window.location.href = deepLink;
   setTimeout(() => { window.location.href = webLink; }, 700);
-
   fecharModal("modalPag");
 }
 
-// ============================================================
-// COPIAR MENSAGEM
-// ============================================================
 async function copiarMensagemComprovante() {
   if (!_comprovanteAtual) return;
   const texto = _comprovanteAtual.mensagem;
   const btn = document.getElementById("btnCopiarMsg");
-
   try {
     if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(texto);
@@ -2651,14 +2380,12 @@ async function copiarMensagemComprovante() {
       ta.value = texto;
       ta.style.position = "fixed";
       ta.style.left = "-9999px";
-      ta.style.top = "0";
       document.body.appendChild(ta);
       ta.focus();
       ta.select();
       document.execCommand("copy");
       document.body.removeChild(ta);
     }
-
     const original = "📋 Copiar";
     btn.textContent = "✅ Copiado!";
     btn.classList.add("copiado");
@@ -2666,31 +2393,24 @@ async function copiarMensagemComprovante() {
       btn.textContent = original;
       btn.classList.remove("copiado");
     }, 1800);
-
   } catch (err) {
-    alert("Não foi possível copiar automaticamente. Selecione o texto e copie manualmente.");
+    alert("Não foi possível copiar automaticamente.");
   }
 }
 
-// ============================================================
-// RESET DO MODAL
-// ============================================================
 function resetModalPag() {
   const acoes = document.querySelector("#modalPag .modal-actions");
   const btnConfirmar = acoes.querySelector(".btn-ok");
   btnConfirmar.style.display = "";
   btnConfirmar.textContent = "✓ Confirmar pagamento";
-
   const btnWa = document.getElementById("btnEnviarWa");
   btnWa.textContent = "📱 Enviar comprovante no WhatsApp";
   btnWa.onclick = enviarComprovantePagamento;
-
   const btnCopy = document.getElementById("btnCopiarMsg");
   if (btnCopy) {
     btnCopy.textContent = "📋 Copiar";
     btnCopy.classList.remove("copiado");
   }
-
   _comprovanteAtual = null;
 }
 
@@ -2707,8 +2427,7 @@ function abrirFormNovo(prefill) {
   document.getElementById("fNome").value = prefill?.nome || "";
   document.getElementById("fCpf").value = prefill?.cpf || "";
   document.getElementById("fTelefone").value = prefill?.tel || "";
-  document.getElementById("fValor").value = prefill?.valor
-    ? brl(prefill.valor, 0) : "";
+  document.getElementById("fValor").value = prefill?.valor ? brl(prefill.valor, 0) : "";
   document.getElementById("fData1").value = prefill?.data1 || toISO(daquiUmaSemana);
 
   popularParcelasForm(prefill?.parcelas);
@@ -2773,7 +2492,6 @@ function atualizarPreviewForm() {
   const parc = price(v, t, n);
   const total = parc * n;
   const juros = total - v;
-
   const d1 = fromISO(data1);
   const dt = gerarParcelas(d1, n, parc);
   const ultima = dt[dt.length - 1];
@@ -2807,7 +2525,6 @@ function salvarFormEmprestimo() {
   const t = getTaxa(v, n);
   const parc = price(v, t, n);
   const total = parc * n;
-
   const d1 = fromISO(data1Str);
   const parcelas = gerarParcelas(d1, n, parc);
 
@@ -2828,7 +2545,6 @@ function salvarFormEmprestimo() {
   lista.push(emp);
   saveEmprestimos(lista);
   updateBadge();
-
   document.getElementById("view-form").style.display = "none";
 
   _voltarDetalhe = "lista";
@@ -2852,11 +2568,12 @@ function excluirEmprestimo(id) {
 }
 
 // ============================================================
-// MODAIS – utilitários
+// MODAIS
 // ============================================================
 function fecharModal(id) {
   document.getElementById(id).classList.remove("show");
   if (id === "modalPag") resetModalPag();
+  if (id === "modalRene") _reneAtual = null;
   _pagAtual = null;
 }
 function mostrarConfirm(titulo, msg, onOk) {
@@ -2870,7 +2587,7 @@ function mostrarConfirm(titulo, msg, onOk) {
   document.getElementById("modalConfirm").classList.add("show");
 }
 
-["modalPag","modalConfirm","modalAjustes"].forEach(id => {
+["modalPag","modalConfirm","modalAjustes","modalRene"].forEach(id => {
   const el = document.getElementById(id);
   el.addEventListener("click", (e) => {
     if (e.target === el) fecharModal(id);
@@ -2878,7 +2595,224 @@ function mostrarConfirm(titulo, msg, onOk) {
 });
 
 // ============================================================
-// HELPERS FINAIS
+// BACKUP
+// ============================================================
+function exportarBackup() {
+  const emps = getEmprestimos();
+  if (emps.length === 0) { alert("Não há dados para exportar ainda."); return; }
+  const dados = {
+    app: "WEB CRÉDITO",
+    versao: 1,
+    exportadoEm: new Date().toISOString(),
+    totalEmprestimos: emps.length,
+    emprestimos: emps
+  };
+  const json = JSON.stringify(dados, null, 2);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const h = new Date();
+  const nome = `webcredito_backup_${h.getFullYear()}-${String(h.getMonth()+1).padStart(2,"0")}-${String(h.getDate()).padStart(2,"0")}.json`;
+  const a = document.createElement("a");
+  a.href = url; a.download = nome;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function importarBackup(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    let dados;
+    try { dados = JSON.parse(e.target.result); }
+    catch (err) { alert("Arquivo inválido."); return; }
+    if (!dados || !Array.isArray(dados.emprestimos)) {
+      alert("Arquivo inválido.");
+      return;
+    }
+    const atuais = getEmprestimos();
+    const novos = dados.emprestimos;
+    mostrarConfirm(
+      "Restaurar backup?",
+      `Vai substituir os ${atuais.length} empréstimo(s) atuais pelos ${novos.length} do arquivo.`,
+      () => {
+        saveEmprestimos(novos);
+        updateBadge();
+        alert("Backup restaurado com sucesso! ✅");
+        location.reload();
+      }
+    );
+  };
+  reader.readAsText(file);
+}
+
+// ============================================================
+// PIN
+// ============================================================
+function hashPin(pin) {
+  let h = 5381;
+  for (let i = 0; i < pin.length; i++) {
+    h = ((h << 5) + h) + pin.charCodeAt(i);
+    h = h & 0xffffffff;
+  }
+  return String(h >>> 0);
+}
+function getPinSalvo() { return localStorage.getItem(CONFIG.PIN_KEY); }
+function salvarPin(pin) { localStorage.setItem(CONFIG.PIN_KEY, hashPin(pin)); }
+function conferirPin(pin) { return getPinSalvo() === hashPin(pin); }
+function temPin() { return !!getPinSalvo(); }
+function isUnlocked() { return sessionStorage.getItem(CONFIG.SESSION_UNLOCK) === "1"; }
+function unlock() { sessionStorage.setItem(CONFIG.SESSION_UNLOCK, "1"); }
+function lock() { sessionStorage.removeItem(CONFIG.SESSION_UNLOCK); }
+
+let _pinBuffer = "";
+let _pinModo = "login";
+let _pinTemp = "";
+
+function initPinScreen() {
+  if (isUnlocked()) {
+    document.getElementById("pinOverlay").classList.remove("show");
+    return;
+  }
+  _pinBuffer = "";
+  _pinTemp = "";
+  if (!temPin()) {
+    _pinModo = "criar";
+    document.getElementById("pinEmoji").textContent = "🆕";
+    document.getElementById("pinSubtitle").textContent = "Crie um PIN de 4 dígitos";
+    document.getElementById("pinLinkEsqueci").style.display = "none";
+  } else {
+    _pinModo = "login";
+    document.getElementById("pinEmoji").textContent = "🔒";
+    document.getElementById("pinSubtitle").textContent = "Digite seu PIN";
+    document.getElementById("pinLinkEsqueci").style.display = "block";
+  }
+  document.getElementById("pinError").textContent = "";
+  renderPinDots();
+  renderPinKeypad();
+  document.getElementById("pinOverlay").classList.add("show");
+}
+
+function renderPinDots() {
+  const dots = document.getElementById("pinDots").querySelectorAll(".pin-dot");
+  dots.forEach((d, i) => {
+    d.classList.toggle("filled", i < _pinBuffer.length);
+    d.classList.remove("error");
+  });
+}
+
+function renderPinKeypad() {
+  const kp = document.getElementById("pinKeypad");
+  kp.innerHTML = "";
+  const keys = ["1","2","3","4","5","6","7","8","9","back","0","ok"];
+  keys.forEach(k => {
+    const b = document.createElement("button");
+    b.type = "button";
+    if (k === "back") {
+      b.className = "pin-key pin-key-back"; b.textContent = "⌫";
+      b.onclick = () => pinBackspace();
+    } else if (k === "ok") {
+      b.className = "pin-key pin-key-ok"; b.textContent = "✓";
+      b.onclick = () => pinConfirmar();
+    } else {
+      b.className = "pin-key"; b.textContent = k;
+      b.onclick = () => pinDigito(k);
+    }
+    kp.appendChild(b);
+  });
+}
+
+function pinDigito(d) {
+  if (_pinBuffer.length >= 4) return;
+  _pinBuffer += d;
+  renderPinDots();
+  if (_pinBuffer.length === 4) setTimeout(pinConfirmar, 150);
+}
+function pinBackspace() {
+  _pinBuffer = _pinBuffer.slice(0, -1);
+  renderPinDots();
+  document.getElementById("pinError").textContent = "";
+}
+function pinConfirmar() {
+  if (_pinBuffer.length !== 4) {
+    document.getElementById("pinError").textContent = "Digite os 4 dígitos";
+    return;
+  }
+  if (_pinModo === "login") {
+    if (conferirPin(_pinBuffer)) {
+      unlock();
+      document.getElementById("pinOverlay").classList.remove("show");
+    } else pinErro("PIN incorreto");
+    return;
+  }
+  if (_pinModo === "criar") {
+    _pinTemp = _pinBuffer;
+    _pinBuffer = "";
+    _pinModo = "confirmar";
+    document.getElementById("pinSubtitle").textContent = "Confirme o PIN";
+    document.getElementById("pinError").textContent = "";
+    renderPinDots();
+    return;
+  }
+  if (_pinModo === "confirmar") {
+    if (_pinBuffer === _pinTemp) {
+      salvarPin(_pinTemp);
+      unlock();
+      document.getElementById("pinOverlay").classList.remove("show");
+    } else {
+      pinErro("Os PINs não batem. Tente de novo.");
+      _pinModo = "criar";
+      _pinTemp = "";
+      document.getElementById("pinSubtitle").textContent = "Crie um PIN de 4 dígitos";
+    }
+    return;
+  }
+}
+function pinErro(msg) {
+  document.getElementById("pinError").textContent = msg;
+  const dots = document.getElementById("pinDots").querySelectorAll(".pin-dot");
+  dots.forEach(d => d.classList.add("error"));
+  if (navigator.vibrate) navigator.vibrate(200);
+  setTimeout(() => { _pinBuffer = ""; renderPinDots(); }, 500);
+}
+function abrirEsqueciPin() {
+  mostrarConfirm(
+    "Esqueci meu PIN",
+    "Para resetar o PIN você precisa apagar todos os dados do app (não tem como recuperar). Tem certeza?",
+    () => {
+      if (confirm("Última confirmação: TODOS os clientes e empréstimos serão apagados. Continuar?")) {
+        localStorage.removeItem(CONFIG.PIN_KEY);
+        localStorage.removeItem(CONFIG.STORAGE_KEY);
+        sessionStorage.removeItem(CONFIG.SESSION_UNLOCK);
+        location.reload();
+      }
+    }
+  );
+}
+
+function abrirAjustes() {
+  if (!temPin()) { alert("Você ainda não tem um PIN configurado."); return; }
+  document.getElementById("pinAtualInput").value = "";
+  document.getElementById("pinNovoInput").value = "";
+  document.getElementById("modalAjustes").classList.add("show");
+}
+function trocarPin() {
+  const atual = soDigitos(document.getElementById("pinAtualInput").value);
+  const novo = soDigitos(document.getElementById("pinNovoInput").value);
+  if (atual.length !== 4) { alert("Digite o PIN atual."); return; }
+  if (!conferirPin(atual)) { alert("PIN atual incorreto."); return; }
+  if (novo.length !== 4) { alert("O novo PIN deve ter 4 dígitos."); return; }
+  salvarPin(novo);
+  fecharModal("modalAjustes");
+  alert("PIN alterado com sucesso! ✅");
+}
+function bloquearAgora() {
+  lock();
+  fecharModal("modalAjustes");
+  initPinScreen();
+}
+
+// ============================================================
+// HELPERS
 // ============================================================
 function escapeHtml(s) {
   return String(s || "").replace(/[&<>"']/g, c => ({
@@ -2890,7 +2824,6 @@ function escapeHtml(s) {
 // INIT
 // ============================================================
 initPinScreen();
-
 setCpfUI("warn");
 atualizarUI();
 updateBadge();
