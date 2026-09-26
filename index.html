@@ -590,9 +590,9 @@ function regras(valor) {
   // Valores entre R$ 1.001 e R$ 2.499 → parcelas normais (até 12x)
   if (valor < 2500) {
     return [
-      { n: 6,  t: 0.184 },
-      { n: 10, t: 0.177 },
-      { n: 12, t: 0.161 }
+      { n: 6,  t: 0.190 },
+      { n: 10, t: 0.178 },
+      { n: 12, t: 0.164 }
     ];
   }
   // ✅ NOVO — Valores de R$ 2.500 a R$ 5.000 → parcelas estendidas (12x até 24x)
