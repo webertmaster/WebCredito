@@ -297,12 +297,7 @@
     <label>Responsável</label>
     <input id="responsavel" placeholder="Nome completo" autocomplete="name" />
 
-    <label>CPF</label>
-    <div class="cpf-row">
-      <input id="cpf" data-mask="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off" />
-      <div class="cpf-status-icon" id="cpfIcon">🪪</div>
-    </div>
-    <div class="cpf-msg warn" id="cpfMsg">Digite o CPF completo para validar</div>
+    <!-- ✅ Campo CPF removido do Simulador -->
 
     <label>Telefone (WhatsApp do cliente)</label>
     <input id="telefone" data-mask="tel" placeholder="(00) 00000-0000" maxlength="16" inputmode="numeric" />
@@ -545,7 +540,7 @@
 // ============================================================
 const CONFIG = {
   VALOR_MINIMO: 50,
-  LIMITE: 5000,                 // ✅ Aumentado de 1500 para 2000
+  LIMITE: 5000,
   WHATSAPP: "5584987974972",
   JUROS_ATRASO_MES: 0.30,
   MULTA_ATRASO: 0,
@@ -582,12 +577,11 @@ function regras(valor) {
   }
   if (valor <= 1000) {
     return [
-      { n: 6,  t: 0.192 },
+      { n: 6,  t: 0.193 },
       { n: 10, t: 0.183 },
-      { n: 12, t: 0.168 }
+      { n: 12, t: 0.169 }
     ];
   }
-  // Valores entre R$ 1.001 e R$ 2.499 → parcelas normais (até 12x)
   if (valor < 2500) {
     return [
       { n: 6,  t: 0.190 },
@@ -595,7 +589,6 @@ function regras(valor) {
       { n: 12, t: 0.164 }
     ];
   }
-  // ✅ NOVO — Valores de R$ 2.500 a R$ 5.000 → parcelas estendidas (12x até 24x)
   return [
     { n: 12, t: 0.158 },
     { n: 14, t: 0.150 },
@@ -675,7 +668,7 @@ function formatTel(v) {
 function soDigitos(v){ return (v||"").replace(/\D/g,""); }
 
 // ============================================================
-// CPF
+// CPF (continua sendo usado apenas no formulário de cliente)
 // ============================================================
 function aplicarMascaraCPF(v) {
   v = soDigitos(v).slice(0, 11);
@@ -708,7 +701,6 @@ document.addEventListener("input", (e) => {
   const tipo = el.dataset.mask;
   if (tipo === "cpf") {
     el.value = aplicarMascaraCPF(el.value);
-    if (el.id === "cpf") { validarCpfAtual(); atualizarUI(); }
   } else if (tipo === "tel") {
     el.value = formatTel(el.value);
   }
@@ -815,7 +807,7 @@ function statusLabel(s) {
   return "Em dia";
 }
 function saldoDevedor(emp) {
-  if (emp.renegociado) return 0;   // ✅ dívida foi transferida
+  if (emp.renegociado) return 0;
   let t = 0;
   emp.parcelas.forEach(p => {
     if (p.pago) return;
@@ -894,7 +886,7 @@ function calcularScoreCliente(emprestimos) {
   const hoje = hojeZero();
 
   emprestimos.forEach(emp => {
-    if (emp.renegociado) return;   // ✅ não conta pra score
+    if (emp.renegociado) return;
     emp.parcelas.forEach(p => {
       if (p.pago) {
         totalPagas++;
@@ -914,12 +906,9 @@ function calcularScoreCliente(emprestimos) {
 }
 
 // ============================================================
-// ELEMENTOS – SIMULADOR
+// ELEMENTOS – SIMULADOR (SEM CPF)
 // ============================================================
 const elResp = document.getElementById("responsavel");
-const elCPF  = document.getElementById("cpf");
-const elCPFMsg = document.getElementById("cpfMsg");
-const elCPFIcon = document.getElementById("cpfIcon");
 const elTelefone = document.getElementById("telefone");
 const elValor = document.getElementById("valor");
 const elParcelas = document.getElementById("parcelas");
@@ -928,43 +917,11 @@ const elBtnSim = document.getElementById("btnSimular");
 const elResultado = document.getElementById("resultado");
 const elDiaVenc = document.getElementById("diaVenc");
 
-let cpfValido = false;
 let _voltarDetalhe = "lista";
 let _cpfClienteAtual = null;
 let _filtroAgenda = "todos";
-let _filtroCliente = "todos";   // ✅ NOVO
-let _reneAtual = null;          // ✅ NOVO
-
-// ============================================================
-// UI – CPF
-// ============================================================
-function setCpfUI(estado) {
-  elCPF.classList.remove("input-ok","input-bad");
-  elCPFMsg.classList.remove("warn","ok","bad");
-  if (estado === "ok") {
-    elCPF.classList.add("input-ok");
-    elCPFMsg.classList.add("ok");
-    elCPFMsg.textContent = "CPF válido ✅";
-    elCPFIcon.textContent = "✅";
-    return;
-  }
-  if (estado === "bad") {
-    elCPF.classList.add("input-bad");
-    elCPFMsg.classList.add("bad");
-    elCPFMsg.textContent = "CPF inválido ❌";
-    elCPFIcon.textContent = "❌";
-    return;
-  }
-  elCPFMsg.classList.add("warn");
-  elCPFMsg.textContent = "Digite o CPF completo para validar";
-  elCPFIcon.textContent = "🪪";
-}
-function validarCpfAtual() {
-  const dig = soDigitos(elCPF.value);
-  if (dig.length < 11) { cpfValido = false; setCpfUI("warn"); return; }
-  cpfValido = cpfEhValido(elCPF.value);
-  setCpfUI(cpfValido ? "ok" : "bad");
-}
+let _filtroCliente = "todos";
+let _reneAtual = null;
 
 // ============================================================
 // UI – SIMULADOR
@@ -1023,7 +980,8 @@ function atualizarUI() {
   if (selAntes && [...elParcelas.options].some(o => o.value === selAntes)) {
     elParcelas.value = selAntes;
   }
-  elBtnSim.disabled = !(nomeOk && cpfValido && elParcelas.value && elDiaVenc.value);
+  // ✅ não exige mais CPF válido
+  elBtnSim.disabled = !(nomeOk && elParcelas.value && elDiaVenc.value);
 }
 
 // ============================================================
@@ -1047,13 +1005,11 @@ elDiaVenc.addEventListener("change", atualizarUI);
 // ============================================================
 function simular() {
   const nome = elResp.value.trim();
-  const cpf = elCPF.value.trim();
   const tel = elTelefone.value.trim();
   const v = parseBRLInteiro(elValor.value);
   const p = Number(elParcelas.value);
 
   if (!nome) { alert("Informe o responsável."); return; }
-  if (!cpfEhValido(cpf)) { alert("CPF inválido."); return; }
   if (!Number.isFinite(v) || v <= 0) { alert("Digite um valor válido."); return; }
   if (v < CONFIG.VALOR_MINIMO) { alert(`Valor mínimo: ${brl(CONFIG.VALOR_MINIMO,0)}`); return; }
   if (v > CONFIG.LIMITE) { alert(`Valor máximo: ${brl(CONFIG.LIMITE,0)}`); return; }
@@ -1077,7 +1033,7 @@ function simular() {
 
   elResultado.style.display = "block";
   window._dados = {
-    nome, cpf, tel, v, p, parc, tot, juros,
+    nome, tel, v, p, parc, tot, juros,
     taxa: r.t,
     diaVenc,
     dataPrimeira: data1.toLocaleDateString("pt-BR"),
@@ -1087,13 +1043,12 @@ function simular() {
 }
 
 // ============================================================
-// WHATSAPP – SIMULAÇÃO
+// WHATSAPP – SIMULAÇÃO (sem CPF)
 // ============================================================
 function montarMensagemSimulacao(d) {
   return `Olá! Gostaria de solicitar uma análise de empréstimo.
 
 👤 Responsável: ${d.nome}
-🪪 CPF: ${d.cpf}
 ${d.tel ? `📞 Telefone: ${d.tel}\n` : ""}
 💰 Valor solicitado: ${brl(d.v, 0)}
 📆 Parcelas: ${d.p}x
@@ -1136,7 +1091,7 @@ function enviarWhatsComLoading() {
 }
 
 // ============================================================
-// SALVAR DA SIMULAÇÃO
+// SALVAR DA SIMULAÇÃO (sem CPF – o usuário preenche no form se quiser)
 // ============================================================
 function salvarDaSimulacao() {
   const d = window._dados;
@@ -1145,7 +1100,7 @@ function salvarDaSimulacao() {
   _voltarDetalhe = "lista";
   _cpfClienteAtual = null;
   abrirFormNovo({
-    nome: d.nome, cpf: d.cpf, tel: d.tel,
+    nome: d.nome, cpf: "", tel: d.tel,
     valor: d.v, parcelas: d.p, data1: d.dataPrimeiraISO
   });
 }
@@ -1245,22 +1200,18 @@ function renderLista() {
   const todos = getEmprestimos();
   let clientes = agruparPorCliente(todos);
 
-  // Filtro de busca
   if (termo) {
     clientes = clientes.filter(c =>
       (c.nome || "").toLowerCase().includes(termo) ||
       soDigitos(c.cpf).includes(soDigitos(termo)));
   }
 
-  // Render filtros (sempre com a lista completa pós-busca)
   renderFiltrosLista(clientes);
 
-  // Aplica filtro de status
   if (_filtroCliente !== "todos") {
     clientes = clientes.filter(c => classificarCliente(c) === _filtroCliente);
   }
 
-  // Ordenação
   const ordem = document.getElementById("ordemLista").value;
   clientes.sort((a, b) => {
     const calcAtivo = (cli) => {
@@ -1512,7 +1463,6 @@ function renderDetalhe(id) {
   const contador = contarParcelas(emp.parcelas);
   const isRene = !!emp.renegociado;
 
-  // Botões do header (só mostra se NÃO estiver quitado/renegociado)
   const ativo = !isRene && st !== "quitado";
   const btnExtrato = ativo
     ? `<button class="btn-mini btn-sec" onclick="abrirExtrato('${emp.id}')">📄</button>`
@@ -1531,7 +1481,6 @@ function renderDetalhe(id) {
     </div>
   `;
 
-  // Aviso se foi renegociado
   if (isRene) {
     const novo = getEmprestimos().find(e => e.id === emp.renegociado.paraId);
     html += `
@@ -1599,7 +1548,7 @@ function renderDetalhe(id) {
 
     let actions = "";
     if (isRene) {
-      // sem botões em contrato renegociado
+      // sem botões
     } else if (p.pago) {
       actions = `<button class="btn-icon btn-sec" onclick="desmarcarPagamento('${emp.id}',${p.n})">↺</button>`;
     } else {
@@ -1671,7 +1620,7 @@ function renderAgenda() {
   const itens = [];
 
   emps.forEach(emp => {
-    if (emp.renegociado) return;   // ✅ pula renegociados
+    if (emp.renegociado) return;
     emp.parcelas.forEach(p => {
       if (p.pago) return;
       const venc = fromISO(p.vencimento);
@@ -1915,7 +1864,6 @@ function abrirRenegociacao(empId) {
     ${st === "atrasado" ? `<span style="color:var(--bad)">⚠️ Contrato em atraso</span>` : ""}
   `;
 
-  // Preenche os campos
   const dataPadrao = calcularPrimeiraParcela(5, 7);
   document.getElementById("reneValor").value = brl(saldo, 0);
   document.getElementById("reneData1").value = toISO(dataPadrao);
@@ -1923,7 +1871,6 @@ function abrirRenegociacao(empId) {
   popularParcelasRene(saldo);
   atualizarPreviewRene();
 
-  // Bind dos listeners (uma vez)
   ["reneValor","reneData1"].forEach(id => {
     const el = document.getElementById(id);
     if (el._boundRene) return;
@@ -2029,7 +1976,6 @@ function confirmarRenegociacao() {
   const d1 = fromISO(data1Str);
   const parcelas = gerarParcelas(d1, n, parc);
 
-  // Novo contrato
   const novo = {
     id: novoId(),
     nome: emp.nome,
@@ -2046,7 +1992,6 @@ function confirmarRenegociacao() {
     renegociadoDe: empId
   };
 
-  // Marca o antigo como renegociado
   emp.renegociado = {
     em: new Date().toISOString(),
     paraId: novo.id
@@ -2836,7 +2781,6 @@ function escapeHtml(s) {
 // INIT
 // ============================================================
 initPinScreen();
-setCpfUI("warn");
 atualizarUI();
 updateBadge();
 renderLista();
