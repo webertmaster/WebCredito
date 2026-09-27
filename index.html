@@ -207,6 +207,14 @@
   .dash-value.brand{ color:var(--brand); }
   .dash-sub{ font-size:11px; color:var(--muted); margin-top:4px; }
 
+  /* ✅ NOVO: Lucro mês a mês */
+  .mes-linha{ display:grid; grid-template-columns:1fr auto auto; gap:12px; padding:10px 12px; background:var(--field); border:1px solid var(--fieldLine); border-radius:10px; margin-bottom:6px; font-size:13px; align-items:center; }
+  .mes-linha.destaque{ border-color:rgba(91,124,250,.5); background:rgba(91,124,250,.06); }
+  .mes-label{ font-weight:800; color:var(--text); }
+  .mes-label .pgt{ font-size:10px; color:var(--muted); font-weight:400; margin-left:4px; }
+  .mes-recebido{ color:var(--ok); font-weight:800; text-align:right; }
+  .mes-juros{ color:var(--brand); font-weight:900; text-align:right; min-width:80px; }
+
   .backup-row{ display:flex; gap:8px; margin-top:8px; }
   .backup-row button{ flex:1; margin-top:0; padding:12px 8px; font-size:13px; }
 
@@ -252,6 +260,9 @@
   @media (max-width: 420px){
     .tab{ font-size:11px; padding:10px 4px; gap:3px; }
     .tab .badge{ padding:1px 5px; font-size:9px; min-width:14px; }
+    .mes-linha{ grid-template-columns:1fr auto; gap:6px; padding:8px 10px; }
+    .mes-recebido{ grid-column:2; }
+    .mes-juros{ grid-column:2; }
   }
 </style>
 </head>
@@ -331,6 +342,8 @@
       <div class="box">📈 Juros total: <strong id="jurosTotal"></strong></div>
       <div class="box">📊 Total a pagar: <strong id="total"></strong></div>
       <div class="box">📅 1ª parcela: <strong id="primeiraParcela"></strong></div>
+      <!-- ✅ NOVO: Timestamp de geração -->
+      <div class="box" style="font-size:12px; color:var(--muted);">🕒 Simulação gerada em: <strong id="geradoEm" style="font-size:13px; color:var(--text);"></strong></div>
 
       <div class="hint-muted" style="margin-bottom:8px;">
         ⚠️ Parcelas em atraso terão <strong>juros de 30% ao mês</strong> (proporcional aos dias).
@@ -669,6 +682,32 @@ function formatTel(v) {
 }
 function soDigitos(v){ return (v||"").replace(/\D/g,""); }
 
+// ✅ NOVO: helper de data+hora e mês por extenso
+function formatarDataHora(iso) {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "-";
+  const data = d.toLocaleDateString("pt-BR");
+  const hora = d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+  return `${data} às ${hora}`;
+}
+function formatarDataHoraCurta(iso) {
+  if (!iso) return "-";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "-";
+  const dia = String(d.getDate()).padStart(2,"0");
+  const mes = String(d.getMonth()+1).padStart(2,"0");
+  const ano = d.getFullYear();
+  const hora = String(d.getHours()).padStart(2,"0");
+  const min  = String(d.getMinutes()).padStart(2,"0");
+  return `${dia}/${mes}/${ano} ${hora}:${min}`;
+}
+const MESES_NOMES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+function formatarMesAno(chave) {
+  const [ano, mes] = chave.split("-");
+  return `${MESES_NOMES[parseInt(mes)-1]}/${ano}`;
+}
+
 // ============================================================
 // CPF
 // ============================================================
@@ -794,7 +833,7 @@ function novoId() {
 }
 
 // ============================================================
-// STATUS / SALDOS (com renegociado)
+// STATUS / SALDOS
 // ============================================================
 function statusEmprestimo(emp) {
   if (emp.renegociado) return "renegociado";
@@ -909,7 +948,7 @@ function calcularScoreCliente(emprestimos) {
 }
 
 // ============================================================
-// ELEMENTOS – SIMULADOR (CPF OPCIONAL)
+// ELEMENTOS – SIMULADOR
 // ============================================================
 const elResp = document.getElementById("responsavel");
 const elCPF  = document.getElementById("cpf");
@@ -923,7 +962,7 @@ const elBtnSim = document.getElementById("btnSimular");
 const elResultado = document.getElementById("resultado");
 const elDiaVenc = document.getElementById("diaVenc");
 
-let cpfValido = true; // opcional: começa como válido
+let cpfValido = true;
 let _voltarDetalhe = "lista";
 let _cpfClienteAtual = null;
 let _filtroAgenda = "todos";
@@ -931,7 +970,7 @@ let _filtroCliente = "todos";
 let _reneAtual = null;
 
 // ============================================================
-// UI – CPF (opcional no Simulador)
+// UI – CPF (opcional)
 // ============================================================
 function setCpfUI(estado) {
   elCPF.classList.remove("input-ok","input-bad");
@@ -956,7 +995,6 @@ function setCpfUI(estado) {
     elCPFIcon.textContent = "❌";
     return;
   }
-  // "warn" = digitando
   elCPFMsg.classList.add("warn");
   elCPFMsg.textContent = "Digite o CPF completo (11 dígitos)";
   elCPFIcon.textContent = "🪪";
@@ -969,7 +1007,7 @@ function validarCpfAtual() {
     return;
   }
   if (dig.length < 11) {
-    cpfValido = true; // deixa passar enquanto digita
+    cpfValido = true;
     setCpfUI("warn");
     return;
   }
@@ -1064,7 +1102,6 @@ function simular() {
   const p = Number(elParcelas.value);
 
   if (!nome) { alert("Informe o responsável."); return; }
-  // CPF é OPCIONAL — só valida se foi preenchido
   if (cpf && !cpfEhValido(cpf)) {
     alert("CPF inválido. Corrija ou apague o campo para continuar (é opcional).");
     return;
@@ -1083,12 +1120,15 @@ function simular() {
 
   const diaVenc = Number(elDiaVenc.value);
   const data1 = calcularPrimeiraParcela(diaVenc, 7);
+  const agora = new Date(); // ✅ Timestamp de geração
 
   document.getElementById("primeiraParcela").textContent =
     data1.toLocaleDateString("pt-BR");
   document.getElementById("parcela").textContent = brl(parc);
   document.getElementById("jurosTotal").textContent = brl(juros);
   document.getElementById("total").textContent = brl(tot);
+  // ✅ NOVO: mostrar hora da geração
+  document.getElementById("geradoEm").textContent = formatarDataHora(agora.toISOString());
 
   elResultado.style.display = "block";
   window._dados = {
@@ -1097,6 +1137,7 @@ function simular() {
     diaVenc,
     dataPrimeira: data1.toLocaleDateString("pt-BR"),
     dataPrimeiraISO: toISO(data1),
+    geradoEm: agora.toISOString(),
     salvo: false
   };
 }
@@ -1105,6 +1146,7 @@ function simular() {
 // WHATSAPP – SIMULAÇÃO
 // ============================================================
 function montarMensagemSimulacao(d) {
+  const gerado = formatarDataHoraCurta(d.geradoEm);
   return `Olá! Gostaria de solicitar uma análise de empréstimo.
 
 👤 Responsável: ${d.nome}
@@ -1115,6 +1157,7 @@ ${d.cpf ? `🪪 CPF: ${d.cpf}\n` : ""}${d.tel ? `📞 Telefone: ${d.tel}\n` : ""
 📈 Juros total: ${brl(d.juros)}
 📊 Total a pagar: ${brl(d.tot)}
 📅 1ª parcela: ${d.dataPrimeira}
+🕒 Simulação gerada em: ${gerado}
 
 Fico no aguardo, obrigado.`;
 }
@@ -1456,7 +1499,8 @@ function renderClienteDetalhe(clienteKey) {
     const totalP = emp.nParcelas;
     const pct = totalP ? (pagas / totalP) * 100 : 0;
     const saldo = saldoDevedor(emp);
-    const criado = new Date(emp.criadoEm).toLocaleDateString("pt-BR");
+    // ✅ NOVO: mostra data + hora
+    const criado = formatarDataHoraCurta(emp.criadoEm);
     const c = contarParcelas(emp.parcelas);
 
     if (emp.renegociado) {
@@ -1521,6 +1565,8 @@ function renderDetalhe(id) {
   const jurosTot = emp.valorTotal - emp.valorSolicitado;
   const contador = contarParcelas(emp.parcelas);
   const isRene = !!emp.renegociado;
+  // ✅ NOVO: data+hora de criação do contrato
+  const criadoEmStr = formatarDataHora(emp.criadoEm);
 
   const ativo = !isRene && st !== "quitado";
   const btnExtrato = ativo
@@ -1563,6 +1609,8 @@ function renderDetalhe(id) {
       <div class="item"><span class="label">Total a pagar</span><span class="value">${brl(emp.valorTotal)}</span></div>
       <div class="item"><span class="label">Status</span><span class="value"><span class="status-badge status-${st}">${statusLabel(st)}</span></span></div>
       <div class="item"><span class="label">Progresso</span><span class="value">${pagas}/${emp.nParcelas}</span></div>
+      <!-- ✅ NOVO: criação com data e hora -->
+      <div class="item" style="grid-column:1/-1;"><span class="label">🕒 Contrato criado em</span><span class="value" style="font-size:13px;">${criadoEmStr}</span></div>
     </div>
 
     ${montarContadorHTML(contador)}
@@ -1788,6 +1836,9 @@ function renderRelatorio() {
   let empsAtivos = 0, empsQuitados = 0, empsAtrasados = 0, empsRene = 0;
   const clientesInadimplentes = new Set();
 
+  // ✅ NOVO: acumulador mensal
+  const lucroMensal = {};
+
   emps.forEach(emp => {
     if (emp.renegociado) { empsRene++; }
     else {
@@ -1807,12 +1858,30 @@ function renderRelatorio() {
     (emp.pagamentos || []).forEach(h => {
       totalRecebido += h.total;
       if (h.juros && h.juros > 0) totalJurosRecebidos += h.juros;
+
+      // ✅ NOVO: agrupa por mês
+      if (h.dataPagamento) {
+        const chave = h.dataPagamento.slice(0, 7); // YYYY-MM
+        if (!lucroMensal[chave]) lucroMensal[chave] = { recebido: 0, juros: 0, pagamentos: 0 };
+        lucroMensal[chave].recebido += h.total;
+        lucroMensal[chave].juros += (h.juros || 0);
+        lucroMensal[chave].pagamentos++;
+      }
     });
 
+    // Compatibilidade: empréstimos antigos sem array de pagamentos
     emp.parcelas.forEach(p => {
-      if (p.pago && (!emp.pagamentos || emp.pagamentos.length === 0)) {
-        totalRecebido += (p.valorPago || p.valor);
-        totalJurosRecebidos += (p.jurosAtraso || 0);
+      if (p.pago && (!emp.pagamentos || emp.pagamentos.length === 0) && p.dataPagamento) {
+        const val = (p.valorPago || p.valor);
+        const jur = (p.jurosAtraso || 0);
+        totalRecebido += val;
+        totalJurosRecebidos += jur;
+
+        const chave = p.dataPagamento.slice(0, 7);
+        if (!lucroMensal[chave]) lucroMensal[chave] = { recebido: 0, juros: 0, pagamentos: 0 };
+        lucroMensal[chave].recebido += val;
+        lucroMensal[chave].juros += jur;
+        lucroMensal[chave].pagamentos++;
       }
     });
   });
@@ -1839,7 +1908,7 @@ function renderRelatorio() {
         <div class="dash-sub">de todos os tempos</div>
       </div>
       <div class="dash-card">
-        <div class="dash-label">📈 Lucro (juros)</div>
+        <div class="dash-label">📈 Lucro total (juros)</div>
         <div class="dash-value brand">${brl(totalJurosRecebidos)}</div>
         <div class="dash-sub">juros já recebidos</div>
       </div>
@@ -1862,6 +1931,43 @@ function renderRelatorio() {
       <div class="item"><span class="label">Atrasados</span><span class="value" style="color:var(--bad)">${empsAtrasados}</span></div>
     </div>
   `;
+
+  // ✅ NOVO: Lucro mês a mês
+  const mesesOrdenados = Object.keys(lucroMensal).sort().reverse(); // mais recentes primeiro
+  if (mesesOrdenados.length > 0) {
+    html += `<div class="section-title">💹 Lucro mês a mês</div>`;
+
+    // Cabeçalho
+    html += `
+      <div class="mes-linha" style="background:transparent; border:none; padding:0 12px 4px; font-size:10px; color:var(--muted); text-transform:uppercase; font-weight:800; letter-spacing:.5px;">
+        <span>Mês</span>
+        <span style="text-align:right;">Recebido</span>
+        <span style="text-align:right;">Juros</span>
+      </div>
+    `;
+
+    let mesAtualChave = new Date().toISOString().slice(0, 7);
+    mesesOrdenados.forEach(m => {
+      const dados = lucroMensal[m];
+      const destaque = (m === mesAtualChave) ? " destaque" : "";
+      html += `
+        <div class="mes-linha${destaque}">
+          <span class="mes-label">${formatarMesAno(m)}<span class="pgt">${dados.pagamentos} pgt${dados.pagamentos>1?'s':''}</span></span>
+          <span class="mes-recebido">${brl(dados.recebido)}</span>
+          <span class="mes-juros">+${brl(dados.juros)}</span>
+        </div>
+      `;
+    });
+
+    // Total geral
+    html += `
+      <div class="mes-linha" style="background:rgba(91,124,250,.1); border-color:var(--brand); margin-top:8px;">
+        <span class="mes-label" style="color:var(--brand);">💠 TOTAL GERAL</span>
+        <span class="mes-recebido">${brl(totalRecebido)}</span>
+        <span class="mes-juros">+${brl(totalJurosRecebidos)}</span>
+      </div>
+    `;
+  }
 
   if (clientesInadimplentes.size > 0) {
     const clientes = agruparPorCliente(emps);
