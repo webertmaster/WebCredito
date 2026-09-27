@@ -94,7 +94,6 @@
   .parcela-counter .cnt-avencer{ color:var(--warn); background:rgba(255,211,138,.1); }
   .parcela-counter .cnt-atrasadas{ color:var(--bad); background:rgba(255,124,124,.12); }
 
-  /* ✅ Filtros da lista de clientes */
   .filtros-lista{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
   .filtro-cli{
     width:auto; padding:7px 11px; font-size:12px; font-weight:800;
@@ -297,7 +296,12 @@
     <label>Responsável</label>
     <input id="responsavel" placeholder="Nome completo" autocomplete="name" />
 
-    <!-- ✅ Campo CPF removido do Simulador -->
+    <label>CPF <span style="font-size:11px; color:var(--muted); font-weight:400;">(opcional)</span></label>
+    <div class="cpf-row">
+      <input id="cpf" data-mask="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off" />
+      <div class="cpf-status-icon" id="cpfIcon">🪪</div>
+    </div>
+    <div class="cpf-msg" id="cpfMsg">CPF opcional — valida automaticamente se preenchido</div>
 
     <label>Telefone (WhatsApp do cliente)</label>
     <input id="telefone" data-mask="tel" placeholder="(00) 00000-0000" maxlength="16" inputmode="numeric" />
@@ -352,9 +356,7 @@
         <input id="busca" placeholder="🔎 Buscar cliente por nome ou CPF" />
         <button type="button" onclick="abrirFormNovo()">+ Novo</button>
       </div>
-      <!-- ✅ NOVO: filtros -->
       <div class="filtros-lista" id="filtrosLista"></div>
-      <!-- ✅ NOVO: ordenação -->
       <div class="ordem-row">
         <label>Ordenar:</label>
         <select id="ordemLista" onchange="renderLista()">
@@ -476,7 +478,7 @@
   </div>
 </div>
 
-<!-- ✅ NOVO MODAL: Renegociação -->
+<!-- MODAL: Renegociação -->
 <div class="overlay" id="modalRene">
   <div class="modal">
     <h3>🔄 Renegociar empréstimo</h3>
@@ -668,7 +670,7 @@ function formatTel(v) {
 function soDigitos(v){ return (v||"").replace(/\D/g,""); }
 
 // ============================================================
-// CPF (continua sendo usado apenas no formulário de cliente)
+// CPF
 // ============================================================
 function aplicarMascaraCPF(v) {
   v = soDigitos(v).slice(0, 11);
@@ -701,6 +703,7 @@ document.addEventListener("input", (e) => {
   const tipo = el.dataset.mask;
   if (tipo === "cpf") {
     el.value = aplicarMascaraCPF(el.value);
+    if (el.id === "cpf") { validarCpfAtual(); atualizarUI(); }
   } else if (tipo === "tel") {
     el.value = formatTel(el.value);
   }
@@ -906,9 +909,12 @@ function calcularScoreCliente(emprestimos) {
 }
 
 // ============================================================
-// ELEMENTOS – SIMULADOR (SEM CPF)
+// ELEMENTOS – SIMULADOR (CPF OPCIONAL)
 // ============================================================
 const elResp = document.getElementById("responsavel");
+const elCPF  = document.getElementById("cpf");
+const elCPFMsg = document.getElementById("cpfMsg");
+const elCPFIcon = document.getElementById("cpfIcon");
 const elTelefone = document.getElementById("telefone");
 const elValor = document.getElementById("valor");
 const elParcelas = document.getElementById("parcelas");
@@ -917,11 +923,59 @@ const elBtnSim = document.getElementById("btnSimular");
 const elResultado = document.getElementById("resultado");
 const elDiaVenc = document.getElementById("diaVenc");
 
+let cpfValido = true; // opcional: começa como válido
 let _voltarDetalhe = "lista";
 let _cpfClienteAtual = null;
 let _filtroAgenda = "todos";
 let _filtroCliente = "todos";
 let _reneAtual = null;
+
+// ============================================================
+// UI – CPF (opcional no Simulador)
+// ============================================================
+function setCpfUI(estado) {
+  elCPF.classList.remove("input-ok","input-bad");
+  elCPFMsg.classList.remove("warn","ok","bad");
+  if (estado === "empty") {
+    elCPFMsg.classList.add("warn");
+    elCPFMsg.textContent = "CPF opcional — valida automaticamente se preenchido";
+    elCPFIcon.textContent = "🪪";
+    return;
+  }
+  if (estado === "ok") {
+    elCPF.classList.add("input-ok");
+    elCPFMsg.classList.add("ok");
+    elCPFMsg.textContent = "CPF válido ✅";
+    elCPFIcon.textContent = "✅";
+    return;
+  }
+  if (estado === "bad") {
+    elCPF.classList.add("input-bad");
+    elCPFMsg.classList.add("bad");
+    elCPFMsg.textContent = "CPF inválido ❌";
+    elCPFIcon.textContent = "❌";
+    return;
+  }
+  // "warn" = digitando
+  elCPFMsg.classList.add("warn");
+  elCPFMsg.textContent = "Digite o CPF completo (11 dígitos)";
+  elCPFIcon.textContent = "🪪";
+}
+function validarCpfAtual() {
+  const dig = soDigitos(elCPF.value);
+  if (dig.length === 0) {
+    cpfValido = true;
+    setCpfUI("empty");
+    return;
+  }
+  if (dig.length < 11) {
+    cpfValido = true; // deixa passar enquanto digita
+    setCpfUI("warn");
+    return;
+  }
+  cpfValido = cpfEhValido(elCPF.value);
+  setCpfUI(cpfValido ? "ok" : "bad");
+}
 
 // ============================================================
 // UI – SIMULADOR
@@ -980,7 +1034,6 @@ function atualizarUI() {
   if (selAntes && [...elParcelas.options].some(o => o.value === selAntes)) {
     elParcelas.value = selAntes;
   }
-  // ✅ não exige mais CPF válido
   elBtnSim.disabled = !(nomeOk && elParcelas.value && elDiaVenc.value);
 }
 
@@ -1005,11 +1058,17 @@ elDiaVenc.addEventListener("change", atualizarUI);
 // ============================================================
 function simular() {
   const nome = elResp.value.trim();
+  const cpf = elCPF.value.trim();
   const tel = elTelefone.value.trim();
   const v = parseBRLInteiro(elValor.value);
   const p = Number(elParcelas.value);
 
   if (!nome) { alert("Informe o responsável."); return; }
+  // CPF é OPCIONAL — só valida se foi preenchido
+  if (cpf && !cpfEhValido(cpf)) {
+    alert("CPF inválido. Corrija ou apague o campo para continuar (é opcional).");
+    return;
+  }
   if (!Number.isFinite(v) || v <= 0) { alert("Digite um valor válido."); return; }
   if (v < CONFIG.VALOR_MINIMO) { alert(`Valor mínimo: ${brl(CONFIG.VALOR_MINIMO,0)}`); return; }
   if (v > CONFIG.LIMITE) { alert(`Valor máximo: ${brl(CONFIG.LIMITE,0)}`); return; }
@@ -1033,7 +1092,7 @@ function simular() {
 
   elResultado.style.display = "block";
   window._dados = {
-    nome, tel, v, p, parc, tot, juros,
+    nome, cpf, tel, v, p, parc, tot, juros,
     taxa: r.t,
     diaVenc,
     dataPrimeira: data1.toLocaleDateString("pt-BR"),
@@ -1043,13 +1102,13 @@ function simular() {
 }
 
 // ============================================================
-// WHATSAPP – SIMULAÇÃO (sem CPF)
+// WHATSAPP – SIMULAÇÃO
 // ============================================================
 function montarMensagemSimulacao(d) {
   return `Olá! Gostaria de solicitar uma análise de empréstimo.
 
 👤 Responsável: ${d.nome}
-${d.tel ? `📞 Telefone: ${d.tel}\n` : ""}
+${d.cpf ? `🪪 CPF: ${d.cpf}\n` : ""}${d.tel ? `📞 Telefone: ${d.tel}\n` : ""}
 💰 Valor solicitado: ${brl(d.v, 0)}
 📆 Parcelas: ${d.p}x
 💳 Valor da parcela: ${brl(d.parc)}
@@ -1091,7 +1150,7 @@ function enviarWhatsComLoading() {
 }
 
 // ============================================================
-// SALVAR DA SIMULAÇÃO (sem CPF – o usuário preenche no form se quiser)
+// SALVAR DA SIMULAÇÃO
 // ============================================================
 function salvarDaSimulacao() {
   const d = window._dados;
@@ -1100,7 +1159,7 @@ function salvarDaSimulacao() {
   _voltarDetalhe = "lista";
   _cpfClienteAtual = null;
   abrirFormNovo({
-    nome: d.nome, cpf: "", tel: d.tel,
+    nome: d.nome, cpf: d.cpf || "", tel: d.tel,
     valor: d.v, parcelas: d.p, data1: d.dataPrimeiraISO
   });
 }
@@ -1154,7 +1213,7 @@ function updateBadge() {
 }
 
 // ============================================================
-// ✅ CLASSIFICAR CLIENTE (para filtros)
+// CLASSIFICAR CLIENTE
 // ============================================================
 function classificarCliente(cli) {
   const temAtiva = cli.emprestimos.some(e => !e.renegociado);
@@ -1167,7 +1226,7 @@ function classificarCliente(cli) {
 }
 
 // ============================================================
-// ✅ RENDER – FILTROS DA LISTA
+// RENDER – FILTROS DA LISTA
 // ============================================================
 function renderFiltrosLista(clientes) {
   const cont = { todos: clientes.length, "em-dia": 0, atrasados: 0, quitados: 0 };
@@ -1193,7 +1252,7 @@ function renderFiltrosLista(clientes) {
 }
 
 // ============================================================
-// ✅ RENDER – LISTA DE CLIENTES (com filtros + ordenação)
+// RENDER – LISTA DE CLIENTES
 // ============================================================
 function renderLista() {
   const termo = (document.getElementById("busca").value || "").toLowerCase().trim();
@@ -1843,7 +1902,7 @@ function renderRelatorio() {
 }
 
 // ============================================================
-// ✅ RENEGOCIAÇÃO
+// RENEGOCIAÇÃO
 // ============================================================
 function abrirRenegociacao(empId) {
   const emp = getEmprestimos().find(e => e.id === empId);
@@ -2781,6 +2840,7 @@ function escapeHtml(s) {
 // INIT
 // ============================================================
 initPinScreen();
+setCpfUI("empty");
 atualizarUI();
 updateBadge();
 renderLista();
