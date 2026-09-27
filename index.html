@@ -141,8 +141,8 @@
 
   .loan-card{ background:var(--field); border:1px solid var(--fieldLine); border-radius:12px; padding:12px; margin-bottom:10px; cursor:pointer; transition:border-color .15s; }
   .loan-card:hover{ border-color:var(--brand); }
-  .loan-card.renegociado{ opacity:.6; border-style:dashed; cursor:default; }
-  .loan-card.renegociado:hover{ border-color:var(--fieldLine); }
+  .loan-card.renegociado{ opacity:.6; border-style:dashed; cursor:pointer; }
+  .loan-card.renegociado:hover{ border-color:var(--warn); }
   .loan-card .row{ display:flex; justify-content:space-between; align-items:center; gap:8px; }
   .loan-card .name{ font-weight:800; color:var(--text); font-size:15px; }
   .loan-card .meta{ font-size:12px; color:var(--muted); margin-top:4px; }
@@ -207,7 +207,6 @@
   .dash-value.brand{ color:var(--brand); }
   .dash-sub{ font-size:11px; color:var(--muted); margin-top:4px; }
 
-  /* ✅ NOVO: Lucro mês a mês */
   .mes-linha{ display:grid; grid-template-columns:1fr auto auto; gap:12px; padding:10px 12px; background:var(--field); border:1px solid var(--fieldLine); border-radius:10px; margin-bottom:6px; font-size:13px; align-items:center; }
   .mes-linha.destaque{ border-color:rgba(91,124,250,.5); background:rgba(91,124,250,.06); }
   .mes-label{ font-weight:800; color:var(--text); }
@@ -342,7 +341,6 @@
       <div class="box">📈 Juros total: <strong id="jurosTotal"></strong></div>
       <div class="box">📊 Total a pagar: <strong id="total"></strong></div>
       <div class="box">📅 1ª parcela: <strong id="primeiraParcela"></strong></div>
-      <!-- ✅ NOVO: Timestamp de geração -->
       <div class="box" style="font-size:12px; color:var(--muted);">🕒 Simulação gerada em: <strong id="geradoEm" style="font-size:13px; color:var(--text);"></strong></div>
 
       <div class="hint-muted" style="margin-bottom:8px;">
@@ -682,7 +680,6 @@ function formatTel(v) {
 }
 function soDigitos(v){ return (v||"").replace(/\D/g,""); }
 
-// ✅ NOVO: helper de data+hora e mês por extenso
 function formatarDataHora(iso) {
   if (!iso) return "-";
   const d = new Date(iso);
@@ -1120,14 +1117,13 @@ function simular() {
 
   const diaVenc = Number(elDiaVenc.value);
   const data1 = calcularPrimeiraParcela(diaVenc, 7);
-  const agora = new Date(); // ✅ Timestamp de geração
+  const agora = new Date();
 
   document.getElementById("primeiraParcela").textContent =
     data1.toLocaleDateString("pt-BR");
   document.getElementById("parcela").textContent = brl(parc);
   document.getElementById("jurosTotal").textContent = brl(juros);
   document.getElementById("total").textContent = brl(tot);
-  // ✅ NOVO: mostrar hora da geração
   document.getElementById("geradoEm").textContent = formatarDataHora(agora.toISOString());
 
   elResultado.style.display = "block";
@@ -1468,10 +1464,12 @@ function renderClienteDetalhe(clienteKey) {
     (a, b) => new Date(b.criadoEm) - new Date(a.criadoEm)
   );
 
+  // ✅ NOVO: botão de excluir cliente no cabeçalho
   let html = `
     <div class="detail-header">
       <button class="btn-mini btn-sec" onclick="voltarLista()">← Clientes</button>
       <h3>${escapeHtml(cli.nome)}</h3>
+      <button class="btn-mini btn-danger" onclick="excluirCliente('${cli.key}')">🗑 Excluir</button>
     </div>
 
     <div style="margin-bottom:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
@@ -1499,13 +1497,13 @@ function renderClienteDetalhe(clienteKey) {
     const totalP = emp.nParcelas;
     const pct = totalP ? (pagas / totalP) * 100 : 0;
     const saldo = saldoDevedor(emp);
-    // ✅ NOVO: mostra data + hora
     const criado = formatarDataHoraCurta(emp.criadoEm);
     const c = contarParcelas(emp.parcelas);
 
     if (emp.renegociado) {
+      // ✅ NOVO: card renegociado agora é clicável
       html += `
-        <div class="loan-card renegociado">
+        <div class="loan-card renegociado" onclick="abrirDetalheEmprestimo('${emp.id}')">
           <div class="row">
             <div style="min-width:0;">
               <div class="name" style="font-size:14px;">${brl(emp.valorSolicitado, 0)} → ${emp.nParcelas}x de ${brl(emp.valorParcela)}</div>
@@ -1565,7 +1563,6 @@ function renderDetalhe(id) {
   const jurosTot = emp.valorTotal - emp.valorSolicitado;
   const contador = contarParcelas(emp.parcelas);
   const isRene = !!emp.renegociado;
-  // ✅ NOVO: data+hora de criação do contrato
   const criadoEmStr = formatarDataHora(emp.criadoEm);
 
   const ativo = !isRene && st !== "quitado";
@@ -1609,7 +1606,6 @@ function renderDetalhe(id) {
       <div class="item"><span class="label">Total a pagar</span><span class="value">${brl(emp.valorTotal)}</span></div>
       <div class="item"><span class="label">Status</span><span class="value"><span class="status-badge status-${st}">${statusLabel(st)}</span></span></div>
       <div class="item"><span class="label">Progresso</span><span class="value">${pagas}/${emp.nParcelas}</span></div>
-      <!-- ✅ NOVO: criação com data e hora -->
       <div class="item" style="grid-column:1/-1;"><span class="label">🕒 Contrato criado em</span><span class="value" style="font-size:13px;">${criadoEmStr}</span></div>
     </div>
 
@@ -1836,7 +1832,6 @@ function renderRelatorio() {
   let empsAtivos = 0, empsQuitados = 0, empsAtrasados = 0, empsRene = 0;
   const clientesInadimplentes = new Set();
 
-  // ✅ NOVO: acumulador mensal
   const lucroMensal = {};
 
   emps.forEach(emp => {
@@ -1859,9 +1854,8 @@ function renderRelatorio() {
       totalRecebido += h.total;
       if (h.juros && h.juros > 0) totalJurosRecebidos += h.juros;
 
-      // ✅ NOVO: agrupa por mês
       if (h.dataPagamento) {
-        const chave = h.dataPagamento.slice(0, 7); // YYYY-MM
+        const chave = h.dataPagamento.slice(0, 7);
         if (!lucroMensal[chave]) lucroMensal[chave] = { recebido: 0, juros: 0, pagamentos: 0 };
         lucroMensal[chave].recebido += h.total;
         lucroMensal[chave].juros += (h.juros || 0);
@@ -1869,7 +1863,6 @@ function renderRelatorio() {
       }
     });
 
-    // Compatibilidade: empréstimos antigos sem array de pagamentos
     emp.parcelas.forEach(p => {
       if (p.pago && (!emp.pagamentos || emp.pagamentos.length === 0) && p.dataPagamento) {
         const val = (p.valorPago || p.valor);
@@ -1932,12 +1925,10 @@ function renderRelatorio() {
     </div>
   `;
 
-  // ✅ NOVO: Lucro mês a mês
-  const mesesOrdenados = Object.keys(lucroMensal).sort().reverse(); // mais recentes primeiro
+  const mesesOrdenados = Object.keys(lucroMensal).sort().reverse();
   if (mesesOrdenados.length > 0) {
     html += `<div class="section-title">💹 Lucro mês a mês</div>`;
 
-    // Cabeçalho
     html += `
       <div class="mes-linha" style="background:transparent; border:none; padding:0 12px 4px; font-size:10px; color:var(--muted); text-transform:uppercase; font-weight:800; letter-spacing:.5px;">
         <span>Mês</span>
@@ -1959,7 +1950,6 @@ function renderRelatorio() {
       `;
     });
 
-    // Total geral
     html += `
       <div class="mes-linha" style="background:rgba(91,124,250,.1); border-color:var(--brand); margin-top:8px;">
         <span class="mes-label" style="color:var(--brand);">💠 TOTAL GERAL</span>
@@ -2675,7 +2665,7 @@ function salvarFormEmprestimo() {
 }
 
 // ============================================================
-// EXCLUIR
+// EXCLUIR EMPRÉSTIMO
 // ============================================================
 function excluirEmprestimo(id) {
   mostrarConfirm(
@@ -2684,6 +2674,33 @@ function excluirEmprestimo(id) {
     () => {
       saveEmprestimos(getEmprestimos().filter(e => e.id !== id));
       updateBadge();
+      voltarLista();
+    }
+  );
+}
+
+// ============================================================
+// ✅ NOVO: EXCLUIR CLIENTE INTEIRO
+// ============================================================
+function excluirCliente(clienteKey) {
+  const todos = getEmprestimos();
+  const clientes = agruparPorCliente(todos);
+  const cli = clientes.find(c => c.key === clienteKey);
+  if (!cli) { voltarLista(); return; }
+
+  const totalEmps = cli.emprestimos.length;
+
+  mostrarConfirm(
+    "Excluir cliente?",
+    `Todos os ${totalEmps} empréstimo(s) de "${cli.nome}" serão apagados permanentemente, ` +
+    `incluindo contratos renegociados e histórico de pagamentos. Esta ação não pode ser desfeita.`,
+    () => {
+      const ids = new Set(cli.emprestimos.map(e => e.id));
+      const restantes = todos.filter(e => !ids.has(e.id));
+      saveEmprestimos(restantes);
+      updateBadge();
+      _cpfClienteAtual = null;
+      _voltarDetalhe = "lista";
       voltarLista();
     }
   );
