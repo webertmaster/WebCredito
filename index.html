@@ -681,6 +681,19 @@ function formatTel(v) {
 }
 function soDigitos(v){ return (v||"").replace(/\D/g,""); }
 
+// ✅ CORRIGIDO: normaliza telefone para o padrão internacional do WhatsApp (com DDI 55)
+function normalizarTelefoneWhatsApp(tel) {
+  let d = soDigitos(tel);
+  if (!d) return "";
+  // remove zeros à esquerda (ex: 084...)
+  d = d.replace(/^0+/, "");
+  // se tiver 10 ou 11 dígitos, adiciona DDI 55 (Brasil)
+  if (d.length === 10 || d.length === 11) {
+    d = "55" + d;
+  }
+  return d;
+}
+
 function formatarDataHora(iso) {
   if (!iso) return "-";
   const d = new Date(iso);
@@ -1159,6 +1172,7 @@ ${d.cpf ? `🪪 CPF: ${d.cpf}\n` : ""}${d.tel ? `📞 Telefone: ${d.tel}\n` : ""
 Fico no aguardo, obrigado.`;
 }
 
+// ✅ CORRIGIDO: envia a simulação para o telefone do cliente (não mais para o número fixo do dono)
 function enviarWhatsComLoading() {
   const d = window._dados;
   if (!d) { alert("Faça a simulação primeiro."); return; }
@@ -1171,8 +1185,14 @@ function enviarWhatsComLoading() {
   pct.textContent = "0%";
 
   const text = encodeURIComponent(montarMensagemSimulacao(d));
-  const deepLink = `whatsapp://send?phone=${CONFIG.WHATSAPP}&text=${text}`;
-  const webLink  = `https://wa.me/${CONFIG.WHATSAPP}?text=${text}`;
+  const telCliente = normalizarTelefoneWhatsApp(d.tel);
+
+  const deepLink = telCliente
+    ? `whatsapp://send?phone=${telCliente}&text=${text}`
+    : `whatsapp://send?text=${text}`;
+  const webLink = telCliente
+    ? `https://wa.me/${telCliente}?text=${text}`
+    : `https://wa.me/?text=${text}`;
 
   window.location.href = deepLink;
   setTimeout(() => { window.location.href = webLink; }, 700);
@@ -1465,7 +1485,6 @@ function renderClienteDetalhe(clienteKey) {
     (a, b) => new Date(b.criadoEm) - new Date(a.criadoEm)
   );
 
-  // ✅ NOVO: botão de excluir cliente no cabeçalho
   let html = `
     <div class="detail-header">
       <button class="btn-mini btn-sec" onclick="voltarLista()">← Clientes</button>
@@ -1502,7 +1521,6 @@ function renderClienteDetalhe(clienteKey) {
     const c = contarParcelas(emp.parcelas);
 
     if (emp.renegociado) {
-      // ✅ NOVO: card renegociado agora é clicável
       html += `
         <div class="loan-card renegociado" onclick="abrirDetalheEmprestimo('${emp.id}')">
           <div class="row">
@@ -2238,7 +2256,8 @@ function abrirLembrete(empId, nParcela) {
   if (!p || p.pago) return;
 
   const atraso = calcularAtraso(p);
-  const tel = emp.telefone ? soDigitos(emp.telefone) : "";
+  // ✅ CORRIGIDO: usa normalizador para incluir DDI 55
+  const tel = normalizarTelefoneWhatsApp(emp.telefone);
 
   let msg;
   if (atraso.dias > 0) {
@@ -2280,7 +2299,8 @@ function abrirExtrato(empId) {
 
   const c = contarParcelas(emp.parcelas);
   const prox = proximaParcela(emp);
-  const tel = emp.telefone ? soDigitos(emp.telefone) : "";
+  // ✅ CORRIGIDO: usa normalizador para incluir DDI 55
+  const tel = normalizarTelefoneWhatsApp(emp.telefone);
 
   let msg = `Olá, ${emp.nome}! 👋\n\n`;
   msg += `📋 Resumo do seu empréstimo:\n`;
@@ -2418,8 +2438,9 @@ function abrirComprovante(empId, nParcela) {
     msg += `\nQualquer dúvida, estou à disposição. Obrigado!`;
   }
 
+  // ✅ CORRIGIDO: usa normalizador para incluir DDI 55
   _comprovanteAtual = { tipo: "parcela", empId, nParcela,
-    tel: emp.telefone ? soDigitos(emp.telefone) : "", mensagem: msg };
+    tel: normalizarTelefoneWhatsApp(emp.telefone), mensagem: msg };
 
   document.getElementById("pagTitulo").textContent = "Enviar comprovante ao cliente";
   document.getElementById("pagInfo").innerHTML = _comprovanteAtual.tel
@@ -2448,8 +2469,9 @@ function abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento) {
   msg += `_(os juros voltam a contar a partir de ${formatBR(dataPagamento)})_\n\n`;
   msg += `Qualquer dúvida, estou à disposição. Obrigado!`;
 
+  // ✅ CORRIGIDO: usa normalizador para incluir DDI 55
   _comprovanteAtual = { tipo: "juros", empId, nParcela,
-    tel: emp.telefone ? soDigitos(emp.telefone) : "", mensagem: msg };
+    tel: normalizarTelefoneWhatsApp(emp.telefone), mensagem: msg };
 
   document.getElementById("pagTitulo").textContent = "Enviar comprovante de juros";
   document.getElementById("pagInfo").innerHTML = _comprovanteAtual.tel
@@ -2681,7 +2703,7 @@ function excluirEmprestimo(id) {
 }
 
 // ============================================================
-// ✅ NOVO: EXCLUIR CLIENTE INTEIRO
+// EXCLUIR CLIENTE INTEIRO
 // ============================================================
 function excluirCliente(clienteKey) {
   const todos = getEmprestimos();
