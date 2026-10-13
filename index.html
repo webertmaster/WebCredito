@@ -325,12 +325,10 @@
       <option value="">Informe um valor acima</option>
     </select>
 
-    <label>Dia de vencimento (1ª parcela)</label>
-    <select id="diaVenc" disabled>
-      <option value="">Selecione um valor primeiro</option>
-    </select>
+    <label>1ª parcela (vencimento)</label>
+    <input type="date" id="diaVenc" disabled />
     <div class="hint-muted">
-      A 1ª parcela cai no próximo vencimento disponível (mín. 7 dias).<br>
+      Escolha a data no calendário — a 1ª parcela deve ser no mínimo 7 dias após hoje.<br>
       As demais são mensais a partir dessa data.
     </div>
 
@@ -681,13 +679,10 @@ function formatTel(v) {
 }
 function soDigitos(v){ return (v||"").replace(/\D/g,""); }
 
-// ✅ CORRIGIDO: normaliza telefone para o padrão internacional do WhatsApp (com DDI 55)
 function normalizarTelefoneWhatsApp(tel) {
   let d = soDigitos(tel);
   if (!d) return "";
-  // remove zeros à esquerda (ex: 084...)
   d = d.replace(/^0+/, "");
-  // se tiver 10 ou 11 dígitos, adiciona DDI 55 (Brasil)
   if (d.length === 10 || d.length === 11) {
     d = "55" + d;
   }
@@ -767,7 +762,7 @@ document.addEventListener("blur", (e) => {
 }, true);
 
 // ============================================================
-// PRIMEIRA PARCELA
+// PRIMEIRA PARCELA (padrão de dia do mês)
 // ============================================================
 function calcularPrimeiraParcela(diaEscolhido, minDias = 7) {
   const hoje = new Date();
@@ -1037,12 +1032,17 @@ function atualizarUI() {
   const selAntes = elParcelas.value;
   elParcelas.innerHTML = "";
   elParcelas.disabled = true;
-  elDiaVenc.innerHTML = "";
-  elDiaVenc.disabled = true;
+
+  // Data mínima = hoje + 7 dias (aplica no calendário)
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() + 7);
+  elDiaVenc.min = toISO(minDate);
 
   if (!Number.isFinite(v) || v <= 0) {
     elInfo.textContent = "Digite um valor válido";
     elBtnSim.disabled = true;
+    elDiaVenc.disabled = true;
+    elDiaVenc.value = "";
     const o = document.createElement("option");
     o.value = ""; o.textContent = "Informe um valor acima";
     elParcelas.appendChild(o);
@@ -1050,11 +1050,16 @@ function atualizarUI() {
   }
   if (v < CONFIG.VALOR_MINIMO) {
     elInfo.textContent = `⚠️ Valor mínimo: ${brl(CONFIG.VALOR_MINIMO,0)}`;
-    elBtnSim.disabled = true; return;
+    elBtnSim.disabled = true;
+    elDiaVenc.disabled = true;
+    elDiaVenc.value = "";
+    return;
   }
   if (v > CONFIG.LIMITE) {
     elInfo.textContent = `⚠️ Valor máximo: ${brl(CONFIG.LIMITE,0)}`;
     elBtnSim.disabled = true;
+    elDiaVenc.disabled = true;
+    elDiaVenc.value = "";
     const o = document.createElement("option");
     o.value = ""; o.textContent = "Valor acima do limite";
     elParcelas.appendChild(o);
@@ -1071,13 +1076,12 @@ function atualizarUI() {
   elParcelas.disabled = false;
   elInfo.textContent = "Selecione as parcelas";
 
-  elDiaVenc.innerHTML = "";
-  [5,10,15,20].forEach(d => {
-    const o = document.createElement("option");
-    o.value = String(d);
-    o.textContent = `Dia ${d}`;
-    elDiaVenc.appendChild(o);
-  });
+  // Define um valor padrão no calendário (próximo dia 5 com mín. 7 dias)
+  // — só define se ainda estiver vazio (não sobrescreve escolha do usuário)
+  if (!elDiaVenc.value) {
+    const dataPadrao = calcularPrimeiraParcela(5, 7);
+    elDiaVenc.value = toISO(dataPadrao);
+  }
   elDiaVenc.disabled = false;
 
   if (selAntes && [...elParcelas.options].some(o => o.value === selAntes)) {
@@ -1125,12 +1129,23 @@ function simular() {
   const r = regras(v).find(x => x.n === p);
   if (!r) { alert("Opção inválida para este valor."); atualizarUI(); return; }
 
+  // ✅ Lê a data diretamente do calendário
+  const data1Str = elDiaVenc.value;
+  if (!data1Str) { alert("Selecione a data da 1ª parcela."); return; }
+  const data1 = fromISO(data1Str);
+
+  // Validação de segurança: mínimo 7 dias a partir de hoje
+  const minDate = new Date();
+  minDate.setHours(0,0,0,0);
+  minDate.setDate(minDate.getDate() + 7);
+  if (data1 < minDate) {
+    alert("A 1ª parcela deve ser no mínimo 7 dias após hoje.");
+    return;
+  }
+
   const parc = price(v, r.t, p);
   const tot = parc * p;
   const juros = tot - v;
-
-  const diaVenc = Number(elDiaVenc.value);
-  const data1 = calcularPrimeiraParcela(diaVenc, 7);
   const agora = new Date();
 
   document.getElementById("primeiraParcela").textContent =
@@ -1144,7 +1159,6 @@ function simular() {
   window._dados = {
     nome, cpf, tel, v, p, parc, tot, juros,
     taxa: r.t,
-    diaVenc,
     dataPrimeira: data1.toLocaleDateString("pt-BR"),
     dataPrimeiraISO: toISO(data1),
     geradoEm: agora.toISOString(),
@@ -1172,7 +1186,6 @@ ${d.cpf ? `🪪 CPF: ${d.cpf}\n` : ""}${d.tel ? `📞 Telefone: ${d.tel}\n` : ""
 Fico no aguardo, obrigado.`;
 }
 
-// ✅ CORRIGIDO: envia a simulação para o telefone do cliente (não mais para o número fixo do dono)
 function enviarWhatsComLoading() {
   const d = window._dados;
   if (!d) { alert("Faça a simulação primeiro."); return; }
@@ -2256,7 +2269,6 @@ function abrirLembrete(empId, nParcela) {
   if (!p || p.pago) return;
 
   const atraso = calcularAtraso(p);
-  // ✅ CORRIGIDO: usa normalizador para incluir DDI 55
   const tel = normalizarTelefoneWhatsApp(emp.telefone);
 
   let msg;
@@ -2299,7 +2311,6 @@ function abrirExtrato(empId) {
 
   const c = contarParcelas(emp.parcelas);
   const prox = proximaParcela(emp);
-  // ✅ CORRIGIDO: usa normalizador para incluir DDI 55
   const tel = normalizarTelefoneWhatsApp(emp.telefone);
 
   let msg = `Olá, ${emp.nome}! 👋\n\n`;
@@ -2438,12 +2449,12 @@ function abrirComprovante(empId, nParcela) {
     msg += `\nQualquer dúvida, estou à disposição. Obrigado!`;
   }
 
-  // ✅ CORRIGIDO: usa normalizador para incluir DDI 55
   _comprovanteAtual = { tipo: "parcela", empId, nParcela,
     tel: normalizarTelefoneWhatsApp(emp.telefone), mensagem: msg };
 
-  document.getElementById("pagTitulo").textContent = "Enviar comprovante ao cliente";
-  document.getElementById("pagInfo").innerHTML = _comprovanteAtual.tel
+  document.getElementById("pagTitulo").textContent = "Enviar comprov return;
+ante ao cliente";
+   const document.getElementById("pagInfo").innerHTML = _ pcomprovanteAt =ual.tel
     ? `Telefone do cliente: <strong>${escapeHtml(emp.telefone)}</strong>`
     : `<span style="color:var(--warn)">⚠️ Cadastre o telefone do cliente para enviar direto.</span>`;
   document.getElementById("pagPreview").textContent = msg;
@@ -2459,8 +2470,7 @@ function abrirComprovante(empId, nParcela) {
 
 function abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento) {
   const emp = getEmprestimos().find(e => e.id === empId);
-  if (!emp) return;
-  const p = emp.parcelas.find(x => x.n === nParcela);
+  if (!emp) emp.parcelas.find(x => x.n === nParcela);
   if (!p) return;
 
   let msg = `Olá, ${emp.nome}! 👋\n\n`;
@@ -2469,7 +2479,6 @@ function abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento) {
   msg += `_(os juros voltam a contar a partir de ${formatBR(dataPagamento)})_\n\n`;
   msg += `Qualquer dúvida, estou à disposição. Obrigado!`;
 
-  // ✅ CORRIGIDO: usa normalizador para incluir DDI 55
   _comprovanteAtual = { tipo: "juros", empId, nParcela,
     tel: normalizarTelefoneWhatsApp(emp.telefone), mensagem: msg };
 
@@ -2693,10 +2702,11 @@ function salvarFormEmprestimo() {
 function excluirEmprestimo(id) {
   mostrarConfirm(
     "Excluir empréstimo?",
-    "Esta ação não pode ser desfeita. Todo o histórico de pagamentos será perdido.",
-    () => {
-      saveEmprestimos(getEmprestimos().filter(e => e.id !== id));
-      updateBadge();
+    "Esta ação não pode(). ser desfeita. Todo o histórico de pagamentos será perdtoISOido.",
+    ()String => {
+      saveEmprestimos(getEmprestimos(),
+().filter(e => e.id !== id));
+         updateBadge();
       voltarLista();
     }
   );
@@ -2765,8 +2775,7 @@ function exportarBackup() {
   const dados = {
     app: "WEB CRÉDITO",
     versao: 1,
-    exportadoEm: new Date().toISOString(),
-    totalEmprestimos: emps.length,
+    exportadoEm: new Date totalEmprestimos: emps.length,
     emprestimos: emps
   };
   const json = JSON.stringify(dados, null, 2);
