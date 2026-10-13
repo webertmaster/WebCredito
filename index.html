@@ -41,6 +41,18 @@
   button{ background:var(--brand); font-weight:800; border:none; cursor:pointer; margin-top:12px; }
   button:disabled{ opacity:.5; cursor:not-allowed; }
 
+  /* ✅ Campo de data no tema escuro (ícone do calendário visível) */
+  input[type="date"]{
+    color-scheme: dark;
+    min-height:48px;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator{
+    filter: invert(0.8) brightness(1.4);
+    cursor:pointer;
+    opacity:.85;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator:hover{ opacity:1; }
+
   .hint{ font-size:13px; color:var(--warn); margin-top:6px; }
   .hint-muted{ font-size:12px; color:var(--muted); margin-top:6px; font-style:italic; line-height:1.4; }
 
@@ -314,10 +326,10 @@
     <div class="cpf-msg" id="cpfMsg">CPF opcional — valida automaticamente se preenchido</div>
 
     <label>Telefone (WhatsApp do cliente)</label>
-    <input id="telefone" data-mask="tel" placeholder="(00) 00000-0000" maxlength="16" inputmode="numeric" />
+    <input id="telefone" data-mask="tel" placeholder="(00) 00000-0000" maxlength="16" inputmode="numeric" autocomplete="off" />
 
     <label>Valor desejado (R$)</label>
-    <input id="valor" inputmode="numeric" placeholder="Ex: 80" />
+    <input id="valor" inputmode="numeric" placeholder="Ex: 80" autocomplete="off" />
     <div class="hint" id="info">Digite um valor válido</div>
 
     <label>Parcelas</label>
@@ -325,12 +337,10 @@
       <option value="">Informe um valor acima</option>
     </select>
 
-    <label>Dia de vencimento (1ª parcela)</label>
-    <select id="diaVenc" disabled>
-      <option value="">Selecione um valor primeiro</option>
-    </select>
+    <label>1ª parcela (vencimento)</label>
+    <input type="date" id="diaVenc" disabled />
     <div class="hint-muted">
-      A 1ª parcela cai no próximo vencimento disponível (mín. 7 dias).<br>
+      Escolha a data no calendário — a 1ª parcela deve ser no mínimo 7 dias após hoje.<br>
       As demais são mensais a partir dessa data.
     </div>
 
@@ -397,10 +407,10 @@
       <input id="fCpf" data-mask="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric" autocomplete="off" />
 
       <label>Telefone (WhatsApp do cliente)</label>
-      <input id="fTelefone" data-mask="tel" placeholder="(00) 00000-0000" maxlength="16" inputmode="numeric" />
+      <input id="fTelefone" data-mask="tel" placeholder="(00) 00000-0000" maxlength="16" inputmode="numeric" autocomplete="off" />
 
       <label>Valor solicitado (R$) *</label>
-      <input id="fValor" inputmode="numeric" placeholder="Ex: 800" />
+      <input id="fValor" inputmode="numeric" placeholder="Ex: 800" autocomplete="off" />
 
       <label>Parcelas *</label>
       <select id="fParcelas">
@@ -500,7 +510,7 @@
     <div class="preview" id="renePreview"></div>
 
     <label>Novo valor (R$)</label>
-    <input id="reneValor" inputmode="numeric" placeholder="Ex: 800" />
+    <input id="reneValor" inputmode="numeric" placeholder="Ex: 800" autocomplete="off" />
 
     <label>Novas parcelas</label>
     <select id="reneParcelas"></select>
@@ -681,13 +691,10 @@ function formatTel(v) {
 }
 function soDigitos(v){ return (v||"").replace(/\D/g,""); }
 
-// ✅ CORRIGIDO: normaliza telefone para o padrão internacional do WhatsApp (com DDI 55)
 function normalizarTelefoneWhatsApp(tel) {
   let d = soDigitos(tel);
   if (!d) return "";
-  // remove zeros à esquerda (ex: 084...)
   d = d.replace(/^0+/, "");
-  // se tiver 10 ou 11 dígitos, adiciona DDI 55 (Brasil)
   if (d.length === 10 || d.length === 11) {
     d = "55" + d;
   }
@@ -745,29 +752,61 @@ function cpfEhValido(cpf) {
 }
 
 // ============================================================
-// MÁSCARAS – EVENT DELEGATION
+// ✅ MÁSCARAS – com preservação de cursor + suporte a colar
 // ============================================================
-document.addEventListener("input", (e) => {
-  const el = e.target;
-  if (!el || !el.dataset) return;
+function aplicarMascaraComCursor(el, fnMascara) {
+  const valorAntes = el.value;
+  const posAntes = el.selectionStart ?? valorAntes.length;
+  const digitosAntes = valorAntes.slice(0, posAntes).replace(/\D/g, "").length;
+
+  const valorDepois = fnMascara(valorAntes);
+  if (valorDepois === valorAntes) return;
+
+  el.value = valorDepois;
+
+  // Reposiciona o cursor mantendo a mesma quantidade de dígitos à esquerda
+  let pos = 0, cont = 0;
+  while (pos < valorDepois.length && cont < digitosAntes) {
+    if (/\d/.test(valorDepois[pos])) cont++;
+    pos++;
+  }
+  try { el.setSelectionRange(pos, pos); } catch (_) {}
+}
+
+function aplicarMascaraGenerica(el) {
+  if (!el || !el.dataset || !el.dataset.mask) return;
   const tipo = el.dataset.mask;
   if (tipo === "cpf") {
-    el.value = aplicarMascaraCPF(el.value);
+    aplicarMascaraComCursor(el, aplicarMascaraCPF);
     if (el.id === "cpf") { validarCpfAtual(); atualizarUI(); }
   } else if (tipo === "tel") {
-    el.value = formatTel(el.value);
+    aplicarMascaraComCursor(el, formatTel);
   }
+}
+
+document.addEventListener("input", (e) => {
+  const el = e.target;
+  if (!el || !el.dataset || !el.dataset.mask) return;
+  aplicarMascaraGenerica(el);
 });
+
 document.addEventListener("blur", (e) => {
   const el = e.target;
-  if (!el || !el.dataset) return;
+  if (!el || !el.dataset || !el.dataset.mask) return;
   const tipo = el.dataset.mask;
   if (tipo === "cpf") el.value = aplicarMascaraCPF(el.value);
   else if (tipo === "tel") el.value = formatTel(el.value);
 }, true);
 
+// ✅ Suporte a colar (paste) nos campos com máscara
+document.addEventListener("paste", (e) => {
+  const el = e.target;
+  if (!el || !el.dataset || !el.dataset.mask) return;
+  setTimeout(() => aplicarMascaraGenerica(el), 0);
+});
+
 // ============================================================
-// PRIMEIRA PARCELA
+// PRIMEIRA PARCELA (padrão de dia do mês)
 // ============================================================
 function calcularPrimeiraParcela(diaEscolhido, minDias = 7) {
   const hoje = new Date();
@@ -1037,12 +1076,17 @@ function atualizarUI() {
   const selAntes = elParcelas.value;
   elParcelas.innerHTML = "";
   elParcelas.disabled = true;
-  elDiaVenc.innerHTML = "";
-  elDiaVenc.disabled = true;
+
+  // Data mínima = hoje + 7 dias (aplica no calendário)
+  const minDate = new Date();
+  minDate.setDate(minDate.getDate() + 7);
+  elDiaVenc.min = toISO(minDate);
 
   if (!Number.isFinite(v) || v <= 0) {
     elInfo.textContent = "Digite um valor válido";
     elBtnSim.disabled = true;
+    elDiaVenc.disabled = true;
+    elDiaVenc.value = "";
     const o = document.createElement("option");
     o.value = ""; o.textContent = "Informe um valor acima";
     elParcelas.appendChild(o);
@@ -1050,11 +1094,16 @@ function atualizarUI() {
   }
   if (v < CONFIG.VALOR_MINIMO) {
     elInfo.textContent = `⚠️ Valor mínimo: ${brl(CONFIG.VALOR_MINIMO,0)}`;
-    elBtnSim.disabled = true; return;
+    elBtnSim.disabled = true;
+    elDiaVenc.disabled = true;
+    elDiaVenc.value = "";
+    return;
   }
   if (v > CONFIG.LIMITE) {
     elInfo.textContent = `⚠️ Valor máximo: ${brl(CONFIG.LIMITE,0)}`;
     elBtnSim.disabled = true;
+    elDiaVenc.disabled = true;
+    elDiaVenc.value = "";
     const o = document.createElement("option");
     o.value = ""; o.textContent = "Valor acima do limite";
     elParcelas.appendChild(o);
@@ -1071,13 +1120,12 @@ function atualizarUI() {
   elParcelas.disabled = false;
   elInfo.textContent = "Selecione as parcelas";
 
-  elDiaVenc.innerHTML = "";
-  [5,10,15,20].forEach(d => {
-    const o = document.createElement("option");
-    o.value = String(d);
-    o.textContent = `Dia ${d}`;
-    elDiaVenc.appendChild(o);
-  });
+  // Define um valor padrão no calendário (próximo dia 5 com mín. 7 dias)
+  // — só define se ainda estiver vazio (não sobrescreve escolha do usuário)
+  if (!elDiaVenc.value) {
+    const dataPadrao = calcularPrimeiraParcela(5, 7);
+    elDiaVenc.value = toISO(dataPadrao);
+  }
   elDiaVenc.disabled = false;
 
   if (selAntes && [...elParcelas.options].some(o => o.value === selAntes)) {
@@ -1125,12 +1173,22 @@ function simular() {
   const r = regras(v).find(x => x.n === p);
   if (!r) { alert("Opção inválida para este valor."); atualizarUI(); return; }
 
+  const data1Str = elDiaVenc.value;
+  if (!data1Str) { alert("Selecione a data da 1ª parcela."); return; }
+  const data1 = fromISO(data1Str);
+
+  // Validação de segurança: mínimo 7 dias a partir de hoje
+  const minDate = new Date();
+  minDate.setHours(0,0,0,0);
+  minDate.setDate(minDate.getDate() + 7);
+  if (data1 < minDate) {
+    alert("A 1ª parcela deve ser no mínimo 7 dias após hoje.");
+    return;
+  }
+
   const parc = price(v, r.t, p);
   const tot = parc * p;
   const juros = tot - v;
-
-  const diaVenc = Number(elDiaVenc.value);
-  const data1 = calcularPrimeiraParcela(diaVenc, 7);
   const agora = new Date();
 
   document.getElementById("primeiraParcela").textContent =
@@ -1144,7 +1202,6 @@ function simular() {
   window._dados = {
     nome, cpf, tel, v, p, parc, tot, juros,
     taxa: r.t,
-    diaVenc,
     dataPrimeira: data1.toLocaleDateString("pt-BR"),
     dataPrimeiraISO: toISO(data1),
     geradoEm: agora.toISOString(),
@@ -1172,7 +1229,6 @@ ${d.cpf ? `🪪 CPF: ${d.cpf}\n` : ""}${d.tel ? `📞 Telefone: ${d.tel}\n` : ""
 Fico no aguardo, obrigado.`;
 }
 
-// ✅ CORRIGIDO: envia a simulação para o telefone do cliente (não mais para o número fixo do dono)
 function enviarWhatsComLoading() {
   const d = window._dados;
   if (!d) { alert("Faça a simulação primeiro."); return; }
@@ -2256,7 +2312,6 @@ function abrirLembrete(empId, nParcela) {
   if (!p || p.pago) return;
 
   const atraso = calcularAtraso(p);
-  // ✅ CORRIGIDO: usa normalizador para incluir DDI 55
   const tel = normalizarTelefoneWhatsApp(emp.telefone);
 
   let msg;
@@ -2299,7 +2354,6 @@ function abrirExtrato(empId) {
 
   const c = contarParcelas(emp.parcelas);
   const prox = proximaParcela(emp);
-  // ✅ CORRIGIDO: usa normalizador para incluir DDI 55
   const tel = normalizarTelefoneWhatsApp(emp.telefone);
 
   let msg = `Olá, ${emp.nome}! 👋\n\n`;
@@ -2438,7 +2492,6 @@ function abrirComprovante(empId, nParcela) {
     msg += `\nQualquer dúvida, estou à disposição. Obrigado!`;
   }
 
-  // ✅ CORRIGIDO: usa normalizador para incluir DDI 55
   _comprovanteAtual = { tipo: "parcela", empId, nParcela,
     tel: normalizarTelefoneWhatsApp(emp.telefone), mensagem: msg };
 
@@ -2469,7 +2522,6 @@ function abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento) {
   msg += `_(os juros voltam a contar a partir de ${formatBR(dataPagamento)})_\n\n`;
   msg += `Qualquer dúvida, estou à disposição. Obrigado!`;
 
-  // ✅ CORRIGIDO: usa normalizador para incluir DDI 55
   _comprovanteAtual = { tipo: "juros", empId, nParcela,
     tel: normalizarTelefoneWhatsApp(emp.telefone), mensagem: msg };
 
