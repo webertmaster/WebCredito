@@ -354,7 +354,7 @@
       <div class="box" style="font-size:12px; color:var(--muted);">🕒 Simulação gerada em: <strong id="geradoEm" style="font-size:13px; color:var(--text);"></strong></div>
 
       <div class="hint-muted" style="margin-bottom:8px;">
-        ⚠️ Parcelas em atraso terão <strong>juros de 30% ao mês</strong> (proporcional aos dias).
+        ⚠️ Parcelas em atraso terão <strong>juros de 30% ao mês</strong>.
       </div>
 
       <button class="btn-wa" id="btnWhats" onclick="enviarWhatsComLoading()">
@@ -850,10 +850,10 @@ function gerarParcelas(dataBase, n, valorParcela) {
 }
 
 // ============================================================
-// ATRASO
+// ATRASO (ATUALIZADO PARA MÊS FECHADO)
 // ============================================================
 function calcularAtraso(p) {
-  if (p.pago) return { dias: 0, juros: 0, multa: 0, total: 0 };
+  if (p.pago) return { dias: 0, juros: 0, multa: 0, total: 0, mesesAtraso: 0 };
   const hoje = hojeZero();
   const venc = fromISO(p.vencimento);
   let inicio = venc;
@@ -862,10 +862,14 @@ function calcularAtraso(p) {
     if (jpa > inicio) inicio = jpa;
   }
   const dias = Math.floor((hoje - inicio) / 86400000);
-  if (dias <= 0) return { dias: 0, juros: 0, multa: 0, total: 0 };
-  const juros = p.valor * CONFIG.JUROS_ATRASO_MES * (dias / 30);
+  if (dias <= 0) return { dias: 0, juros: 0, multa: 0, total: 0, mesesAtraso: 0 };
+  
+  // O juros é calculado por mês cheio (30 dias). 
+  // Ex: 1 dia de atraso = 1 mês de juros. 31 dias de atraso = 2 meses de juros.
+  const mesesAtraso = Math.ceil(dias / 30);
+  const juros = p.valor * CONFIG.JUROS_ATRASO_MES * mesesAtraso;
   const multa = p.valor * CONFIG.MULTA_ATRASO;
-  return { dias, juros, multa, total: juros + multa };
+  return { dias, juros, multa, total: juros + multa, mesesAtraso };
 }
 
 // ============================================================
@@ -1718,7 +1722,7 @@ function renderDetalhe(id) {
       subInfo += `<div class="parcela-pago">✓ Pago em ${formatBR(p.dataPagamento)} · Total: ${brl(p.valorPago)}</div>`;
     } else if (!isRene && atraso.dias > 0) {
       subInfo += `<div class="parcela-atraso">
-        ⚠️ ${atraso.dias} dia(s) em atraso<br>
+        ⚠️ ${atraso.dias} dia(s) em atraso (${atraso.mesesAtraso} mês(es))<br>
         Juros (30%/mês): ${brl(atraso.juros)}<br>
         Total com juros: <strong>${brl(p.valor + atraso.total)}</strong>
       </div>`;
@@ -2262,7 +2266,7 @@ function abrirPagamento(empId, nParcela) {
     : `Vencimento: ${formatBR(p.vencimento)} · No prazo`;
 
   document.getElementById("pagPreview").textContent = atraso.dias > 0
-    ? `Valor da parcela: ${brl(p.valor)}\nJuros de atraso (30%/mês proporcional): ${brl(atraso.juros)}\n\nTotal a receber: ${brl(valorPago)}`
+    ? `Valor da parcela: ${brl(p.valor)}\nJuros de atraso (30%/mês · ${atraso.mesesAtraso} mês(es)): ${brl(atraso.juros)}\n\nTotal a receber: ${brl(valorPago)}`
     : `Valor a receber: ${brl(valorPago)}`;
 
   resetModalPag();
@@ -2289,12 +2293,12 @@ function abrirPagamentoJuros(empId, nParcela) {
   document.getElementById("pagTitulo").textContent = `Pagar somente juros · Parcela ${nParcela}/${emp.nParcelas}`;
   document.getElementById("pagInfo").innerHTML = `
     Vencimento: ${formatBR(p.vencimento)} · <span style="color:var(--bad)">${atraso.dias} dia(s) em atraso</span><br>
-    <span style="color:var(--warn)">A parcela continuará em aberto. Apenas os juros serão quitados.</span>
+    <span style="color:var(--warn)">A parcela continuará em aberto. Apenas os juros serão quitados e o prazo será renovado por mais 30 dias.</span>
   `;
 
   document.getElementById("pagPreview").textContent =
     `Valor da parcela (fica pendente): ${brl(p.valor)}\n` +
-    `Juros de atraso (30%/mês · ${atraso.dias} dias): ${brl(atraso.juros)}\n\n` +
+    `Juros de atraso (30% · ${atraso.mesesAtraso} mês(es)): ${brl(atraso.juros)}\n\n` +
     `Total a receber agora: ${brl(valorPago)}\n\n` +
     `Após o pagamento, os juros voltam a contar do zero a partir de hoje.`;
 
@@ -2519,7 +2523,7 @@ function abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento) {
   let msg = `Olá, ${emp.nome}! 👋\n\n`;
   msg += `✅ Recebemos o pagamento dos *juros de atraso* da parcela *${nParcela}/${emp.nParcelas}* no valor de *${brl(valorPago)}*.\n\n`;
   msg += `💰 A parcela *${nParcela}* continua em aberto no valor de *${brl(p.valor)}*.\n`;
-  msg += `_(os juros voltam a contar a partir de ${formatBR(dataPagamento)})_\n\n`;
+  msg += `_(Seu prazo foi renovado por mais 30 dias e os juros voltam a contar a partir de ${formatBR(dataPagamento)})_\n\n`;
   msg += `Qualquer dúvida, estou à disposição. Obrigado!`;
 
   _comprovanteAtual = { tipo: "juros", empId, nParcela,
