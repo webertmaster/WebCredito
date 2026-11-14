@@ -83,6 +83,7 @@
   .btn-mini{ width:auto; padding:8px 12px; font-size:13px; margin-top:0; border-radius:10px; }
   .btn-icon{ width:auto; padding:6px 10px; margin-top:0; border-radius:10px; font-size:13px; font-weight:900; }
   .btn-juros{ background:rgba(255,211,138,.15); color:var(--warn); border:1px solid rgba(255,211,138,.4); font-weight:900; }
+  .btn-diario{ background:rgba(0,229,255,.15); color:var(--neon-blue); border:1px solid rgba(0,229,255,.4); font-weight:900; }
   .btn-copy{ background:var(--field); border:1px solid var(--fieldLine); color:var(--text); font-weight:800; border-radius:12px; padding:14px 16px; cursor:pointer; white-space:nowrap; transition:all .15s; margin-top:0; width:auto; }
   .btn-copy:hover{ border-color:var(--brand); }
   .btn-copy.copiado{ background:rgba(108,255,157,.15); border-color:rgba(108,255,157,.5); color:var(--ok); }
@@ -354,7 +355,7 @@
       <div class="box" style="font-size:12px; color:var(--muted);">🕒 Simulação gerada em: <strong id="geradoEm" style="font-size:13px; color:var(--text);"></strong></div>
 
       <div class="hint-muted" style="margin-bottom:8px;">
-        ⚠️ Parcelas em atraso terão <strong>juros de 30% ao mês</strong>.
+        ⚠️ Parcelas em atraso terão <strong>juros de 30% ao mês</strong> ou <strong>1% ao dia</strong> (a critério do cliente).
       </div>
 
       <button class="btn-wa" id="btnWhats" onclick="enviarWhatsComLoading()">
@@ -566,6 +567,7 @@ const CONFIG = {
   LIMITE: 5000,
   WHATSAPP: "5584987974972",
   JUROS_ATRASO_MES: 0.30,
+  JUROS_DIARIO: 0.01,
   MULTA_ATRASO: 0,
   STORAGE_KEY: "webcredito_emprestimos_v3",
   PIN_KEY: "webcredito_pin_v1",
@@ -870,6 +872,25 @@ function calcularAtraso(p) {
   const juros = p.valor * CONFIG.JUROS_ATRASO_MES * mesesAtraso;
   const multa = p.valor * CONFIG.MULTA_ATRASO;
   return { dias, juros, multa, total: juros + multa, mesesAtraso };
+}
+
+// ============================================================
+// ATRASO DIÁRIO (1% ao dia) — opção paralela à de 30%/mês
+// ============================================================
+function calcularAtrasoDiario(p) {
+  if (p.pago) return { dias: 0, juros: 0, multa: 0, total: 0, mesesAtraso: 0 };
+  const hoje = hojeZero();
+  const venc = fromISO(p.vencimento);
+  let inicio = venc;
+  if (p.jurosPagosAte) {
+    const jpa = fromISO(p.jurosPagosAte);
+    if (jpa > inicio) inicio = jpa;
+  }
+  const dias = Math.floor((hoje - inicio) / 86400000);
+  if (dias <= 0) return { dias: 0, juros: 0, multa: 0, total: 0, mesesAtraso: 0 };
+
+  const juros = p.valor * CONFIG.JUROS_DIARIO * dias;
+  return { dias, juros, multa: 0, total: juros, mesesAtraso: 0 };
 }
 
 // ============================================================
@@ -1721,10 +1742,13 @@ function renderDetalhe(id) {
     if (p.pago) {
       subInfo += `<div class="parcela-pago">✓ Pago em ${formatBR(p.dataPagamento)} · Total: ${brl(p.valorPago)}</div>`;
     } else if (!isRene && atraso.dias > 0) {
+      const atrasoDiario = calcularAtrasoDiario(p);
       subInfo += `<div class="parcela-atraso">
-        ⚠️ ${atraso.dias} dia(s) em atraso (${atraso.mesesAtraso} mês(es))<br>
-        Juros (30%/mês): ${brl(atraso.juros)}<br>
-        Total com juros: <strong>${brl(p.valor + atraso.total)}</strong>
+        ⚠️ ${atraso.dias} dia(s) em atraso<br>
+        <span style="color:var(--warn)">📊 Mensal 30% (${atraso.mesesAtraso} mês(es)): ${brl(atraso.juros)}</span><br>
+        <span style="color:var(--warn)">Total mensal: <strong>${brl(p.valor + atraso.total)}</strong></span><br>
+        <span style="color:var(--neon-blue)">📅 Diário 1% (${atrasoDiario.dias} dia${atrasoDiario.dias>1?'s':''}): ${brl(atrasoDiario.juros)}</span><br>
+        <span style="color:var(--neon-blue)">Total diário: <strong>${brl(p.valor + atrasoDiario.total)}</strong></span>
       </div>`;
     }
 
@@ -1741,7 +1765,8 @@ function renderDetalhe(id) {
         actions = `
           ${btnLembrete}
           <button class="btn-icon btn-juros" onclick="abrirPagamentoJuros('${emp.id}',${p.n})">💸 Só juros</button>
-          <button class="btn-icon btn-ok" onclick="abrirPagamento('${emp.id}',${p.n})">✓ Pagar</button>
+          <button class="btn-icon btn-ok" onclick="abrirPagamento('${emp.id}',${p.n})">✓ Pagar (30%)</button>
+          <button class="btn-icon btn-diario" onclick="abrirPagamentoDiario('${emp.id}',${p.n})">📅 Pagar (1%/dia)</button>
         `;
       } else {
         actions = `
@@ -1769,8 +1794,10 @@ function renderDetalhe(id) {
     [...emp.pagamentos].sort((a,b)=>new Date(b.dataPagamento)-new Date(a.dataPagamento)).forEach(h => {
       const isJuros = h.tipo === "juros";
       const titulo = isJuros ? `Parcela ${h.n} · 💸 Só juros` : `Parcela ${h.n}`;
+      const tipoJurosTxt = h.tipoJuros === "diario" ? " (diário)"
+                          : h.tipoJuros === "mensal" ? " (30%/mês)" : "";
       const extra = h.juros > 0
-        ? `<br><span style="color:var(--bad)">Juros de atraso: ${brl(h.juros)}</span>` : "";
+        ? `<br><span style="color:var(--bad)">Juros de atraso${tipoJurosTxt}: ${brl(h.juros)}</span>` : "";
 
       html += `
         <div class="hist-item ${isJuros ? "juros" : ""}">
@@ -2307,6 +2334,41 @@ function abrirPagamentoJuros(empId, nParcela) {
 }
 
 // ============================================================
+// PAGAMENTO COM JUROS DIÁRIOS (1% ao dia)
+// ============================================================
+function abrirPagamentoDiario(empId, nParcela) {
+  const emp = getEmprestimos().find(e => e.id === empId);
+  if (!emp || emp.renegociado) return;
+  const p = emp.parcelas.find(x => x.n === nParcela);
+  if (!p || p.pago) return;
+
+  const atraso = calcularAtrasoDiario(p);
+  if (atraso.dias <= 0) {
+    alert("Esta parcela não está em atraso.");
+    return;
+  }
+
+  const valorPago = p.valor + atraso.total;
+  const hoje = toISO(new Date());
+
+  _pagAtual = { tipo: "parcela_diario", empId, nParcela, atraso, valorPago, dataPagamento: hoje };
+
+  document.getElementById("pagTitulo").textContent = `Pagar com juros diários · Parcela ${nParcela}/${emp.nParcelas}`;
+  document.getElementById("pagInfo").innerHTML = `
+    Vencimento: ${formatBR(p.vencimento)} · <span style="color:var(--bad)">${atraso.dias} dia(s) em atraso</span><br>
+    <span style="color:var(--neon-blue)">📅 Juros: 1% ao dia × ${atraso.dias} dia${atraso.dias>1?'s':''} = ${brl(atraso.juros)}</span>
+  `;
+
+  document.getElementById("pagPreview").textContent =
+    `Valor da parcela: ${brl(p.valor)}\n` +
+    `Juros diários (1% × ${atraso.dias} dia${atraso.dias>1?'s':''}): ${brl(atraso.juros)}\n\n` +
+    `Total a receber: ${brl(valorPago)}`;
+
+  resetModalPag();
+  document.getElementById("modalPag").classList.add("show");
+}
+
+// ============================================================
 // LEMBRETE
 // ============================================================
 function abrirLembrete(empId, nParcela) {
@@ -2391,6 +2453,7 @@ function abrirExtrato(empId) {
 function confirmarPagamento() {
   if (!_pagAtual) return;
   if (_pagAtual.tipo === "juros") return confirmarPagamentoJuros();
+  if (_pagAtual.tipo === "parcela_diario") return confirmarPagamentoDiario();
   return confirmarPagamentoParcela();
 }
 
@@ -2410,8 +2473,48 @@ function confirmarPagamentoParcela() {
 
   if (!emp.pagamentos) emp.pagamentos = [];
   emp.pagamentos.push({
-    tipo: "parcela", n: nParcela, dataPagamento,
-    valorBase: p.valor, juros: atraso.juros, total: valorPago
+    tipo: "parcela",
+    tipoJuros: "mensal",
+    n: nParcela,
+    dataPagamento,
+    valorBase: p.valor,
+    juros: atraso.juros,
+    total: valorPago
+  });
+
+  saveEmprestimos(lista);
+  updateBadge();
+  fecharModal("modalPag");
+  renderDetalhe(empId);
+  abrirComprovante(empId, nParcela);
+}
+
+// ============================================================
+// CONFIRMAR PAGAMENTO COM JUROS DIÁRIOS
+// ============================================================
+function confirmarPagamentoDiario() {
+  const { empId, nParcela, atraso, valorPago, dataPagamento } = _pagAtual;
+  const lista = getEmprestimos();
+  const emp = lista.find(e => e.id === empId);
+  if (!emp) return;
+  const p = emp.parcelas.find(x => x.n === nParcela);
+  if (!p || p.pago) return;
+
+  p.pago = true;
+  p.dataPagamento = dataPagamento;
+  p.valorPago = valorPago;
+  p.jurosAtraso = atraso.juros;
+  p.jurosPagosAte = null;
+
+  if (!emp.pagamentos) emp.pagamentos = [];
+  emp.pagamentos.push({
+    tipo: "parcela",
+    tipoJuros: "diario",
+    n: nParcela,
+    dataPagamento,
+    valorBase: p.valor,
+    juros: atraso.juros,
+    total: valorPago
   });
 
   saveEmprestimos(lista);
@@ -2693,7 +2796,7 @@ function atualizarPreviewForm() {
     Última parcela: <strong>${formatBR(ultima.vencimento)}</strong><br>
     Juros total: <strong>${brl(juros)}</strong><br>
     Total a pagar: <strong>${brl(total)}</strong><br>
-    <span style="color:var(--warn)">⚠️ Parcelas em atraso: juros de 30% ao mês.</span>
+    <span style="color:var(--warn)">⚠️ Parcelas em atraso: juros de 30% ao mês ou 1% ao dia.</span>
   `;
 }
 
