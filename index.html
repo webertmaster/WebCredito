@@ -481,8 +481,8 @@
       <button class="btn-sec" onclick="fecharModal('modalPag')">Fechar</button>
       <button class="btn-ok" onclick="confirmarPagamento()">✓ Confirmar pagamento</button>
     </div>
-    <div style="display:none; gap:8px; margin-top:10px;" id="comprovanteAcoes">
-      <button class="btn-wa" id="btnEnviarWa" onclick="enviarComprovantePagamento()" style="flex:1; margin-top:0;">📱 Enviar comprovante no WhatsApp</button>
+    <div style="display:flex; gap:8px; margin-top:10px;" id="comprovanteAcoes">
+      <button class="btn-wa" id="btnEnviarWa" onclick="enviarComprovantePagamento()" style="flex:1; margin-top:0;">📱 Enviar no WhatsApp</button>
       <button class="btn-copy" id="btnCopiarMsg" onclick="copiarMensagemComprovante()">📋 Copiar</button>
     </div>
   </div>
@@ -2286,6 +2286,12 @@ function abrirPagamento(empId, nParcela) {
   const hoje = toISO(new Date());
 
   _pagAtual = { tipo: "parcela", empId, nParcela, atraso, valorPago, dataPagamento: hoje };
+  _comprovanteAtual = {
+    tipo: "pagamento",
+    empId, nParcela,
+    tel: normalizarTelefoneWhatsApp(emp.telefone),
+    mensagem: `Olá, ${emp.nome}! 👋\n\nSegue o resumo do pagamento:\n\n*Parcela ${nParcela}/${emp.nParcelas}*\n💰 Valor: ${brl(valorPago)}\n\nQualquer dúvida, estou à disposição!`
+  };
 
   document.getElementById("pagTitulo").textContent = `Registrar pagamento da parcela ${nParcela}/${emp.nParcelas}`;
   document.getElementById("pagInfo").innerHTML = atraso.dias > 0
@@ -2316,6 +2322,12 @@ function abrirPagamentoJuros(empId, nParcela) {
   const hoje = toISO(new Date());
 
   _pagAtual = { tipo: "juros", empId, nParcela, atraso, valorPago, dataPagamento: hoje };
+  _comprovanteAtual = {
+    tipo: "pagamento_juros",
+    empId, nParcela,
+    tel: normalizarTelefoneWhatsApp(emp.telefone),
+    mensagem: `Olá, ${emp.nome}! 👋\n\nSegue o resumo do pagamento:\n\n*Juros da Parcela ${nParcela}/${emp.nParcelas}*\n💰 Valor: ${brl(valorPago)}\n\nQualquer dúvida, estou à disposição!`
+  };
 
   document.getElementById("pagTitulo").textContent = `Pagar somente juros · Parcela ${nParcela}/${emp.nParcelas}`;
   document.getElementById("pagInfo").innerHTML = `
@@ -2352,6 +2364,12 @@ function abrirPagamentoDiario(empId, nParcela) {
   const hoje = toISO(new Date());
 
   _pagAtual = { tipo: "parcela_diario", empId, nParcela, atraso, valorPago, dataPagamento: hoje };
+  _comprovanteAtual = {
+    tipo: "pagamento_diario",
+    empId, nParcela,
+    tel: normalizarTelefoneWhatsApp(emp.telefone),
+    mensagem: `Olá, ${emp.nome}! 👋\n\nSegue o resumo do pagamento:\n\n*Parcela ${nParcela}/${emp.nParcelas} (juros diários)*\n💰 Valor: ${brl(valorPago)}\n\nQualquer dúvida, estou à disposição!`
+  };
 
   document.getElementById("pagTitulo").textContent = `Pagar com juros diários · Parcela ${nParcela}/${emp.nParcelas}`;
   document.getElementById("pagInfo").innerHTML = `
@@ -2407,9 +2425,6 @@ function abrirLembrete(empId, nParcela) {
   const btnWa = document.getElementById("btnEnviarWa");
   btnWa.textContent = tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
   btnWa.onclick = enviarComprovantePagamento;
-  
-  const compAcoes = document.getElementById("comprovanteAcoes");
-  if (compAcoes) compAcoes.style.display = "flex";
 
   document.getElementById("modalPag").classList.add("show");
 }
@@ -2446,9 +2461,6 @@ function abrirExtrato(empId) {
   const btnWa = document.getElementById("btnEnviarWa");
   btnWa.textContent = tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
   btnWa.onclick = enviarComprovantePagamento;
-
-  const compAcoes = document.getElementById("comprovanteAcoes");
-  if (compAcoes) compAcoes.style.display = "flex";
 
   document.getElementById("modalPag").classList.add("show");
 }
@@ -2620,9 +2632,6 @@ function abrirComprovante(empId, nParcela) {
   btnWa.textContent = _comprovanteAtual.tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
   btnWa.onclick = enviarComprovantePagamento;
 
-  const compAcoes = document.getElementById("comprovanteAcoes");
-  if (compAcoes) compAcoes.style.display = "flex";
-
   document.getElementById("modalPag").classList.add("show");
 }
 
@@ -2652,9 +2661,6 @@ function abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento) {
   const btnWa = document.getElementById("btnEnviarWa");
   btnWa.textContent = _comprovanteAtual.tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
   btnWa.onclick = enviarComprovantePagamento;
-
-  const compAcoes = document.getElementById("comprovanteAcoes");
-  if (compAcoes) compAcoes.style.display = "flex";
 
   document.getElementById("modalPag").classList.add("show");
 }
@@ -2710,17 +2716,13 @@ function resetModalPag() {
   btnConfirmar.style.display = "";
   btnConfirmar.textContent = "✓ Confirmar pagamento";
   const btnWa = document.getElementById("btnEnviarWa");
-  btnWa.textContent = "📱 Enviar comprovante no WhatsApp";
+  btnWa.textContent = "📱 Enviar no WhatsApp";
   btnWa.onclick = enviarComprovantePagamento;
   const btnCopy = document.getElementById("btnCopiarMsg");
   if (btnCopy) {
     btnCopy.textContent = "📋 Copiar";
     btnCopy.classList.remove("copiado");
   }
-  
-  const compAcoes = document.getElementById("comprovanteAcoes");
-  if (compAcoes) compAcoes.style.display = "none"; // <--- ESCONDE OS BOTÕES
-
   _comprovanteAtual = null;
 }
 
