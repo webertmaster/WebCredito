@@ -481,8 +481,8 @@
       <button class="btn-sec" onclick="fecharModal('modalPag')">Fechar</button>
       <button class="btn-ok" onclick="confirmarPagamento()">✓ Confirmar pagamento</button>
     </div>
-    <div style="display:flex; gap:8px; margin-top:10px;">
-      <button class="btn-wa" id="btnEnviarWa" onclick="enviarComprovantePagamento()" style="flex:1; margin-top:0;">📱 Enviar no WhatsApp</button>
+    <div style="display:none; gap:8px; margin-top:10px;" id="comprovanteAcoes">
+      <button class="btn-wa" id="btnEnviarWa" onclick="enviarComprovantePagamento()" style="flex:1; margin-top:0;">📱 Enviar comprovante no WhatsApp</button>
       <button class="btn-copy" id="btnCopiarMsg" onclick="copiarMensagemComprovante()">📋 Copiar</button>
     </div>
   </div>
@@ -2407,6 +2407,9 @@ function abrirLembrete(empId, nParcela) {
   const btnWa = document.getElementById("btnEnviarWa");
   btnWa.textContent = tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
   btnWa.onclick = enviarComprovantePagamento;
+  
+  const compAcoes = document.getElementById("comprovanteAcoes");
+  if (compAcoes) compAcoes.style.display = "flex";
 
   document.getElementById("modalPag").classList.add("show");
 }
@@ -2443,6 +2446,9 @@ function abrirExtrato(empId) {
   const btnWa = document.getElementById("btnEnviarWa");
   btnWa.textContent = tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
   btnWa.onclick = enviarComprovantePagamento;
+
+  const compAcoes = document.getElementById("comprovanteAcoes");
+  if (compAcoes) compAcoes.style.display = "flex";
 
   document.getElementById("modalPag").classList.add("show");
 }
@@ -2614,6 +2620,9 @@ function abrirComprovante(empId, nParcela) {
   btnWa.textContent = _comprovanteAtual.tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
   btnWa.onclick = enviarComprovantePagamento;
 
+  const compAcoes = document.getElementById("comprovanteAcoes");
+  if (compAcoes) compAcoes.style.display = "flex";
+
   document.getElementById("modalPag").classList.add("show");
 }
 
@@ -2643,6 +2652,9 @@ function abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento) {
   const btnWa = document.getElementById("btnEnviarWa");
   btnWa.textContent = _comprovanteAtual.tel ? "📱 Enviar para o cliente" : "📱 Compartilhar mensagem";
   btnWa.onclick = enviarComprovantePagamento;
+
+  const compAcoes = document.getElementById("comprovanteAcoes");
+  if (compAcoes) compAcoes.style.display = "flex";
 
   document.getElementById("modalPag").classList.add("show");
 }
@@ -2705,6 +2717,10 @@ function resetModalPag() {
     btnCopy.textContent = "📋 Copiar";
     btnCopy.classList.remove("copiado");
   }
+  
+  const compAcoes = document.getElementById("comprovanteAcoes");
+  if (compAcoes) compAcoes.style.display = "none"; // <--- ESCONDE OS BOTÕES
+
   _comprovanteAtual = null;
 }
 
