@@ -2286,6 +2286,9 @@ function abrirPagamento(empId, nParcela) {
   const hoje = toISO(new Date());
 
   _pagAtual = { tipo: "parcela", empId, nParcela, atraso, valorPago, dataPagamento: hoje };
+
+  resetModalPag(); // Limpa o visual anterior
+
   _comprovanteAtual = {
     tipo: "pagamento",
     empId, nParcela,
@@ -2302,7 +2305,6 @@ function abrirPagamento(empId, nParcela) {
     ? `Valor da parcela: ${brl(p.valor)}\nJuros de atraso (30%/mês · ${atraso.mesesAtraso} mês(es)): ${brl(atraso.juros)}\n\nTotal a receber: ${brl(valorPago)}`
     : `Valor a receber: ${brl(valorPago)}`;
 
-  resetModalPag();
   document.getElementById("modalPag").classList.add("show");
 }
 
@@ -2322,6 +2324,9 @@ function abrirPagamentoJuros(empId, nParcela) {
   const hoje = toISO(new Date());
 
   _pagAtual = { tipo: "juros", empId, nParcela, atraso, valorPago, dataPagamento: hoje };
+
+  resetModalPag();
+
   _comprovanteAtual = {
     tipo: "pagamento_juros",
     empId, nParcela,
@@ -2341,7 +2346,6 @@ function abrirPagamentoJuros(empId, nParcela) {
     `Total a receber agora: ${brl(valorPago)}\n\n` +
     `Após o pagamento, os juros voltam a contar do zero a partir de hoje.`;
 
-  resetModalPag();
   document.getElementById("modalPag").classList.add("show");
 }
 
@@ -2364,6 +2368,9 @@ function abrirPagamentoDiario(empId, nParcela) {
   const hoje = toISO(new Date());
 
   _pagAtual = { tipo: "parcela_diario", empId, nParcela, atraso, valorPago, dataPagamento: hoje };
+
+  resetModalPag();
+
   _comprovanteAtual = {
     tipo: "pagamento_diario",
     empId, nParcela,
@@ -2382,7 +2389,6 @@ function abrirPagamentoDiario(empId, nParcela) {
     `Juros diários (1% × ${atraso.dias} dia${atraso.dias>1?'s':''}): ${brl(atraso.juros)}\n\n` +
     `Total a receber: ${brl(valorPago)}`;
 
-  resetModalPag();
   document.getElementById("modalPag").classList.add("show");
 }
 
@@ -2412,6 +2418,8 @@ function abrirLembrete(empId, nParcela) {
   }
 
   _comprovanteAtual = { tipo: "lembrete", empId, nParcela, tel, mensagem: msg };
+
+  resetModalPag();
 
   document.getElementById("pagTitulo").textContent = atraso.dias > 0
     ? "Lembrete de parcela vencida" : "Lembrete de vencimento";
@@ -2449,6 +2457,8 @@ function abrirExtrato(empId) {
   msg += `\nQualquer dúvida, estou à disposição!`;
 
   _comprovanteAtual = { tipo: "extrato", empId, nParcela: null, tel, mensagem: msg };
+
+  resetModalPag();
 
   document.getElementById("pagTitulo").textContent = "Resumo do empréstimo";
   document.getElementById("pagInfo").innerHTML = tel
@@ -2620,6 +2630,8 @@ function abrirComprovante(empId, nParcela) {
   _comprovanteAtual = { tipo: "parcela", empId, nParcela,
     tel: normalizarTelefoneWhatsApp(emp.telefone), mensagem: msg };
 
+  resetModalPag();
+
   document.getElementById("pagTitulo").textContent = "Enviar comprovante ao cliente";
   document.getElementById("pagInfo").innerHTML = _comprovanteAtual.tel
     ? `Telefone do cliente: <strong>${escapeHtml(emp.telefone)}</strong>`
@@ -2650,6 +2662,8 @@ function abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento) {
   _comprovanteAtual = { tipo: "juros", empId, nParcela,
     tel: normalizarTelefoneWhatsApp(emp.telefone), mensagem: msg };
 
+  resetModalPag();
+
   document.getElementById("pagTitulo").textContent = "Enviar comprovante de juros";
   document.getElementById("pagInfo").innerHTML = _comprovanteAtual.tel
     ? `Telefone do cliente: <strong>${escapeHtml(emp.telefone)}</strong>`
@@ -2669,7 +2683,10 @@ function abrirComprovanteJuros(empId, nParcela, valorPago, dataPagamento) {
 // ENVIO / COPIAR
 // ============================================================
 function enviarComprovantePagamento() {
-  if (!_comprovanteAtual) return;
+  if (!_comprovanteAtual) {
+    alert("Nenhuma mensagem disponível para enviar.");
+    return;
+  }
   const text = encodeURIComponent(_comprovanteAtual.mensagem);
   const tel = _comprovanteAtual.tel;
   const target = tel ? `phone=${tel}&text=${text}` : `text=${text}`;
@@ -2681,7 +2698,10 @@ function enviarComprovantePagamento() {
 }
 
 async function copiarMensagemComprovante() {
-  if (!_comprovanteAtual) return;
+  if (!_comprovanteAtual) {
+    alert("Nenhuma mensagem disponível para copiar.");
+    return;
+  }
   const texto = _comprovanteAtual.mensagem;
   const btn = document.getElementById("btnCopiarMsg");
   try {
@@ -2723,7 +2743,7 @@ function resetModalPag() {
     btnCopy.textContent = "📋 Copiar";
     btnCopy.classList.remove("copiado");
   }
-  _comprovanteAtual = null;
+  // O _comprovanteAtual NÃO é limpo aqui, para permitir copiar antes de confirmar.
 }
 
 // ============================================================
@@ -2911,7 +2931,10 @@ function excluirCliente(clienteKey) {
 // ============================================================
 function fecharModal(id) {
   document.getElementById(id).classList.remove("show");
-  if (id === "modalPag") resetModalPag();
+  if (id === "modalPag") {
+    resetModalPag();
+    _comprovanteAtual = null; // Limpa apenas ao fechar
+  }
   if (id === "modalRene") _reneAtual = null;
   _pagAtual = null;
 }
